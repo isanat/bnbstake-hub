@@ -9,7 +9,7 @@ import { CommissionsPage } from '@/components/web3/CommissionsPage'
 import { AdminPage } from '@/components/web3/AdminPage'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import {
   LayoutDashboard, Coins, Users, Gift, Shield, Menu,
   Zap, ExternalLink, ChevronDown, ArrowRight, Globe,
@@ -602,6 +602,7 @@ function AppLayout() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="bg-[#0a0a0f] border-[#F0B90B]/10 p-0 w-64">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col h-full">
                   <div className="flex items-center gap-2 px-6 h-14 border-b border-[#F0B90B]/10">
                     <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#F0B90B] to-[#C99A00] flex items-center justify-center">
