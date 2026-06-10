@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  walletAddress  String    @unique
+  referrerId     String?
+  referrer       User?     @relation("UnilevelTree", fields: [referrerId], references: [id])
+  referrals      User[]    @relation("UnilevelTree")
+  binaryParentId String?
+  binarySide     String?
+  referralCode   String    @unique
+  isAdmin        Boolean   @default(false)
+  totalStaked    Float     @default(0)
+  totalEarned    Float     @default(0)
+  totalWithdrawn Float     @default(0)
+  leftVolume     Float     @default(0)
+  rightVolume    Float     @default(0)
+  isActive       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  stakes           Stake[]
+  commissions      Commission[]     @relation("UserCommissions")
+  commissionsFrom  Commission[]     @relation("CommissionFromUser")
+  transactions     Transaction[]
+  binaryChildren   User[]           @relation("BinaryTree")
+  binaryParent     User?            @relation("BinaryTree", fields: [binaryParentId], references: [id])
+}
+
+model StakingPlan {
+  id                   String   @id @default(cuid())
+  name                 String
+  description          String   @default("")
+  durationDays         Int
+  apy                  Float
+  minAmount            Float
+  maxAmount            Float
+  isActive             Boolean  @default(true)
+  earlyWithdrawPenalty Float    @default(10)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  stakes               Stake[]
+}
+
+model Stake {
+  id             String      @id @default(cuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id])
+  planId         String
+  plan           StakingPlan @relation(fields: [planId], references: [id])
+  amount         Float
+  rewardsEarned  Float       @default(0)
+  rewardsClaimed Float       @default(0)
+  startDate      DateTime
+  endDate        DateTime
+  status         String      @default("active")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model UnilevelConfig {
+  id         String   @id @default(cuid())
+  level      Int      @unique
+  percentage Float
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model BinaryConfig {
+  id                String   @id @default(cuid())
+  percentage        Float
+  dailyCap          Float    @default(0)
+  flushOutThreshold Float    @default(0)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Commission {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation("UserCommissions", fields: [userId], references: [id])
+  fromUserId  String
+  fromUser    User     @relation("CommissionFromUser", fields: [fromUserId], references: [id])
+  amount      Float
+  type        String
+  level       Int      @default(0)
+  status      String   @default("pending")
+  description String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  stakeId     String?
+  type        String
+  amount      Float
+  status      String   @default("completed")
+  txHash      String?
+  description String   @default("")
+  createdAt   DateTime @default(now())
+}
+
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String   @default("")
+  updatedAt   DateTime @updatedAt
+}
