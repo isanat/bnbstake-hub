@@ -1,43 +1,41 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
 }
 
 model User {
-  id             String    @id @default(cuid())
-  walletAddress  String    @unique
-  referrerId     String?
-  referrer       User?     @relation("UnilevelTree", fields: [referrerId], references: [id])
-  referrals      User[]    @relation("UnilevelTree")
-  binaryParentId String?
-  binarySide     String?
-  referralCode   String    @unique
-  isAdmin        Boolean   @default(false)
-  totalStaked    Float     @default(0)
-  totalEarned    Float     @default(0)
-  totalWithdrawn Float     @default(0)
-  leftVolume     Float     @default(0)
-  rightVolume    Float     @default(0)
-  isActive       Boolean   @default(false)
-  xp             Int       @default(0)
-  level          Int       @default(1)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  stakes           Stake[]
-  commissions      Commission[]     @relation("UserCommissions")
-  commissionsFrom  Commission[]     @relation("CommissionFromUser")
-  transactions     Transaction[]
-  binaryChildren   User[]           @relation("BinaryTree")
-  binaryParent     User?            @relation("BinaryTree", fields: [binaryParentId], references: [id])
-  achievements     UserAchievement[]
+  id              String            @id @default(cuid())
+  walletAddress   String            @unique
+  referrerId      String?
+  binaryParentId  String?
+  binarySide      String?
+  referralCode    String            @unique
+  isAdmin         Boolean           @default(false)
+  totalStaked     Float             @default(0)
+  totalEarned     Float             @default(0)
+  totalWithdrawn  Float             @default(0)
+  leftVolume      Float             @default(0)
+  rightVolume     Float             @default(0)
+  isActive        Boolean           @default(false)
+  xp              Int               @default(0)
+  level           Int               @default(1)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  referrer        User?             @relation("UnilevelTree", fields: [referrerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  referrals       User[]            @relation("UnilevelTree")
+  stakes          Stake[]
+  commissions     Commission[]      @relation("UserCommissions")
+  commissionsFrom Commission[]      @relation("CommissionFromUser")
+  transactions    Transaction[]
+  binaryChildren  User[]            @relation("BinaryTree")
+  binaryParent    User?             @relation("BinaryTree", fields: [binaryParentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  achievements    UserAchievement[]
 }
 
 model StakingPlan {
@@ -52,16 +50,13 @@ model StakingPlan {
   earlyWithdrawPenalty Float    @default(10)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
-
   stakes               Stake[]
 }
 
 model Stake {
   id             String      @id @default(cuid())
   userId         String
-  user           User        @relation(fields: [userId], references: [id])
   planId         String
-  plan           StakingPlan @relation(fields: [planId], references: [id])
   amount         Float
   rewardsEarned  Float       @default(0)
   rewardsClaimed Float       @default(0)
@@ -70,6 +65,8 @@ model Stake {
   status         String      @default("active")
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
+  user           User        @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  plan           StakingPlan @relation(fields: [planId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 }
 
 model UnilevelConfig {
@@ -94,9 +91,7 @@ model BinaryConfig {
 model Commission {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation("UserCommissions", fields: [userId], references: [id])
   fromUserId  String
-  fromUser    User     @relation("CommissionFromUser", fields: [fromUserId], references: [id])
   amount      Float
   type        String
   level       Int      @default(0)
@@ -104,12 +99,13 @@ model Commission {
   description String   @default("")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User     @relation("UserCommissions", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  fromUser    User     @relation("CommissionFromUser", fields: [fromUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 }
 
 model Transaction {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
   stakeId     String?
   type        String
   amount      Float
@@ -117,6 +113,7 @@ model Transaction {
   txHash      String?
   description String   @default("")
   createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 }
 
 model SystemConfig {
@@ -128,24 +125,23 @@ model SystemConfig {
 }
 
 model Achievement {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  nameEn      String
-  nameEs      String
-  namePt      String
-  descEn      String
-  descEs      String
-  descPt      String
-  icon        String   @default("Trophy")
-  condition   String   @default("{}")
-  reward      String   @default("{}")
-  tier        String   @default("bronze")
-  xpReward    Int      @default(10)
-  isActive    Boolean  @default(true)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  id               String            @id @default(cuid())
+  key              String            @unique
+  nameEn           String
+  nameEs           String
+  namePt           String
+  descEn           String
+  descEs           String
+  descPt           String
+  icon             String            @default("Trophy")
+  condition        String            @default("{}")
+  reward           String            @default("{}")
+  tier             String            @default("bronze")
+  xpReward         Int               @default(10)
+  isActive         Boolean           @default(true)
+  order            Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   userAchievements UserAchievement[]
 }
 
@@ -156,9 +152,8 @@ model UserAchievement {
   unlockedAt    DateTime    @default(now())
   claimed       Boolean     @default(false)
   claimedAt     DateTime?
-
-  user        User        @relation(fields: [userId], references: [id])
-  achievement Achievement @relation(fields: [achievementId], references: [id])
+  user          User        @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   @@unique([userId, achievementId])
 }
@@ -176,15 +171,15 @@ model Translation {
 }
 
 model NotificationTemplate {
-  id          String   @id @default(cuid())
-  type        String   @unique
-  titleEn     String
-  titleEs     String
-  titlePt     String
-  messageEn   String
-  messageEs   String
-  messagePt   String
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  type      String   @unique
+  titleEn   String
+  titleEs   String
+  titlePt   String
+  messageEn String
+  messageEs String
+  messagePt String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
