@@ -342,4 +342,24 @@ export const defaultTranslations: Record<string, string> = {
   you_rank: 'Your Rank',
   players: 'Players',
   not_ranked: 'Not Ranked',
+
+  // ========================
+  // LIVE FEED & TOAST (15 keys)
+  // ========================
+  live_feed: 'Live Feed',
+  live_label: 'LIVE',
+  updates_every: 'Updates every',
+  last_refresh: 'last refresh',
+  unable_load_feed: 'Unable to load live feed',
+  tx_stake: 'staked',
+  tx_commission: 'earned commission',
+  tx_referral: 'joined via referral',
+  tx_withdraw: 'withdrew',
+  toast_stake_title: 'New Stake!',
+  toast_stake_msg: 'just staked',
+  toast_commission_title: 'Commission Paid!',
+  toast_commission_msg: 'earned',
+  toast_referral_title: 'New Referral!',
+  toast_referral_msg: 'joined the network',
+  toast_ago: 'ago',
 }
