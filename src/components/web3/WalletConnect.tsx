@@ -107,26 +107,26 @@ export function WalletConnect() {
         animate={{ opacity: 1, x: 0 }}
         className="flex items-center gap-2"
       >
-        <div className="hidden sm:flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2">
+        <div className="hidden sm:flex items-center gap-2 glass-card rounded-xl px-3 py-2">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="h-2 w-2 rounded-full bg-[#F0B90B] animate-pulse shadow-[0_0_8px_rgba(240,185,11,0.5)]" />
             <span className="text-sm text-gray-300 font-mono">
               {truncateAddress(currentWallet)}
             </span>
-            <button onClick={handleCopyAddress} className="text-gray-400 hover:text-emerald-400 transition-colors">
+            <button onClick={handleCopyAddress} className="text-gray-400 hover:text-[#F0B90B] transition-colors">
               {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
           </div>
-          <div className="border-l border-gray-700 pl-2 ml-1">
+          <div className="border-l border-[#F0B90B]/20 pl-2 ml-1">
             <span className="text-xs text-gray-400">{bnbBalance.toFixed(3)} BNB</span>
           </div>
-          <div className="border-l border-gray-700 pl-2 ml-1">
-            <span className="text-xs text-emerald-400">{usdtBalance.toFixed(2)} USDT</span>
+          <div className="border-l border-[#F0B90B]/20 pl-2 ml-1">
+            <span className="text-xs text-[#F0B90B] font-medium">{usdtBalance.toFixed(2)} USDT</span>
           </div>
         </div>
 
-        <div className="sm:hidden flex items-center gap-1 bg-gray-800/80 border border-gray-700 rounded-xl px-2 py-1.5">
-          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="sm:hidden flex items-center gap-1 glass-card rounded-xl px-2 py-1.5">
+          <div className="h-2 w-2 rounded-full bg-[#F0B90B] animate-pulse shadow-[0_0_8px_rgba(240,185,11,0.5)]" />
           <span className="text-xs text-gray-300 font-mono">
             {truncateAddress(currentWallet)}
           </span>
@@ -147,15 +147,15 @@ export function WalletConnect() {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-xl">
+        <Button className="btn-bnb gap-2 rounded-xl">
           <Wallet className="h-4 w-4" />
           <span className="hidden sm:inline">Connect Wallet</span>
           <span className="sm:hidden">Connect</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-md">
+      <DialogContent className="glass-strong border-[#F0B90B]/15 text-white sm:max-w-md backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle className="text-xl">Connect Wallet</DialogTitle>
+          <DialogTitle className="text-xl text-gradient-bnb">Connect Wallet</DialogTitle>
           <DialogDescription className="text-gray-400">
             Connect your BNB Smart Chain wallet to start staking
           </DialogDescription>
@@ -164,7 +164,7 @@ export function WalletConnect() {
           <Button
             onClick={handleConnectRandom}
             disabled={connecting}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 rounded-xl gap-2 justify-start px-4"
+            className="w-full btn-bnb h-12 rounded-xl gap-2 justify-start px-4"
           >
             {connecting ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -173,7 +173,7 @@ export function WalletConnect() {
             )}
             <div className="text-left">
               <div className="font-semibold">Simulated Wallet</div>
-              <div className="text-xs text-emerald-200/70">Generate a random test address</div>
+              <div className="text-xs opacity-70">Generate a random test address</div>
             </div>
           </Button>
 
@@ -181,12 +181,12 @@ export function WalletConnect() {
             onClick={handleConnectAdmin}
             disabled={connecting}
             variant="outline"
-            className="w-full border-amber-500/30 hover:bg-amber-500/10 text-amber-400 h-12 rounded-xl gap-2 justify-start px-4"
+            className="w-full border-[#F0B90B]/30 hover:bg-[#F0B90B]/10 text-[#F0B90B] h-12 rounded-xl gap-2 justify-start px-4"
           >
-            <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center text-xs font-bold">A</div>
+            <div className="h-5 w-5 rounded-full bg-[#F0B90B]/20 flex items-center justify-center text-xs font-bold text-[#F0B90B]">A</div>
             <div className="text-left">
               <div className="font-semibold">Admin Wallet</div>
-              <div className="text-xs text-amber-300/50">Connect as admin (0xAdmin...0001)</div>
+              <div className="text-xs text-[#F0B90B]/60">Connect as admin (0xAdmin...0001)</div>
             </div>
           </Button>
 
@@ -197,13 +197,13 @@ export function WalletConnect() {
                 placeholder="0x..."
                 value={customAddress}
                 onChange={(e) => setCustomAddress(e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white font-mono text-sm"
+                className="bg-gray-800/60 border-[#F0B90B]/20 text-white font-mono text-sm focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
               />
               <Button
                 onClick={handleConnectCustom}
                 disabled={!customAddress.startsWith('0x') || customAddress.length !== 42 || connecting}
                 variant="secondary"
-                className="bg-gray-800 hover:bg-gray-700 text-white shrink-0"
+                className="bg-[#F0B90B]/10 hover:bg-[#F0B90B]/20 text-[#F0B90B] border border-[#F0B90B]/20 shrink-0"
               >
                 {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Connect'}
               </Button>
@@ -211,8 +211,8 @@ export function WalletConnect() {
           </div>
 
           <div className="flex items-center justify-center gap-2 pt-2">
-            <Badge variant="outline" className="border-gray-700 text-gray-400 gap-1">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <Badge variant="outline" className="border-[#F0B90B]/20 text-[#F0B90B]/70 gap-1">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#F0B90B]" />
               BNB Smart Chain
             </Badge>
           </div>

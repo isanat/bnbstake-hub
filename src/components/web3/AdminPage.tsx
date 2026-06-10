@@ -328,7 +328,7 @@ export function AdminPage() {
         title="Admin Panel"
         description="Manage staking plans, configurations, and users"
         actions={
-          <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 gap-1">
+          <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 gap-1">
             <Shield className="h-3 w-3" />
             Admin Access
           </Badge>
@@ -336,24 +336,24 @@ export function AdminPage() {
       />
 
       <Tabs defaultValue="plans" className="space-y-4">
-        <TabsList className="bg-gray-800 border border-gray-700 flex-wrap h-auto gap-1 p-1">
-          <TabsTrigger value="plans" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-xs sm:text-sm">
+        <TabsList className="bg-gray-800/60 border border-[#F0B90B]/10 flex-wrap h-auto gap-1 p-1 backdrop-blur-sm">
+          <TabsTrigger value="plans" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <Coins className="h-4 w-4 mr-1" />
             Plans
           </TabsTrigger>
-          <TabsTrigger value="unilevel" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-xs sm:text-sm">
+          <TabsTrigger value="unilevel" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <TrendingUp className="h-4 w-4 mr-1" />
             Unilevel Config
           </TabsTrigger>
-          <TabsTrigger value="binary" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-xs sm:text-sm">
+          <TabsTrigger value="binary" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <Settings className="h-4 w-4 mr-1" />
             Binary Config
           </TabsTrigger>
-          <TabsTrigger value="users" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-xs sm:text-sm">
+          <TabsTrigger value="users" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <Users className="h-4 w-4 mr-1" />
             Users
           </TabsTrigger>
-          <TabsTrigger value="reports" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-xs sm:text-sm">
+          <TabsTrigger value="reports" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <BarChart3 className="h-4 w-4 mr-1" />
             Reports
           </TabsTrigger>
@@ -361,13 +361,13 @@ export function AdminPage() {
 
         {/* Plans Tab */}
         <TabsContent value="plans">
-          <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+          <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-3">
                 <CardTitle className="text-lg text-white">Staking Plans</CardTitle>
                 <Button
                   onClick={openNewPlan}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-xl"
+                  className="btn-bnb gap-2 rounded-xl"
                 >
                   <Plus className="h-4 w-4" />
                   Add Plan
@@ -394,16 +394,16 @@ export function AdminPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="grid grid-cols-1 sm:grid-cols-7 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors items-center"
+                      className="grid grid-cols-1 sm:grid-cols-7 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/40 hover:bg-[#F0B90B]/5 border border-transparent hover:border-[#F0B90B]/10 transition-colors items-center"
                     >
                       <span className="text-sm font-medium text-white">{plan.name}</span>
                       <span className="text-sm text-gray-300">{plan.durationDays} days</span>
-                      <span className="text-sm font-semibold text-emerald-400">{plan.apy}%</span>
+                      <span className="text-sm font-semibold text-[#F0B90B]">{plan.apy}%</span>
                       <span className="text-sm text-gray-400">${plan.minAmount.toLocaleString()} - ${plan.maxAmount.toLocaleString()}</span>
                       <span className="text-sm text-red-400">{plan.earlyWithdrawPenalty}%</span>
                       <Badge variant="outline" className={`w-fit text-xs ${
                         plan.isActive
-                          ? 'border-emerald-500/30 text-emerald-400'
+                          ? 'border-[#F0B90B]/30 text-[#F0B90B]'
                           : 'border-gray-600 text-gray-500'
                       }`}>
                         {plan.isActive ? 'Active' : 'Inactive'}
@@ -412,7 +412,7 @@ export function AdminPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+                          className="h-8 w-8 text-gray-400 hover:text-[#F0B90B] hover:bg-[#F0B90B]/10"
                           onClick={() => openEditPlan(plan)}
                         >
                           <Edit className="h-3.5 w-3.5" />
@@ -428,7 +428,7 @@ export function AdminPage() {
 
         {/* Unilevel Config Tab */}
         <TabsContent value="unilevel">
-          <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+          <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="text-lg text-white">Unilevel Commission Configuration</CardTitle>
             </CardHeader>
@@ -449,10 +449,10 @@ export function AdminPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/50 items-center"
+                      className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/40 border border-transparent hover:border-[#F0B90B]/10 transition-colors items-center"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-sm font-bold">
+                        <div className="h-8 w-8 rounded-lg bg-[#F0B90B]/10 flex items-center justify-center text-[#F0B90B] text-sm font-bold">
                           {config.level}
                         </div>
                         <span className="text-sm text-white">Level {config.level}</span>
@@ -466,7 +466,7 @@ export function AdminPage() {
                             newConfig[index].percentage = Number(e.target.value)
                             setUnilevelConfigLocal(newConfig)
                           }}
-                          className="bg-gray-700 border-gray-600 text-white text-sm h-9 w-20"
+                          className="bg-gray-800/60 border-[#F0B90B]/20 text-white text-sm h-9 w-20 focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                         />
                         <span className="text-gray-500 text-sm">%</span>
                       </div>
@@ -487,7 +487,7 @@ export function AdminPage() {
                           walletAddress: currentWallet!,
                         })}
                         disabled={saveUnilevelConfigMutation.isPending}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-1 w-fit"
+                        className="btn-bnb rounded-xl gap-1 w-fit"
                       >
                         {saveUnilevelConfigMutation.isPending ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -506,7 +506,7 @@ export function AdminPage() {
 
         {/* Binary Config Tab */}
         <TabsContent value="binary">
-          <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+          <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="text-lg text-white">Binary Commission Configuration</CardTitle>
             </CardHeader>
@@ -522,7 +522,7 @@ export function AdminPage() {
                         type="number"
                         value={binaryConfigLocal.percentage}
                         onChange={(e) => setBinaryConfigLocal({ ...binaryConfigLocal, percentage: Number(e.target.value) })}
-                        className="bg-gray-800 border-gray-700 text-white"
+                        className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                       />
                       <p className="text-xs text-gray-500">Percentage of weaker leg volume paid as commission</p>
                     </div>
@@ -532,7 +532,7 @@ export function AdminPage() {
                         type="number"
                         value={binaryConfigLocal.dailyCap}
                         onChange={(e) => setBinaryConfigLocal({ ...binaryConfigLocal, dailyCap: Number(e.target.value) })}
-                        className="bg-gray-800 border-gray-700 text-white"
+                        className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                       />
                       <p className="text-xs text-gray-500">Maximum binary commission per day</p>
                     </div>
@@ -542,7 +542,7 @@ export function AdminPage() {
                         type="number"
                         value={binaryConfigLocal.flushOutThreshold}
                         onChange={(e) => setBinaryConfigLocal({ ...binaryConfigLocal, flushOutThreshold: Number(e.target.value) })}
-                        className="bg-gray-800 border-gray-700 text-white"
+                        className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                       />
                       <p className="text-xs text-gray-500">Volume remaining after flush (% of stronger leg)</p>
                     </div>
@@ -560,11 +560,11 @@ export function AdminPage() {
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                  <div className="p-4 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/20">
                     <div className="flex items-start gap-2">
-                      <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                      <AlertTriangle className="h-4 w-4 text-[#F0B90B] mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-sm text-amber-400 font-medium">Configuration Warning</p>
+                        <p className="text-sm text-[#F0B90B] font-medium">Configuration Warning</p>
                         <p className="text-xs text-gray-400 mt-1">
                           Changes to binary configuration will affect all users immediately. Ensure values are tested thoroughly before saving.
                         </p>
@@ -578,7 +578,7 @@ export function AdminPage() {
                       walletAddress: currentWallet!,
                     })}
                     disabled={saveBinaryConfigMutation.isPending}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-2"
+                    className="btn-bnb rounded-xl gap-2"
                   >
                     {saveBinaryConfigMutation.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -595,9 +595,9 @@ export function AdminPage() {
 
         {/* Users Tab */}
         <TabsContent value="users">
-          <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+          <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-3">
                 <CardTitle className="text-lg text-white">Users</CardTitle>
                 <div className="flex items-center gap-2">
                   <div className="relative">
@@ -606,7 +606,7 @@ export function AdminPage() {
                       placeholder="Search wallet or code..."
                       value={searchQuery}
                       onChange={(e) => { setSearchQuery(e.target.value); setUsersPage(1) }}
-                      className="bg-gray-800 border-gray-700 text-white pl-9 h-9 w-48 sm:w-64"
+                      className="bg-gray-800/60 border-[#F0B90B]/20 text-white pl-9 h-9 w-48 sm:w-64 focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                     />
                   </div>
                 </div>
@@ -638,17 +638,17 @@ export function AdminPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="grid grid-cols-2 sm:grid-cols-6 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors items-center"
+                        className="grid grid-cols-2 sm:grid-cols-6 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/40 hover:bg-[#F0B90B]/5 border border-transparent hover:border-[#F0B90B]/10 transition-colors items-center"
                       >
                         <span className="text-sm text-gray-300 font-mono col-span-2 sm:col-span-1">
                           {`${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}`}
                         </span>
                         <span className="text-sm text-white">${user.totalStaked.toLocaleString()}</span>
-                        <span className="text-sm text-emerald-400">${user.totalEarned.toLocaleString()}</span>
+                        <span className="text-sm text-[#F0B90B]">${user.totalEarned.toLocaleString()}</span>
                         <span className="text-sm text-gray-400">{user.referralCode}</span>
                         <Badge variant="outline" className={`w-fit text-xs ${
                           user.isActive
-                            ? 'border-emerald-500/30 text-emerald-400'
+                            ? 'border-[#F0B90B]/30 text-[#F0B90B]'
                             : 'border-gray-600 text-gray-500'
                         }`}>
                           {user.isActive ? 'Active' : 'Inactive'}
@@ -670,38 +670,38 @@ export function AdminPage() {
               <LoadingSkeleton variant="cards" count={4} />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+                <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
                     <p className="text-sm text-gray-400">Total Users</p>
-                    <p className="text-2xl font-bold text-white">{stats?.totalUsers?.toLocaleString() ?? '0'}</p>
+                    <p className="text-2xl font-bold text-[#F0B90B]">{stats?.totalUsers?.toLocaleString() ?? '0'}</p>
                     <p className="text-xs text-gray-500 mt-1">{stats?.activeUsers ?? 0} active</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+                <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
                     <p className="text-sm text-gray-400">Total Staked</p>
-                    <p className="text-2xl font-bold text-white">${stats?.totalStaked?.toLocaleString() ?? '0'}</p>
+                    <p className="text-2xl font-bold text-[#F0B90B]">${stats?.totalStaked?.toLocaleString() ?? '0'}</p>
                     <p className="text-xs text-gray-500 mt-1">{stats?.activeStakes ?? 0} active stakes</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+                <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
                     <p className="text-sm text-gray-400">Total Commissions</p>
-                    <p className="text-2xl font-bold text-white">${stats?.totalCommissions?.toLocaleString() ?? '0'}</p>
-                    <p className="text-xs text-amber-400 mt-1">${stats?.pendingCommissions?.toLocaleString() ?? '0'} pending</p>
+                    <p className="text-2xl font-bold text-[#F0B90B]">${stats?.totalCommissions?.toLocaleString() ?? '0'}</p>
+                    <p className="text-xs text-[#F8D12F] mt-1">${stats?.pendingCommissions?.toLocaleString() ?? '0'} pending</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+                <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
                     <p className="text-sm text-gray-400">Total Transactions</p>
-                    <p className="text-2xl font-bold text-white">{stats?.totalTransactions?.toLocaleString() ?? '0'}</p>
+                    <p className="text-2xl font-bold text-[#F0B90B]">{stats?.totalTransactions?.toLocaleString() ?? '0'}</p>
                     <p className="text-xs text-gray-500 mt-1">${stats?.totalWithdrawn?.toLocaleString() ?? '0'} withdrawn</p>
                   </CardContent>
                 </Card>
               </div>
             )}
 
-            <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+            <Card className="glass-card backdrop-blur-xl">
               <CardHeader>
                 <CardTitle className="text-lg text-white">Deposits vs Withdrawals</CardTitle>
               </CardHeader>
@@ -714,14 +714,15 @@ export function AdminPage() {
                       <YAxis stroke="#6b7280" fontSize={12} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#1f2937',
-                          border: '1px solid #374151',
+                          backgroundColor: 'rgba(15, 15, 25, 0.9)',
+                          border: '1px solid rgba(240, 185, 11, 0.2)',
                           borderRadius: '12px',
                           color: '#fff',
+                          backdropFilter: 'blur(20px)',
                         }}
                       />
-                      <Bar dataKey="deposits" fill="#10b981" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="withdrawals" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="deposits" fill="#F0B90B" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="withdrawals" fill="#F8D12F" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -733,9 +734,9 @@ export function AdminPage() {
 
       {/* Plan Dialog */}
       <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-md">
+        <DialogContent className="glass-strong border-[#F0B90B]/15 text-white sm:max-w-md backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl">{editPlan ? 'Edit Plan' : 'Add New Plan'}</DialogTitle>
+            <DialogTitle className="text-xl text-gradient-bnb">{editPlan ? 'Edit Plan' : 'Add New Plan'}</DialogTitle>
             <DialogDescription className="text-gray-400">
               {editPlan ? 'Modify staking plan details' : 'Create a new staking plan for users'}
             </DialogDescription>
@@ -747,7 +748,7 @@ export function AdminPage() {
                 value={planForm.name}
                 onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
                 placeholder="e.g., Silver, Gold"
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
               />
             </div>
             <div className="space-y-2">
@@ -756,7 +757,7 @@ export function AdminPage() {
                 value={planForm.description}
                 onChange={(e) => setPlanForm({ ...planForm, description: e.target.value })}
                 placeholder="Plan description"
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -766,7 +767,7 @@ export function AdminPage() {
                   type="number"
                   value={planForm.durationDays}
                   onChange={(e) => setPlanForm({ ...planForm, durationDays: Number(e.target.value) })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                 />
               </div>
               <div className="space-y-2">
@@ -775,7 +776,7 @@ export function AdminPage() {
                   type="number"
                   value={planForm.apy}
                   onChange={(e) => setPlanForm({ ...planForm, apy: Number(e.target.value) })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                 />
               </div>
             </div>
@@ -786,7 +787,7 @@ export function AdminPage() {
                   type="number"
                   value={planForm.minAmount}
                   onChange={(e) => setPlanForm({ ...planForm, minAmount: Number(e.target.value) })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                 />
               </div>
               <div className="space-y-2">
@@ -795,7 +796,7 @@ export function AdminPage() {
                   type="number"
                   value={planForm.maxAmount}
                   onChange={(e) => setPlanForm({ ...planForm, maxAmount: Number(e.target.value) })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                 />
               </div>
             </div>
@@ -806,7 +807,7 @@ export function AdminPage() {
                   type="number"
                   value={planForm.earlyWithdrawPenalty}
                   onChange={(e) => setPlanForm({ ...planForm, earlyWithdrawPenalty: Number(e.target.value) })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                 />
               </div>
               <div className="space-y-2">
@@ -822,7 +823,7 @@ export function AdminPage() {
             <Button
               onClick={handleSavePlan}
               disabled={savePlanMutation.isPending || !planForm.name}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11"
+              className="w-full btn-bnb rounded-xl h-11"
             >
               {savePlanMutation.isPending ? (
                 <>

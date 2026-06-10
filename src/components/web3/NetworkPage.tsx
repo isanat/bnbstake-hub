@@ -77,18 +77,18 @@ function UnilevelNodeComponent({ node, level }: UnilevelNodeProps) {
         transition={{ delay: level * 0.1 }}
         className="relative"
       >
-        <div className={`px-3 py-2 rounded-xl border text-center min-w-[140px] ${
+        <div className={`px-4 py-3 rounded-xl text-center min-w-[150px] backdrop-blur-md transition-all duration-300 ${
           node.isActive
-            ? 'bg-gray-800/80 border-emerald-500/30'
-            : 'bg-gray-800/40 border-gray-700'
+            ? 'bg-[#0a0a0f]/80 border border-[#F0B90B]/30 shadow-[0_0_15px_rgba(240,185,11,0.08)]'
+            : 'bg-[#0a0a0f]/50 border border-dashed border-gray-700'
         }`}>
           <p className="text-xs font-mono text-gray-300">{truncateAddress(node.walletAddress)}</p>
-          <p className="text-sm font-semibold text-emerald-400 mt-1">
+          <p className="text-sm font-semibold text-[#F0B90B] mt-1">
             ${node.totalStaked.toLocaleString()}
           </p>
           <Badge variant="outline" className={`mt-1 text-xs ${
             node.isActive
-              ? 'border-emerald-500/30 text-emerald-400'
+              ? 'border-[#F0B90B]/30 text-[#F0B90B] bg-[#F0B90B]/5'
               : 'border-gray-600 text-gray-500'
           }`}>
             {node.isActive ? 'Active' : 'Inactive'}
@@ -97,9 +97,9 @@ function UnilevelNodeComponent({ node, level }: UnilevelNodeProps) {
       </motion.div>
       {node.children && node.children.length > 0 && (
         <>
-          <div className="w-px h-4 bg-gray-700" />
+          <div className="w-px h-5 bg-gradient-to-b from-[#F0B90B]/40 to-[#F0B90B]/10" />
           <div className="relative flex gap-4 sm:gap-8">
-            <div className="absolute top-0 left-1/2 right-1/2 h-px bg-gray-700" />
+            <div className="absolute top-0 left-1/2 right-1/2 h-px bg-gradient-to-r from-transparent via-[#F0B90B]/30 to-transparent" />
             {node.children.map((child, i) => (
               <UnilevelNodeComponent key={child.id || i} node={child} level={level + 1} />
             ))}
@@ -123,7 +123,7 @@ function BinaryNodeComponent({ node, side = 'root', level }: BinaryNodeProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: level * 0.1 }}
-        className="px-3 py-2 rounded-xl border border-dashed border-gray-700 text-center min-w-[120px] bg-gray-800/20"
+        className="px-4 py-3 rounded-xl border border-dashed border-gray-700 text-center min-w-[130px] bg-[#0a0a0f]/30 backdrop-blur-sm"
       >
         <UserPlus className="h-4 w-4 text-gray-600 mx-auto mb-1" />
         <p className="text-xs text-gray-600">Empty</p>
@@ -131,7 +131,11 @@ function BinaryNodeComponent({ node, side = 'root', level }: BinaryNodeProps) {
     )
   }
 
-  const borderColor = side === 'left' ? 'border-emerald-500/40' : side === 'right' ? 'border-amber-500/40' : 'border-gray-600'
+  const borderColor = side === 'left'
+    ? 'border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.06)]'
+    : side === 'right'
+    ? 'border-[#F0B90B]/40 shadow-[0_0_12px_rgba(240,185,11,0.06)]'
+    : 'border-[#F0B90B]/20'
 
   return (
     <div className="flex flex-col items-center">
@@ -141,15 +145,15 @@ function BinaryNodeComponent({ node, side = 'root', level }: BinaryNodeProps) {
         transition={{ delay: level * 0.1 }}
         className="relative"
       >
-        <div className={`px-3 py-2 rounded-xl border text-center min-w-[130px] bg-gray-800/80 ${borderColor}`}>
+        <div className={`px-4 py-3 rounded-xl border text-center min-w-[140px] backdrop-blur-md bg-[#0a0a0f]/80 transition-all duration-300 ${borderColor}`}>
           <p className="text-xs font-mono text-gray-300">{truncateAddress(node.walletAddress)}</p>
           <div className="flex justify-between gap-2 mt-1 text-xs">
             <span className="text-emerald-400">L: ${node.leftVolume.toLocaleString()}</span>
-            <span className="text-amber-400">R: ${node.rightVolume.toLocaleString()}</span>
+            <span className="text-[#F0B90B]">R: ${node.rightVolume.toLocaleString()}</span>
           </div>
           <Badge variant="outline" className={`mt-1 text-xs ${
             node.isActive
-              ? 'border-emerald-500/30 text-emerald-400'
+              ? 'border-[#F0B90B]/30 text-[#F0B90B] bg-[#F0B90B]/5'
               : 'border-gray-600 text-gray-500'
           }`}>
             {node.isActive ? 'Active' : 'Inactive'}
@@ -158,7 +162,13 @@ function BinaryNodeComponent({ node, side = 'root', level }: BinaryNodeProps) {
       </motion.div>
       {level < 3 && (
         <>
-          <div className="w-px h-4 bg-gray-700" />
+          <div className={`w-px h-5 ${
+            side === 'left'
+              ? 'bg-gradient-to-b from-emerald-500/40 to-emerald-500/10'
+              : side === 'right'
+              ? 'bg-gradient-to-b from-[#F0B90B]/40 to-[#F0B90B]/10'
+              : 'bg-gradient-to-b from-[#F0B90B]/30 to-[#F0B90B]/10'
+          }`} />
           <div className="flex gap-4 sm:gap-6">
             <BinaryNodeComponent node={node.left} side="left" level={level + 1} />
             <BinaryNodeComponent node={node.right} side="right" level={level + 1} />
@@ -216,27 +226,33 @@ export function NetworkPage() {
     <div className="space-y-6">
       <PageHeader title="Network" description="Your referral network on BNB Smart Chain" />
 
-      {/* Referral Link */}
-      <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+      {/* Referral Link - Glass card with golden accent */}
+      <Card className="glass-card glow-bnb rounded-2xl">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <Link2 className="h-5 w-5 text-emerald-500" />
+              <div className="p-2 rounded-lg bg-[#F0B90B]/10">
+                <Link2 className="h-5 w-5 text-[#F0B90B]" />
+              </div>
               <span className="text-sm font-medium text-white">Referral Link</span>
             </div>
             <div className="flex-1 flex items-center gap-2 w-full sm:w-auto">
               <Input
                 value={referralLink}
                 readOnly
-                className="bg-gray-800 border-gray-700 text-gray-300 text-sm font-mono"
+                className="bg-[#0a0a0f]/60 border-[#F0B90B]/15 text-gray-300 text-sm font-mono focus-visible:ring-[#F0B90B]/30"
               />
               <Button
                 onClick={handleCopy}
                 variant="outline"
                 size="icon"
-                className="border-gray-700 hover:bg-gray-800 shrink-0"
+                className={`shrink-0 rounded-xl transition-all duration-300 ${
+                  copied
+                    ? 'border-[#F0B90B]/50 bg-[#F0B90B]/10 text-[#F0B90B]'
+                    : 'border-[#F0B90B]/20 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/40'
+                }`}
               >
-                {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
+                {copied ? <Check className="h-4 w-4 text-[#F0B90B]" /> : <Copy className="h-4 w-4 text-[#F0B90B]" />}
               </Button>
             </div>
           </div>
@@ -248,30 +264,33 @@ export function NetworkPage() {
         <LoadingSkeleton variant="cards" count={4} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard icon={Users} label="Direct Referrals" value={`${stats?.directReferrals ?? 0}`} trend={stats?.directReferrals ? { value: 20, positive: true } : undefined} />
-          <StatsCard icon={TreePine} label="Total Network" value={`${stats?.totalNetworkSize ?? 0}`} trend={stats?.totalNetworkSize ? { value: 15, positive: true } : undefined} />
+          <StatsCard icon={Users} label="Direct Referrals" value={`${stats?.directReferrals ?? 0}`} trend={stats?.directReferrals ? { value: 20, positive: true } : undefined} variant="gold" />
+          <StatsCard icon={TreePine} label="Total Network" value={`${stats?.totalNetworkSize ?? 0}`} trend={stats?.totalNetworkSize ? { value: 15, positive: true } : undefined} variant="gold" />
           <StatsCard icon={GitBranch} label="Left Volume" value={`$${(stats?.leftVolume ?? 0).toLocaleString()}`} />
-          <StatsCard icon={GitBranch} label="Right Volume" value={`$${(stats?.rightVolume ?? 0).toLocaleString()}`} iconClassName="bg-amber-500/10" />
+          <StatsCard icon={GitBranch} label="Right Volume" value={`$${(stats?.rightVolume ?? 0).toLocaleString()}`} variant="gold" />
         </div>
       )}
 
       {/* Tree Tabs */}
       <Tabs defaultValue="unilevel" className="space-y-4">
-        <TabsList className="bg-gray-800 border border-gray-700">
-          <TabsTrigger value="unilevel" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+        <TabsList className="bg-[#0a0a0f]/80 border border-[#F0B90B]/10 backdrop-blur-sm">
+          <TabsTrigger value="unilevel" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
             <TreePine className="h-4 w-4 mr-2" />
             Unilevel
           </TabsTrigger>
-          <TabsTrigger value="binary" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+          <TabsTrigger value="binary" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
             <GitBranch className="h-4 w-4 mr-2" />
             Binary
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="unilevel">
-          <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+          <Card className="glass-card rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-lg text-white">Unilevel Tree</CardTitle>
+              <CardTitle className="text-lg text-white flex items-center gap-2">
+                <TreePine className="h-5 w-5 text-[#F0B90B]" />
+                Unilevel Tree
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -290,12 +309,12 @@ export function NetworkPage() {
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-6 mt-4 text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <div className="h-3 w-3 rounded border border-emerald-500/30 bg-emerald-500/10" />
+                    <div className="flex items-center gap-1.5">
+                      <div className="h-3 w-3 rounded border border-[#F0B90B]/30 bg-[#F0B90B]/10" />
                       Active
                     </div>
-                    <div className="flex items-center gap-1">
-                      <div className="h-3 w-3 rounded border border-gray-700 bg-gray-800/40" />
+                    <div className="flex items-center gap-1.5">
+                      <div className="h-3 w-3 rounded border border-dashed border-gray-700 bg-[#0a0a0f]/50" />
                       Inactive
                     </div>
                   </div>
@@ -306,17 +325,20 @@ export function NetworkPage() {
         </TabsContent>
 
         <TabsContent value="binary">
-          <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
+          <Card className="glass-card rounded-2xl">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-white">Binary Tree</CardTitle>
+                <CardTitle className="text-lg text-white flex items-center gap-2">
+                  <GitBranch className="h-5 w-5 text-[#F0B90B]" />
+                  Binary Tree
+                </CardTitle>
                 <div className="flex items-center gap-4 text-xs">
-                  <div className="flex items-center gap-1">
-                    <div className="h-3 w-3 rounded bg-emerald-500/30 border border-emerald-500/40" />
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-3 w-3 rounded bg-emerald-500/20 border border-emerald-500/40" />
                     Left Leg
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div className="h-3 w-3 rounded bg-amber-500/30 border border-amber-500/40" />
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-3 w-3 rounded bg-[#F0B90B]/20 border border-[#F0B90B]/40" />
                     Right Leg
                   </div>
                 </div>
@@ -339,13 +361,13 @@ export function NetworkPage() {
                     </div>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-center">
-                      <p className="text-sm text-gray-400">Left Volume</p>
-                      <p className="text-xl font-bold text-emerald-400">${(stats?.leftVolume ?? 0).toLocaleString()}</p>
+                    <div className="p-5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-center shadow-[0_0_20px_rgba(16,185,129,0.05)]">
+                      <p className="text-sm text-gray-400 mb-1">Left Volume</p>
+                      <p className="text-2xl font-bold text-emerald-400">${(stats?.leftVolume ?? 0).toLocaleString()}</p>
                     </div>
-                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 text-center">
-                      <p className="text-sm text-gray-400">Right Volume</p>
-                      <p className="text-xl font-bold text-amber-400">${(stats?.rightVolume ?? 0).toLocaleString()}</p>
+                    <div className="p-5 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/20 text-center shadow-[0_0_20px_rgba(240,185,11,0.05)]">
+                      <p className="text-sm text-gray-400 mb-1">Right Volume</p>
+                      <p className="text-2xl font-bold text-[#F0B90B]">${(stats?.rightVolume ?? 0).toLocaleString()}</p>
                     </div>
                   </div>
                 </>

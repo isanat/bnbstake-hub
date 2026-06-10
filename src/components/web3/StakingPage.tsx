@@ -5,7 +5,7 @@ import { StatsCard } from '@/components/shared/StatsCard'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { LoadingSkeleton } from '@/components/shared/LoadingSkeleton'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -24,13 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Progress } from '@/components/ui/progress'
 import { useAppStore } from '@/store/useAppStore'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   Wallet, TrendingUp, Clock, Coins, Plus,
-  ArrowUpRight, Gift, AlertTriangle, CheckCircle2, Shield, Loader2
+  Gift, AlertTriangle, CheckCircle2, Shield, Loader2,
+  Flame, Sparkles, ArrowRight, CircleDot, CircleCheck, Circle
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -65,6 +65,34 @@ interface StakingData {
     activeStakesCount: number
     totalStakesCount: number
   }
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+}
+
+const stakeItemVariants = {
+  hidden: { opacity: 0, x: -24 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
 }
 
 export function StakingPage() {
@@ -167,7 +195,6 @@ export function StakingPage() {
   const stakes = stakingData?.stakes || []
   const summary = stakingData?.summary
 
-  const activeStakes = stakes.filter(s => s.status === 'active')
   const totalStaked = summary?.totalStaked ?? 0
   const totalPendingRewards = summary?.totalPendingRewards ?? 0
 
@@ -194,15 +221,21 @@ export function StakingPage() {
     setSelectedPlan('')
   }
 
+  const getStepStatus = (step: number) => {
+    if (confirmStep) return step <= 3 ? 'done' : 'pending'
+    if (approveStep) return step === 1 ? 'done' : step === 2 ? 'active' : 'pending'
+    return step === 1 ? 'active' : 'pending'
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         title="Staking"
         description="Stake USDT on BNB Smart Chain and earn passive income"
         actions={
           <Button
             onClick={() => setDepositOpen(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-xl"
+            className="btn-bnb gap-2 rounded-xl h-10 px-5"
           >
             <Plus className="h-4 w-4" />
             New Stake
@@ -214,17 +247,35 @@ export function StakingPage() {
       {isLoading ? (
         <LoadingSkeleton variant="cards" count={4} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard icon={Coins} label="Total Staked" value={`$${totalStaked.toLocaleString()}`} />
-          <StatsCard icon={TrendingUp} label="Total Rewards" value={`$${(stakes.reduce((sum, s) => sum + Number(s.pendingRewards || 0), 0) + totalStaked * 0.01).toFixed(2)}`} trend={{ value: 8.5, positive: true }} />
-          <StatsCard icon={Clock} label="Pending Rewards" value={`$${totalPendingRewards.toFixed(2)}`} />
-          <StatsCard icon={Shield} label="Active Stakes" value={`${summary?.activeStakesCount ?? 0}`} />
-        </div>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+          <motion.div variants={itemVariants}>
+            <StatsCard icon={Coins} label="Total Staked" value={`$${totalStaked.toLocaleString()}`} theme="bnb" />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <StatsCard icon={TrendingUp} label="Total Rewards" value={`$${(stakes.reduce((sum, s) => sum + Number(s.pendingRewards || 0), 0) + totalStaked * 0.01).toFixed(2)}`} trend={{ value: 8.5, positive: true }} theme="bnb" />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <StatsCard icon={Clock} label="Pending Rewards" value={`$${totalPendingRewards.toFixed(2)}`} theme="bnb" />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <StatsCard icon={Shield} label="Active Stakes" value={`${summary?.activeStakesCount ?? 0}`} theme="bnb" />
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Staking Plans */}
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Available Plans</h2>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="p-1.5 rounded-lg bg-[#F0B90B]/10">
+            <Flame className="h-5 w-5 text-[#F0B90B]" />
+          </div>
+          <h2 className="text-xl font-semibold text-white">Available Plans</h2>
+        </div>
         {isLoading ? (
           <LoadingSkeleton variant="cards" count={4} className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" />
         ) : plans.length === 0 ? (
@@ -234,63 +285,96 @@ export function StakingPage() {
             description="There are no active staking plans at the moment. Check back later."
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          >
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                variants={itemVariants}
+                whileHover={{ scale: 1.03, y: -4 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
-                <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm hover:border-emerald-500/30 transition-all cursor-pointer group"
+                <div
+                  className="gradient-border cursor-pointer group h-full"
                   onClick={() => { setSelectedPlan(plan.id); setDepositOpen(true) }}
                 >
-                  <CardContent className="p-5">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
-                          {plan.name}
-                        </h3>
-                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
-                          {plan.durationDays} Days
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-gray-400">{plan.description}</p>
-                      <div className="text-center py-3">
-                        <span className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
-                          {plan.apy}%
-                        </span>
-                        <p className="text-xs text-gray-500 mt-1">Annual Percentage Yield</p>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between text-gray-400">
-                          <span>Min</span>
-                          <span className="text-white">${plan.minAmount.toLocaleString()}</span>
+                  <div className="glass-card rounded-2xl h-full hover:border-[#F0B90B]/30 transition-all duration-300">
+                    <CardContent className="p-5 sm:p-6">
+                      <div className="space-y-5">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-bold text-white group-hover:text-[#F8D12F] transition-colors duration-300">
+                            {plan.name}
+                          </h3>
+                          <Badge
+                            className="border-[#F0B90B]/30 text-[#F0B90B] bg-[#F0B90B]/8 text-xs font-medium"
+                            variant="outline"
+                          >
+                            <Clock className="h-3 w-3 mr-1" />
+                            {plan.durationDays} Days
+                          </Badge>
                         </div>
-                        <div className="flex justify-between text-gray-400">
-                          <span>Max</span>
-                          <span className="text-white">${plan.maxAmount.toLocaleString()}</span>
+
+                        {/* Description */}
+                        <p className="text-xs text-gray-500 leading-relaxed">{plan.description}</p>
+
+                        {/* APY - Big and bold */}
+                        <div className="text-center py-4 relative">
+                          <div className="absolute inset-0 bg-[#F0B90B]/3 rounded-xl" />
+                          <div className="relative">
+                            <span className="text-5xl sm:text-6xl font-black text-gradient-bnb leading-none">
+                              {plan.apy}%
+                            </span>
+                            <p className="text-xs text-gray-500 mt-2 uppercase tracking-wider font-medium">
+                              Annual Percentage Yield
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-gray-400">
-                          <span>Early Penalty</span>
-                          <span className="text-red-400">{plan.earlyWithdrawPenalty}%</span>
+
+                        {/* Details */}
+                        <div className="space-y-2.5 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-500">Min Stake</span>
+                            <span className="text-white font-medium">${plan.minAmount.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-500">Max Stake</span>
+                            <span className="text-white font-medium">${plan.maxAmount.toLocaleString()}</span>
+                          </div>
+                          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#F0B90B]/15 to-transparent" />
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-500">Early Penalty</span>
+                            <span className="text-red-400 font-medium">{plan.earlyWithdrawPenalty}%</span>
+                          </div>
                         </div>
+
+                        {/* CTA Button */}
+                        <Button className="btn-bnb w-full rounded-xl h-11 text-sm">
+                          <Sparkles className="h-4 w-4 mr-1.5" />
+                          Stake Now
+                        </Button>
                       </div>
-                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
-                        Stake Now
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </div>
+                </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 
       {/* Active Stakes */}
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Your Stakes</h2>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="p-1.5 rounded-lg bg-[#F0B90B]/10">
+            <TrendingUp className="h-5 w-5 text-[#F0B90B]" />
+          </div>
+          <h2 className="text-xl font-semibold text-white">Your Stakes</h2>
+        </div>
         {isLoading ? (
           <LoadingSkeleton variant="table" count={3} />
         ) : stakes.length === 0 ? (
@@ -299,14 +383,19 @@ export function StakingPage() {
             title="No Stakes Yet"
             description="Start staking to earn rewards. Choose a plan above to begin."
             action={
-              <Button onClick={() => setDepositOpen(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-xl">
+              <Button onClick={() => setDepositOpen(true)} className="btn-bnb gap-2 rounded-xl">
                 <Plus className="h-4 w-4" />
                 Start Staking
               </Button>
             }
           />
         ) : (
-          <div className="space-y-4">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4"
+          >
             {stakes.map((stake, index) => {
               const start = new Date(stake.startDate)
               const end = new Date(stake.endDate)
@@ -314,96 +403,119 @@ export function StakingPage() {
               const totalDuration = end.getTime() - start.getTime()
               const elapsed = now.getTime() - start.getTime()
               const progress = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100)
+              const isActive = stake.status === 'active'
+              const isWithdrawn = stake.status === 'withdrawn'
 
               return (
                 <motion.div
                   key={stake.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  variants={stakeItemVariants}
+                  className={`
+                    glass-card rounded-2xl overflow-hidden transition-all duration-300
+                    border-l-[3px]
+                    ${isActive ? 'border-l-[#F0B90B]' : isWithdrawn ? 'border-l-gray-600' : 'border-l-amber-500'}
+                    hover:border-[#F0B90B]/30
+                  `}
                 >
-                  <Card className="bg-gray-900/80 border-gray-800 backdrop-blur-sm">
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="space-y-2 flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-semibold text-white">{stake.plan.name} Plan</h3>
-                            <Badge className={`${
-                              stake.status === 'active'
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                : stake.status === 'withdrawn'
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-3 flex-1">
+                        {/* Stake header */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-lg font-semibold text-white">{stake.plan.name} Plan</h3>
+                          <Badge
+                            className={`
+                              text-xs font-medium
+                              ${isActive
+                                ? 'bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20'
+                                : isWithdrawn
                                 ? 'bg-gray-500/10 text-gray-400 border-gray-500/20'
                                 : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                            }`}>
-                              {stake.status}
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                            <div>
-                              <p className="text-gray-500">Amount</p>
-                              <p className="text-white font-medium">${Number(stake.amount).toLocaleString()}</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500">Pending Rewards</p>
-                              <p className="text-emerald-400 font-medium">${Number(stake.pendingRewards).toFixed(2)}</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500">Start</p>
-                              <p className="text-white">{start.toLocaleDateString()}</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500">End</p>
-                              <p className="text-white">{end.toLocaleDateString()}</p>
-                            </div>
-                          </div>
-                          {stake.status === 'active' && (
-                            <div className="space-y-1">
-                              <div className="flex justify-between text-xs">
-                                <span className="text-gray-500">Progress</span>
-                                <span className="text-gray-400">{progress.toFixed(1)}%</span>
-                              </div>
-                              <Progress value={progress} className="h-2 bg-gray-800" />
-                            </div>
-                          )}
+                              }
+                            `}
+                            variant="outline"
+                          >
+                            {stake.status}
+                          </Badge>
                         </div>
-                        {stake.status === 'active' && (
-                          <div className="flex sm:flex-col gap-2 shrink-0">
-                            <Button
-                              size="sm"
-                              onClick={() => claimMutation.mutate({ stakeId: stake.id, walletAddress: currentWallet! })}
-                              disabled={claimMutation.isPending}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1 rounded-xl flex-1 sm:flex-none"
-                            >
-                              {claimMutation.isPending ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              ) : (
-                                <Gift className="h-3.5 w-3.5" />
-                              )}
-                              Claim
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => withdrawMutation.mutate({ stakeId: stake.id, walletAddress: currentWallet! })}
-                              disabled={withdrawMutation.isPending}
-                              className="border-gray-700 text-gray-300 hover:bg-gray-800 gap-1 rounded-xl flex-1 sm:flex-none"
-                            >
-                              {withdrawMutation.isPending ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              ) : (
-                                <AlertTriangle className="h-3.5 w-3.5" />
-                              )}
-                              Withdraw
-                            </Button>
+
+                        {/* Stake details */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                          <div>
+                            <p className="text-gray-500 text-xs mb-0.5">Amount</p>
+                            <p className="text-white font-semibold">${Number(stake.amount).toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 text-xs mb-0.5">Pending Rewards</p>
+                            <p className="text-[#F8D12F] font-semibold">${Number(stake.pendingRewards).toFixed(2)}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 text-xs mb-0.5">Start</p>
+                            <p className="text-white">{start.toLocaleDateString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 text-xs mb-0.5">End</p>
+                            <p className="text-white">{end.toLocaleDateString()}</p>
+                          </div>
+                        </div>
+
+                        {/* Progress bar */}
+                        {isActive && (
+                          <div className="space-y-1.5">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-500">Staking Progress</span>
+                              <span className="text-[#F0B90B] font-medium">{progress.toFixed(1)}%</span>
+                            </div>
+                            <div className="h-2.5 w-full bg-gray-800/60 rounded-full overflow-hidden">
+                              <motion.div
+                                className="h-full rounded-full bg-gradient-to-r from-[#C99A00] via-[#F0B90B] to-[#F8D12F]"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress}%` }}
+                                transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
+
+                      {/* Action buttons */}
+                      {isActive && (
+                        <div className="flex sm:flex-col gap-2 shrink-0">
+                          <Button
+                            size="sm"
+                            onClick={() => claimMutation.mutate({ stakeId: stake.id, walletAddress: currentWallet! })}
+                            disabled={claimMutation.isPending}
+                            className="bg-[#F0B90B]/15 hover:bg-[#F0B90B]/25 text-[#F0B90B] border border-[#F0B90B]/20 gap-1.5 rounded-xl flex-1 sm:flex-none h-9 font-medium transition-all"
+                          >
+                            {claimMutation.isPending ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Gift className="h-3.5 w-3.5" />
+                            )}
+                            Claim
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => withdrawMutation.mutate({ stakeId: stake.id, walletAddress: currentWallet! })}
+                            disabled={withdrawMutation.isPending}
+                            className="border-gray-700/50 text-gray-400 hover:bg-gray-800/50 hover:text-gray-300 hover:border-gray-600 gap-1.5 rounded-xl flex-1 sm:flex-none h-9 font-medium transition-all"
+                          >
+                            {withdrawMutation.isPending ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <AlertTriangle className="h-3.5 w-3.5" />
+                            )}
+                            Withdraw
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
                 </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         )}
       </div>
 
@@ -412,24 +524,72 @@ export function StakingPage() {
         setDepositOpen(open)
         if (!open) resetDialog()
       }}>
-        <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-md">
+        <DialogContent className="glass-strong border-[#F0B90B]/15 text-white sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-xl">New Stake</DialogTitle>
+            <DialogTitle className="text-xl text-gradient-bnb text-3xl font-black">New Stake</DialogTitle>
             <DialogDescription className="text-gray-400">
               Stake USDT to earn rewards on BNB Smart Chain
             </DialogDescription>
           </DialogHeader>
+
+          {/* Step Indicators */}
+          <div className="flex items-center justify-center gap-0 py-2">
+            {[
+              { step: 1, label: 'Approve', icon: approveStep || confirmStep ? CircleCheck : CircleDot },
+              { step: 2, label: 'Confirm', icon: confirmStep ? CircleCheck : CircleDot },
+              { step: 3, label: 'Done', icon: CircleCheck },
+            ].map((s, i) => {
+              const status = getStepStatus(s.step)
+              const StepIcon = s.icon
+              return (
+                <div key={s.step} className="flex items-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={`
+                      w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300
+                      ${status === 'done'
+                        ? 'bg-[#F0B90B]/20 text-[#F0B90B]'
+                        : status === 'active'
+                        ? 'bg-[#F0B90B]/10 text-[#F0B90B] glow-bnb'
+                        : 'bg-gray-800/50 text-gray-600'
+                      }
+                    `}>
+                      {status === 'done' ? (
+                        <CheckCircle2 className="h-5 w-5" />
+                      ) : (
+                        <span className="text-xs font-bold">{s.step}</span>
+                      )}
+                    </div>
+                    <span className={`text-[10px] font-medium ${
+                      status === 'done' ? 'text-[#F0B90B]' : status === 'active' ? 'text-[#F8D12F]' : 'text-gray-600'
+                    }`}>
+                      {s.label}
+                    </span>
+                  </div>
+                  {i < 2 && (
+                    <div className={`w-10 sm:w-14 h-0.5 mx-1 mb-4 rounded-full transition-all duration-500 ${
+                      getStepStatus(s.step + 1) !== 'pending' ? 'bg-[#F0B90B]/40' : 'bg-gray-800'
+                    }`} />
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
           <div className="space-y-4 mt-2">
             <div className="space-y-2">
-              <Label className="text-gray-300">Select Plan</Label>
+              <Label className="text-gray-300 text-sm">Select Plan</Label>
               <Select value={selectedPlan} onValueChange={setSelectedPlan}>
-                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                <SelectTrigger className="bg-[#0a0a0f]/60 border-[#F0B90B]/15 text-white focus:ring-[#F0B90B]/30 focus:border-[#F0B90B]/30 rounded-xl h-11">
                   <SelectValue placeholder="Choose a staking plan" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-[#0f0f1a] border-[#F0B90B]/15">
                   {plans.map(plan => (
-                    <SelectItem key={plan.id} value={plan.id} className="text-white focus:bg-gray-700 focus:text-white">
-                      {plan.name} - {plan.apy}% APY ({plan.durationDays} days)
+                    <SelectItem key={plan.id} value={plan.id} className="text-white focus:bg-[#F0B90B]/10 focus:text-[#F8D12F]">
+                      <div className="flex items-center gap-2">
+                        <span>{plan.name}</span>
+                        <span className="text-[#F0B90B] text-xs font-medium">{plan.apy}% APY</span>
+                        <span className="text-gray-500 text-xs">({plan.durationDays}d)</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -437,83 +597,102 @@ export function StakingPage() {
             </div>
 
             {selectedPlanData && (
-              <div className="p-3 rounded-xl bg-gray-800/50 border border-gray-700 space-y-1 text-sm">
-                <div className="flex justify-between">
+              <div className="p-3.5 rounded-xl glass border border-[#F0B90B]/10 space-y-2 text-sm">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">APY</span>
-                  <span className="text-emerald-400 font-medium">{selectedPlanData.apy}%</span>
+                  <span className="text-[#F0B90B] font-bold">{selectedPlanData.apy}%</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Duration</span>
-                  <span className="text-white">{selectedPlanData.durationDays} days</span>
+                  <span className="text-white font-medium">{selectedPlanData.durationDays} days</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Range</span>
-                  <span className="text-white">${selectedPlanData.minAmount.toLocaleString()} - ${selectedPlanData.maxAmount.toLocaleString()}</span>
+                  <span className="text-white font-medium">${selectedPlanData.minAmount.toLocaleString()} - ${selectedPlanData.maxAmount.toLocaleString()}</span>
                 </div>
               </div>
             )}
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Amount (USDT)</Label>
-              <Input
-                type="number"
-                placeholder="Enter amount"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white"
-              />
+              <Label className="text-gray-300 text-sm">Amount (USDT)</Label>
+              <div className="relative">
+                <Input
+                  type="number"
+                  placeholder="Enter amount"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  className="bg-[#0a0a0f]/60 border-[#F0B90B]/15 text-white focus:ring-[#F0B90B]/30 focus:border-[#F0B90B]/30 rounded-xl h-11 pr-16"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <div className="h-4 w-4 rounded-full bg-[#F0B90B]/20 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-[#F0B90B]">$</span>
+                  </div>
+                  <span className="text-xs text-gray-500 font-medium">USDT</span>
+                </div>
+              </div>
               {selectedPlanData && depositAmount && (
-                <p className="text-xs text-gray-500">
-                  Estimated daily reward: ${((Number(depositAmount) * selectedPlanData.apy / 100) / 365).toFixed(2)}
-                </p>
+                <div className="flex items-center gap-1.5 text-xs">
+                  <Sparkles className="h-3 w-3 text-[#F0B90B]" />
+                  <span className="text-gray-400">Estimated daily reward:</span>
+                  <span className="text-[#F8D12F] font-medium">${((Number(depositAmount) * selectedPlanData.apy / 100) / 365).toFixed(2)}</span>
+                </div>
               )}
             </div>
 
+            {/* Step 1: Approve */}
             {!approveStep && !confirmStep && (
               <Button
                 onClick={handleApprove}
                 disabled={!selectedPlan || !depositAmount}
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-xl h-11"
+                className="btn-bnb w-full rounded-xl h-11 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
+                <Shield className="h-4 w-4 mr-1.5" />
                 Approve USDT
               </Button>
             )}
 
+            {/* Step 2: Confirm */}
             {approveStep && !confirmStep && (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-amber-400">
-                  <CheckCircle2 className="h-4 w-4" />
-                  USDT Approved Successfully
+                <div className="flex items-center gap-2 text-sm text-[#F0B90B] p-2 rounded-lg bg-[#F0B90B]/5 border border-[#F0B90B]/10">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span>USDT Approved Successfully</span>
                 </div>
                 <Button
                   onClick={handleConfirmStake}
                   disabled={createStakeMutation.isPending}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11"
+                  className="btn-bnb w-full rounded-xl h-11 text-sm"
                 >
                   {createStakeMutation.isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Confirming...
+                      Confirming on BNB Chain...
                     </>
                   ) : (
-                    'Confirm Stake'
+                    <>
+                      Confirm Stake
+                      <ArrowRight className="h-4 w-4 ml-1.5" />
+                    </>
                   )}
                 </Button>
               </div>
             )}
 
+            {/* Step 3: Done */}
             {confirmStep && (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-emerald-400">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Transaction Confirmed!
+                <div className="flex items-center gap-2 text-sm text-[#F0B90B] p-3 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/15 glow-bnb">
+                  <CheckCircle2 className="h-5 w-5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-[#F8D12F]">Transaction Confirmed!</p>
+                    <p className="text-gray-400 text-xs mt-0.5">
+                      Your stake is now active on BNB Smart Chain. Rewards accrue immediately.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500 text-center">
-                  Your stake has been submitted to BNB Smart Chain. Rewards will begin accruing immediately.
-                </p>
                 <Button
                   onClick={resetDialog}
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white rounded-xl h-11"
+                  className="w-full bg-[#0a0a0f]/60 border border-[#F0B90B]/15 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/25 rounded-xl h-11 font-medium transition-all"
                 >
                   Done
                 </Button>
