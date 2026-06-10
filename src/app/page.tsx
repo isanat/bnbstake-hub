@@ -1,12 +1,19 @@
 'use client'
 
 import { useAppStore, PageType } from '@/store/useAppStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { WalletConnect } from '@/components/web3/WalletConnect'
+import { LanguageSwitcher } from '@/components/web3/LanguageSwitcher'
 import { DashboardPage } from '@/components/web3/DashboardPage'
 import { StakingPage } from '@/components/web3/StakingPage'
 import { NetworkPage } from '@/components/web3/NetworkPage'
 import { CommissionsPage } from '@/components/web3/CommissionsPage'
+import { AchievementsPage } from '@/components/web3/AchievementsPage'
 import { AdminPage } from '@/components/web3/AdminPage'
+import { ReturnCalculator } from '@/components/web3/ReturnCalculator'
+import { Leaderboard } from '@/components/web3/Leaderboard'
+import { LiveFeed } from '@/components/web3/LiveFeed'
+import { LiveToast } from '@/components/web3/LiveToast'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
@@ -18,25 +25,27 @@ import {
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useRef, useMemo } from 'react'
 
-const navItems: { page: PageType; label: string; icon: React.ComponentType<{ className?: string }>; adminOnly?: boolean }[] = [
-  { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { page: 'staking', label: 'Staking', icon: Coins },
-  { page: 'network', label: 'Network', icon: Users },
-  { page: 'commissions', label: 'Commissions', icon: Gift },
-  { page: 'admin', label: 'Admin', icon: Shield, adminOnly: true },
+const navItemConfigs: { page: PageType; labelKey: string; icon: React.ComponentType<{ className?: string }>; adminOnly?: boolean }[] = [
+  { page: 'dashboard', labelKey: 'nav_dashboard', icon: LayoutDashboard },
+  { page: 'staking', labelKey: 'nav_staking', icon: Coins },
+  { page: 'network', labelKey: 'nav_network', icon: Users },
+  { page: 'commissions', labelKey: 'nav_commissions', icon: Gift },
+  { page: 'achievements', labelKey: 'nav_achievements', icon: Award },
+  { page: 'admin', labelKey: 'nav_admin', icon: Shield, adminOnly: true },
 ]
 
-const mobileNavItems: { page: PageType; label: string; icon: React.ComponentType<{ className?: string }>; adminOnly?: boolean }[] = [
-  { page: 'dashboard', label: 'Home', icon: LayoutDashboard },
-  { page: 'staking', label: 'Stake', icon: Coins },
-  { page: 'network', label: 'Network', icon: Users },
-  { page: 'commissions', label: 'Rewards', icon: Gift },
-  { page: 'admin', label: 'Admin', icon: Shield, adminOnly: true },
+const mobileNavItemConfigs: { page: PageType; labelKey: string; icon: React.ComponentType<{ className?: string }>; adminOnly?: boolean }[] = [
+  { page: 'dashboard', labelKey: 'nav_home', icon: LayoutDashboard },
+  { page: 'staking', labelKey: 'nav_stake', icon: Coins },
+  { page: 'commissions', labelKey: 'nav_rewards', icon: Gift },
+  { page: 'achievements', labelKey: 'nav_trophies', icon: Award },
+  { page: 'admin', labelKey: 'nav_admin', icon: Shield, adminOnly: true },
 ]
 
 // ===== LANDING PAGE =====
 function LandingPage() {
   const { isConnected, setPage } = useAppStore()
+  const { t } = useTranslation()
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroY = useTransform(scrollYProgress, [0, 1], [0, -100])
@@ -54,15 +63,19 @@ function LandingPage() {
             <span className="font-bold text-xl text-gradient-bnb">StakeBNB</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">Features</a>
-            <a href="#how-it-works" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">How it Works</a>
-            <a href="#stats" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">Stats</a>
-            <a href="#security" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">Security</a>
+            <a href="#features" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_features')}</a>
+            <a href="#how-it-works" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_how')}</a>
+            <a href="#stats" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_stats')}</a>
+            <a href="#security" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_security')}</a>
           </div>
           <div className="flex items-center gap-3">
+            <div className="hidden md:block">
+              <LiveFeed variant="ticker" />
+            </div>
+            <LanguageSwitcher />
             <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs hidden sm:flex">
               <div className="h-1.5 w-1.5 rounded-full bg-[#F0B90B] animate-pulse" />
-              BNB Chain
+              {t('bnb_chain')}
             </Badge>
             <WalletConnect />
           </div>
@@ -92,7 +105,7 @@ function LandingPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8"
           >
             <div className="h-2 w-2 rounded-full bg-[#F0B90B] animate-pulse" />
-            <span className="text-xs font-medium text-[#F0B90B]">Live on BNB Smart Chain</span>
+            <span className="text-xs font-medium text-[#F0B90B]">{t('live_on_bnb')}</span>
             <ChevronDown className="h-3 w-3 text-[#F0B90B] rotate-180" />
           </motion.div>
 
@@ -103,12 +116,11 @@ function LandingPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight mb-6"
           >
-            <span className="text-white">Stake USDT.</span>
+            <span className="text-white">{t('hero_title_1')}</span>
             <br />
-            <span className="text-gradient-bnb glow-bnb-text">Earn Rewards.</span>
+            <span className="text-gradient-bnb glow-bnb-text">{t('hero_title_2')}</span>
             <br />
-            <span className="text-white">Grow Your </span>
-            <span className="text-gradient-bnb">Network.</span>
+            <span className="text-white">{t('hero_title_3')}</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -118,9 +130,7 @@ function LandingPage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            The most powerful DeFi staking and MLM platform on BNB Smart Chain.
-            Earn up to <span className="text-[#F0B90B] font-semibold">25% APY</span> plus
-            multi-level commissions from your growing network.
+            {t('hero_subtitle')}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -136,7 +146,7 @@ function LandingPage() {
                 className="btn-bnb h-14 px-8 rounded-2xl text-base gap-2"
               >
                 <Rocket className="h-5 w-5" />
-                Go to Dashboard
+                {t('go_to_dashboard')}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
@@ -146,7 +156,7 @@ function LandingPage() {
                   className="btn-bnb h-14 px-8 rounded-2xl text-base gap-2"
                 >
                   <Zap className="h-5 w-5" />
-                  Start Earning Now
+                  {t('hero_cta')}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button
@@ -154,7 +164,7 @@ function LandingPage() {
                   className="h-14 px-8 rounded-2xl text-base border-[#F0B90B]/20 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/30 gap-2"
                 >
                   <Globe className="h-5 w-5" />
-                  View on BscScan
+                  {t('view_bscscan')}
                 </Button>
               </>
             )}
@@ -168,10 +178,10 @@ function LandingPage() {
             className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto"
           >
             {[
-              { label: 'Total Value Locked', value: '$12.5M+', icon: Lock },
-              { label: 'Active Stakers', value: '8,420+', icon: Users },
-              { label: 'Rewards Distributed', value: '$3.2M+', icon: TrendingUp },
-              { label: 'Network Size', value: '24K+', icon: Globe },
+              { label: t('stat_tvl'), value: '$12.5M+', icon: Lock },
+              { label: t('stat_stakers'), value: '8,420+', icon: Users },
+              { label: t('stat_rewards'), value: '$3.2M+', icon: TrendingUp },
+              { label: t('stat_network'), value: '24K+', icon: Globe },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -201,13 +211,13 @@ function LandingPage() {
           >
             <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
               <Star className="h-3 w-3" />
-              FEATURES
+              {t('features_title').split(' ')[0].toUpperCase()}
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Why Choose <span className="text-gradient-bnb">StakeBNB</span>?
+              {t('features_title')}
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              Built on BNB Smart Chain for speed, security, and maximum rewards
+              {t('features_subtitle')}
             </p>
           </motion.div>
 
@@ -215,38 +225,38 @@ function LandingPage() {
             {[
               {
                 icon: TrendingUp,
-                title: 'High-Yield Staking',
-                desc: 'Earn up to 25% APY with flexible staking plans. Choose from 30 to 365 day lock periods with competitive returns.',
+                title: t('feature_staking_title'),
+                desc: t('feature_staking_desc'),
                 color: '#F0B90B'
               },
               {
                 icon: Users,
-                title: 'Unilevel Commissions',
-                desc: 'Earn from 5 levels of referrals. Get up to 10% commission on your direct network\'s staking activity.',
+                title: t('feature_unilevel_title'),
+                desc: t('feature_unilevel_desc'),
                 color: '#10b981'
               },
               {
                 icon: Layers,
-                title: 'Binary Structure',
-                desc: 'Build your binary tree and earn matching bonuses from your weaker leg volume with daily caps.',
+                title: t('feature_binary_title'),
+                desc: t('feature_binary_desc'),
                 color: '#8b5cf6'
               },
               {
                 icon: ShieldCheck,
-                title: 'Audited Smart Contracts',
-                desc: 'All contracts are fully audited and open-source. Your funds are secured by battle-tested code on BNB Chain.',
+                title: t('feature_audit_title'),
+                desc: t('feature_audit_desc'),
                 color: '#06b6d4'
               },
               {
                 icon: Zap,
-                title: 'Instant Rewards',
-                desc: 'Rewards accrue in real-time and can be claimed instantly. No waiting periods or complicated processes.',
+                title: t('feature_instant_title'),
+                desc: t('feature_instant_desc'),
                 color: '#f43f5e'
               },
               {
                 icon: Globe,
-                title: 'Global Community',
-                desc: 'Join thousands of stakers worldwide building wealth together on the fastest growing DeFi ecosystem.',
+                title: t('feature_community_title'),
+                desc: t('feature_community_desc'),
                 color: '#F0B90B'
               },
             ].map((feature, i) => (
@@ -285,13 +295,13 @@ function LandingPage() {
           >
             <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
               <Rocket className="h-3 w-3" />
-              GET STARTED
+              {t('how_title').split(' ')[0].toUpperCase()}
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Start Earning in <span className="text-gradient-bnb">3 Steps</span>
+              {t('how_title')}
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              From wallet connection to earning rewards in minutes
+              {t('how_subtitle')}
             </p>
           </motion.div>
 
@@ -299,20 +309,20 @@ function LandingPage() {
             {[
               {
                 step: '01',
-                title: 'Connect & Register',
-                desc: 'Connect your BNB Smart Chain wallet. You\'ll be automatically registered with a unique referral code.',
+                title: t('step1_title'),
+                desc: t('step1_desc'),
                 icon: Lock,
               },
               {
                 step: '02',
-                title: 'Stake USDT',
-                desc: 'Choose a staking plan that fits your goals. Approve USDT and confirm your stake on-chain.',
+                title: t('step2_title'),
+                desc: t('step2_desc'),
                 icon: Coins,
               },
               {
                 step: '03',
-                title: 'Earn & Grow',
-                desc: 'Watch your rewards grow in real-time. Build your network and earn multi-level commissions.',
+                title: t('step3_title'),
+                desc: t('step3_desc'),
                 icon: Award,
               },
             ].map((item, i) => (
@@ -345,6 +355,31 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Return Calculator Section */}
+      <section className="py-20 sm:py-28 px-4 relative section-transition">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
+              <TrendingUp className="h-3 w-3" />
+              {t('calculator_title')}
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+              {t('your_potential')}
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              {t('calculator_description')}
+            </p>
+          </motion.div>
+          <ReturnCalculator />
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section id="stats" className="py-20 sm:py-28 px-4 relative">
         <div className="max-w-7xl mx-auto">
@@ -357,16 +392,16 @@ function LandingPage() {
           >
             <div className="text-center mb-10">
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-                Platform <span className="text-gradient-bnb">Statistics</span>
+                {t('stats_title')}
               </h2>
-              <p className="text-gray-400">Real-time metrics from the StakeBNB protocol</p>
+              <p className="text-gray-400">{t('stats_subtitle')}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { label: 'Total Value Locked', value: '$12,547,832', change: '+12.5%' },
-                { label: 'Total Stakers', value: '8,421', change: '+8.3%' },
-                { label: 'Commissions Paid', value: '$3,241,567', change: '+15.2%' },
-                { label: 'Avg. APY', value: '18.7%', change: '+2.1%' },
+                { label: t('stat_tvl'), value: '$12,547,832', change: '+12.5%' },
+                { label: t('stat_stakers'), value: '8,421', change: '+8.3%' },
+                { label: t('stat_rewards'), value: '$3,241,567', change: '+15.2%' },
+                { label: t('stat_avg_apy'), value: '18.7%', change: '+2.1%' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -388,6 +423,31 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Leaderboard Section */}
+      <section className="py-20 sm:py-28 px-4 relative section-transition bnb-gradient-bg">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
+              <Award className="h-3 w-3" />
+              {t('leaderboard_title')}
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+              {t('leaderboard_title')}
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              {t('leaderboard_description')}
+            </p>
+          </motion.div>
+          <Leaderboard />
+        </div>
+      </section>
+
       {/* Security Section */}
       <section id="security" className="py-20 sm:py-28 px-4 relative section-transition">
         <div className="max-w-7xl mx-auto">
@@ -400,13 +460,13 @@ function LandingPage() {
           >
             <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 gap-1.5 text-xs mb-4">
               <ShieldCheck className="h-3 w-3" />
-              SECURITY
+              {t('security_title').split(' ')[0].toUpperCase()}
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Built for <span className="text-gradient-bnb">Trust</span>
+              {t('security_title')}
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              Security is our top priority. Every transaction is transparent and verifiable.
+              {t('security_subtitle')}
             </p>
           </motion.div>
 
@@ -414,18 +474,18 @@ function LandingPage() {
             {[
               {
                 icon: Shield,
-                title: 'Smart Contract Audited',
-                desc: 'All contracts undergo rigorous third-party audits before deployment. Code is open-source and verifiable on BscScan.',
+                title: t('security_audit_title'),
+                desc: t('security_audit_desc'),
               },
               {
                 icon: Lock,
-                title: 'Non-Custodial',
-                desc: 'Your keys, your crypto. We never hold your funds. All staking operations are executed directly on-chain.',
+                title: t('security_noncustodial_title'),
+                desc: t('security_noncustodial_desc'),
               },
               {
                 icon: ShieldCheck,
-                title: 'Multi-Sig Admin',
-                desc: 'Admin functions require multi-signature authorization. No single point of failure in protocol governance.',
+                title: t('security_multisig_title'),
+                desc: t('security_multisig_desc'),
               },
             ].map((item, i) => (
               <motion.div
@@ -457,11 +517,10 @@ function LandingPage() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Start <span className="text-gradient-bnb">Earning</span>?
+              {t('cta_title')}
             </h2>
             <p className="text-gray-400 text-lg max-w-xl mx-auto mb-10">
-              Join thousands of stakers earning passive income on BNB Smart Chain.
-              Your future wealth starts with a single stake.
+              {t('cta_subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
@@ -469,7 +528,7 @@ function LandingPage() {
                 className="btn-bnb h-14 px-10 rounded-2xl text-base gap-2"
               >
                 <Zap className="h-5 w-5" />
-                Connect & Stake Now
+                {t('cta_button')}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -487,10 +546,10 @@ function LandingPage() {
             <span className="text-sm text-gray-500">StakeBNB &copy; 2024</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-gray-600">
-            <span>BNB Smart Chain</span>
+            <span>{t('bnb_chain')}</span>
             <span className="flex items-center gap-1">
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Network Active
+              {t('network_active')}
             </span>
           </div>
         </div>
@@ -502,10 +561,11 @@ function LandingPage() {
 // ===== APP SIDEBAR =====
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { currentPage, setPage, isAdmin } = useAppStore()
+  const { t } = useTranslation()
 
   return (
     <nav className="space-y-1 px-3">
-      {navItems
+      {navItemConfigs
         .filter(item => !item.adminOnly || isAdmin)
         .map(item => {
           const isActive = currentPage === item.page
@@ -524,7 +584,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               }`}
             >
               <item.icon className={`h-5 w-5 ${isActive ? 'text-[#F0B90B]' : ''}`} />
-              <span className="font-medium">{item.label}</span>
+              <span className="font-medium">{t(item.labelKey)}</span>
             </Button>
           )
         })}
@@ -535,11 +595,12 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 // ===== MOBILE BOTTOM NAV =====
 function MobileBottomNav() {
   const { currentPage, setPage, isAdmin } = useAppStore()
+  const { t } = useTranslation()
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong pb-safe border-t border-[#F0B90B]/10">
       <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
-        {mobileNavItems
+        {mobileNavItemConfigs
           .filter(item => !item.adminOnly || isAdmin)
           .map(item => {
             const isActive = currentPage === item.page
@@ -551,7 +612,7 @@ function MobileBottomNav() {
               >
                 <item.icon className={`h-5 w-5 ${isActive ? 'text-[#F0B90B]' : 'text-gray-500'}`} />
                 <span className={`text-[10px] font-medium ${isActive ? 'text-[#F0B90B]' : 'text-gray-500'}`}>
-                  {item.label}
+                  {t(item.labelKey)}
                 </span>
               </button>
             )
@@ -578,6 +639,7 @@ function PageContent() {
         {currentPage === 'staking' && <StakingPage />}
         {currentPage === 'network' && <NetworkPage />}
         {currentPage === 'commissions' && <CommissionsPage />}
+        {currentPage === 'achievements' && <AchievementsPage />}
         {currentPage === 'admin' && <AdminPage />}
       </motion.div>
     </AnimatePresence>
@@ -587,6 +649,7 @@ function PageContent() {
 // ===== APP DASHBOARD LAYOUT =====
 function AppLayout() {
   const { sidebarOpen, setSidebarOpen } = useAppStore()
+  const { t } = useTranslation()
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-white">
@@ -626,9 +689,10 @@ function AppLayout() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageSwitcher />
             <Badge variant="outline" className="border-[#F0B90B]/20 text-[#F0B90B] gap-1.5 text-xs hidden sm:flex">
               <div className="h-1.5 w-1.5 rounded-full bg-[#F0B90B] animate-pulse" />
-              BNB Chain
+              {t('bnb_chain')}
             </Badge>
             <WalletConnect />
           </div>
@@ -641,14 +705,15 @@ function AppLayout() {
           <div className="flex-1 py-4">
             <SidebarNav />
           </div>
-          <div className="p-4 border-t border-[#F0B90B]/8">
+          <div className="p-4 border-t border-[#F0B90B]/8 space-y-4">
+            <LiveFeed variant="feed" />
             <div className="p-3 rounded-xl glass-card space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <ExternalLink className="h-4 w-4" />
-                <span>BNB Smart Chain</span>
+                <span>{t('bnb_chain')}</span>
               </div>
-              <p className="text-xs text-gray-600">Block: #38,521,847</p>
-              <p className="text-xs text-gray-600">Gas: 3 Gwei</p>
+              <p className="text-xs text-gray-600">{t('block_number')}: #38,521,847</p>
+              <p className="text-xs text-gray-600">{t('gas_price')}: 3 Gwei</p>
             </div>
           </div>
         </aside>
@@ -670,10 +735,10 @@ function AppLayout() {
               <span>StakeBNB &copy; 2024</span>
             </div>
             <div className="flex items-center gap-4">
-              <span>BNB Smart Chain Mainnet</span>
+              <span>{t('bnb_chain')}</span>
               <span className="flex items-center gap-1">
                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Network Active
+                {t('network_active')}
               </span>
             </div>
           </div>
@@ -694,9 +759,10 @@ export default function HomePage() {
   // Use useMemo instead of useState+useEffect to avoid the lint warning
   const showApp = useMemo(() => isConnected, [isConnected])
 
-  if (showApp) {
-    return <AppLayout />
-  }
-
-  return <LandingPage />
+  return (
+    <>
+      <LiveToast />
+      {showApp ? <AppLayout /> : <LandingPage />}
+    </>
+  )
 }

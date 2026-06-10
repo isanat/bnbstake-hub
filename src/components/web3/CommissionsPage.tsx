@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAppStore } from '@/store/useAppStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -51,6 +52,7 @@ export function CommissionsPage() {
   const currentWallet = useAppStore(s => s.currentWallet)
   const isConnected = useAppStore(s => s.isConnected)
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
@@ -86,11 +88,11 @@ export function CommissionsPage() {
   if (!isConnected) {
     return (
       <div>
-        <PageHeader title="Commissions" description="Track your earnings" />
+        <PageHeader title={t('commissions_title')} description={t('commissions_description')} />
         <EmptyState
           icon={Wallet}
-          title="Wallet Not Connected"
-          description="Connect your wallet to view your commissions and earnings."
+          title={t('connect_wallet_title')}
+          description={t('connect_wallet_desc')}
         />
       </div>
     )
@@ -134,8 +136,8 @@ export function CommissionsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Commissions"
-        description="Track your unilevel and binary commissions on BNB Smart Chain"
+        title={t('commissions_title')}
+        description={t('commissions_description')}
         actions={
           <Button
             onClick={() => claimAllMutation.mutate({ walletAddress: currentWallet! })}
@@ -147,7 +149,7 @@ export function CommissionsPage() {
             ) : (
               <Gift className="h-4 w-4" />
             )}
-            Claim All Pending
+            {t('claim_all_pending')}
           </Button>
         }
       />
@@ -157,10 +159,10 @@ export function CommissionsPage() {
         <LoadingSkeleton variant="cards" count={4} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard icon={TrendingUp} label="Total Unilevel" value={`$${totalUnilevel.toLocaleString()}`} trend={totalUnilevel > 0 ? { value: 12, positive: true } : undefined} variant="gold" />
-          <StatsCard icon={ArrowUpRight} label="Total Binary" value={`$${totalBinary.toLocaleString()}`} trend={totalBinary > 0 ? { value: 8, positive: true } : undefined} variant="purple" />
-          <StatsCard icon={Clock} label="Pending" value={`$${pendingAmount.toLocaleString()}`} variant="gold" />
-          <StatsCard icon={CheckCircle2} label="Distributed" value={`$${distributedAmount.toLocaleString()}`} />
+          <StatsCard icon={TrendingUp} label={t('total_unilevel')} value={`$${totalUnilevel.toLocaleString()}`} trend={totalUnilevel > 0 ? { value: 12, positive: true } : undefined} variant="gold" />
+          <StatsCard icon={ArrowUpRight} label={t('total_binary')} value={`$${totalBinary.toLocaleString()}`} trend={totalBinary > 0 ? { value: 8, positive: true } : undefined} variant="purple" />
+          <StatsCard icon={Clock} label={t('commissions_pending')} value={`$${pendingAmount.toLocaleString()}`} variant="gold" />
+          <StatsCard icon={CheckCircle2} label={t('distributed')} value={`$${distributedAmount.toLocaleString()}`} />
         </div>
       )}
 
@@ -172,7 +174,7 @@ export function CommissionsPage() {
               <div className="p-1.5 rounded-lg bg-[#F0B90B]/10">
                 <Filter className="h-4 w-4 text-[#F0B90B]" />
               </div>
-              <span className="text-sm text-gray-400">Filters:</span>
+              <span className="text-sm text-gray-400">{t('filter')}:</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -180,9 +182,9 @@ export function CommissionsPage() {
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0f] border-[#F0B90B]/15">
-                  <SelectItem value="all" className="text-white">All Types</SelectItem>
-                  <SelectItem value="unilevel" className="text-white">Unilevel</SelectItem>
-                  <SelectItem value="binary" className="text-white">Binary</SelectItem>
+                  <SelectItem value="all" className="text-white">{t('all_types')}</SelectItem>
+                  <SelectItem value="unilevel" className="text-white">{t('unilevel')}</SelectItem>
+                  <SelectItem value="binary" className="text-white">{t('binary')}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -190,9 +192,9 @@ export function CommissionsPage() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0f] border-[#F0B90B]/15">
-                  <SelectItem value="all" className="text-white">All Status</SelectItem>
-                  <SelectItem value="pending" className="text-white">Pending</SelectItem>
-                  <SelectItem value="distributed" className="text-white">Distributed</SelectItem>
+                  <SelectItem value="all" className="text-white">{t('all_status')}</SelectItem>
+                  <SelectItem value="pending" className="text-white">{t('pending')}</SelectItem>
+                  <SelectItem value="distributed" className="text-white">{t('distributed')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -206,7 +208,7 @@ export function CommissionsPage() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg text-white flex items-center gap-2">
               <Gift className="h-5 w-5 text-[#F0B90B]" />
-              Commission History
+              {t('commission_history')}
             </CardTitle>
             <Button
               variant="outline"
@@ -215,7 +217,7 @@ export function CommissionsPage() {
               className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 gap-1 rounded-xl"
             >
               <Download className="h-3.5 w-3.5" />
-              Export
+              {t('commissions_export')}
             </Button>
           </div>
         </CardHeader>
@@ -225,20 +227,18 @@ export function CommissionsPage() {
           ) : filteredCommissions.length === 0 ? (
             <EmptyState
               icon={Gift}
-              title="No Commissions Found"
-              description={commissions.length === 0
-                ? "You haven't earned any commissions yet. Build your network to start earning."
-                : "No commissions match the selected filters."}
+              title={t('no_commissions')}
+              description={t('connect_wallet_desc')}
             />
           ) : (
             <div className="space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar">
               {/* Table Header */}
               <div className="hidden sm:grid grid-cols-5 gap-4 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <span>Type</span>
-                <span>From</span>
-                <span>Amount</span>
-                <span>Level / Date</span>
-                <span>Status</span>
+                <span>{t('type')}</span>
+                <span>{t('from')}</span>
+                <span>{t('amount')}</span>
+                <span>{t('level_date')}</span>
+                <span>{t('status')}</span>
               </div>
 
               {filteredCommissions.map((commission, index) => (

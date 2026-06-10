@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAppStore } from '@/store/useAppStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -99,6 +100,7 @@ export function StakingPage() {
   const currentWallet = useAppStore(s => s.currentWallet)
   const isConnected = useAppStore(s => s.isConnected)
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   const [depositOpen, setDepositOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<string>('')
@@ -181,11 +183,11 @@ export function StakingPage() {
   if (!isConnected) {
     return (
       <div>
-        <PageHeader title="Staking" description="Stake USDT and earn rewards" />
+        <PageHeader title={t('staking_title')} description={t('staking_description')} />
         <EmptyState
           icon={Wallet}
-          title="Wallet Not Connected"
-          description="Connect your wallet to view staking plans and start earning rewards."
+          title={t('connect_wallet_title')}
+          description={t('connect_wallet_desc')}
         />
       </div>
     )
@@ -230,15 +232,15 @@ export function StakingPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Staking"
-        description="Stake USDT on BNB Smart Chain and earn passive income"
+        title={t('staking_title')}
+        description={t('staking_description')}
         actions={
           <Button
             onClick={() => setDepositOpen(true)}
             className="btn-bnb gap-2 rounded-xl h-10 px-5"
           >
             <Plus className="h-4 w-4" />
-            New Stake
+            {t('new_stake')}
           </Button>
         }
       />
@@ -254,16 +256,16 @@ export function StakingPage() {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
         >
           <motion.div variants={itemVariants}>
-            <StatsCard icon={Coins} label="Total Staked" value={`$${totalStaked.toLocaleString()}`} theme="bnb" />
+            <StatsCard icon={Coins} label={t('total_staked')} value={`$${totalStaked.toLocaleString()}`} theme="bnb" />
           </motion.div>
           <motion.div variants={itemVariants}>
-            <StatsCard icon={TrendingUp} label="Total Rewards" value={`$${(stakes.reduce((sum, s) => sum + Number(s.pendingRewards || 0), 0) + totalStaked * 0.01).toFixed(2)}`} trend={{ value: 8.5, positive: true }} theme="bnb" />
+            <StatsCard icon={TrendingUp} label={t('total_rewards')} value={`$${(stakes.reduce((sum, s) => sum + Number(s.pendingRewards || 0), 0) + totalStaked * 0.01).toFixed(2)}`} trend={{ value: 8.5, positive: true }} theme="bnb" />
           </motion.div>
           <motion.div variants={itemVariants}>
-            <StatsCard icon={Clock} label="Pending Rewards" value={`$${totalPendingRewards.toFixed(2)}`} theme="bnb" />
+            <StatsCard icon={Clock} label={t('pending_rewards_label')} value={`$${totalPendingRewards.toFixed(2)}`} theme="bnb" />
           </motion.div>
           <motion.div variants={itemVariants}>
-            <StatsCard icon={Shield} label="Active Stakes" value={`${summary?.activeStakesCount ?? 0}`} theme="bnb" />
+            <StatsCard icon={Shield} label={t('active_stakes_label')} value={`${summary?.activeStakesCount ?? 0}`} theme="bnb" />
           </motion.div>
         </motion.div>
       )}
@@ -274,15 +276,15 @@ export function StakingPage() {
           <div className="p-1.5 rounded-lg bg-[#F0B90B]/10">
             <Flame className="h-5 w-5 text-[#F0B90B]" />
           </div>
-          <h2 className="text-xl font-semibold text-white">Available Plans</h2>
+          <h2 className="text-xl font-semibold text-white">{t('available_plans')}</h2>
         </div>
         {isLoading ? (
           <LoadingSkeleton variant="cards" count={4} className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" />
         ) : plans.length === 0 ? (
           <EmptyState
             icon={Coins}
-            title="No Plans Available"
-            description="There are no active staking plans at the moment. Check back later."
+            title={t('no_plans')}
+            description={t('connect_wallet_desc')}
           />
         ) : (
           <motion.div
@@ -330,7 +332,7 @@ export function StakingPage() {
                               {plan.apy}%
                             </span>
                             <p className="text-xs text-gray-500 mt-2 uppercase tracking-wider font-medium">
-                              Annual Percentage Yield
+                              {t('annual_percentage_yield')}
                             </p>
                           </div>
                         </div>
@@ -338,11 +340,11 @@ export function StakingPage() {
                         {/* Details */}
                         <div className="space-y-2.5 text-sm">
                           <div className="flex justify-between items-center">
-                            <span className="text-gray-500">Min Stake</span>
+                            <span className="text-gray-500">{t('staking_total_staked')}</span>
                             <span className="text-white font-medium">${plan.minAmount.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-gray-500">Max Stake</span>
+                            <span className="text-gray-500">{t('range')}</span>
                             <span className="text-white font-medium">${plan.maxAmount.toLocaleString()}</span>
                           </div>
                           <div className="w-full h-px bg-gradient-to-r from-transparent via-[#F0B90B]/15 to-transparent" />

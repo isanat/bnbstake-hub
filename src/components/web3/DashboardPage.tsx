@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAppStore } from '@/store/useAppStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { useQuery } from '@tanstack/react-query'
 import {
   Wallet, TrendingUp, Clock, Coins, Users, Gift,
@@ -16,6 +17,8 @@ import {
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { motion } from 'framer-motion'
+import { ReturnCalculator } from '@/components/web3/ReturnCalculator'
+import { Leaderboard } from '@/components/web3/Leaderboard'
 
 interface UserData {
   user: {
@@ -135,6 +138,7 @@ export function DashboardPage() {
   const currentWallet = useAppStore(s => s.currentWallet)
   const isConnected = useAppStore(s => s.isConnected)
   const setPage = useAppStore(s => s.setPage)
+  const { t } = useTranslation()
 
   const { data: userData, isLoading: userLoading } = useQuery<UserData>({
     queryKey: ['user', currentWallet],
@@ -158,7 +162,7 @@ export function DashboardPage() {
   if (!isConnected) {
     return (
       <div className="min-h-[70vh] flex flex-col">
-        <PageHeader title="Dashboard" description="Overview of your staking portfolio" />
+        <PageHeader title={t('title')} description={t('connect_wallet_desc')} />
         <div className="flex-1 flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -184,7 +188,7 @@ export function DashboardPage() {
               transition={{ delay: 0.2 }}
               className="text-2xl sm:text-3xl font-bold text-white mb-3"
             >
-              Connect Your Wallet
+              {t('connect_wallet_title')}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -192,9 +196,7 @@ export function DashboardPage() {
               transition={{ delay: 0.3 }}
               className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed"
             >
-              Unlock the full power of StakeBNB on BNB Smart Chain.
-              Track your staking rewards, manage your portfolio, and earn
-              passive income through our DeFi protocol.
+              {t('connect_wallet_desc')}
             </motion.p>
 
             <motion.div
@@ -205,15 +207,15 @@ export function DashboardPage() {
             >
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
                 <Shield className="h-4 w-4 text-[#F0B90B]" />
-                Non-custodial
+                {t('non_custodial')}
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
                 <Flame className="h-4 w-4 text-[#F0B90B]" />
-                Up to 200% APY
+                {t('up_to_apy')}
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
                 <Hexagon className="h-4 w-4 text-[#F0B90B]" />
-                BNB Chain
+                {t('bnb_chain_label')}
               </div>
             </motion.div>
           </motion.div>
@@ -266,8 +268,8 @@ export function DashboardPage() {
       {/* Page Header */}
       <motion.div variants={fadeUpVariants}>
         <PageHeader
-          title="Dashboard"
-          description="Overview of your staking portfolio on BNB Smart Chain"
+          title={t('title')}
+          description={t('description')}
           actions={
             <div className="flex gap-2">
               <Button
@@ -275,7 +277,7 @@ export function DashboardPage() {
                 className="btn-bnb gap-2 rounded-xl h-10 px-5"
               >
                 <Zap className="h-4 w-4" />
-                Deposit
+                {t('deposit')}
               </Button>
               <Button
                 variant="outline"
@@ -283,7 +285,7 @@ export function DashboardPage() {
                 className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 gap-2 rounded-xl h-10 px-5 transition-all"
               >
                 <Gift className="h-4 w-4" />
-                Claim Rewards
+                {t('claim_rewards')}
               </Button>
             </div>
           }
@@ -301,7 +303,7 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={Wallet}
-              label="Total Staked"
+              label={t('total_staked')}
               value={`$${(stakingSummary?.totalStaked ?? user?.totalStaked ?? 0).toLocaleString()}`}
               trend={user?.totalStaked ? { value: 12.5, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
@@ -311,7 +313,7 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={TrendingUp}
-              label="Total Earned"
+              label={t('total_earned')}
               value={`$${(user?.totalEarned ?? 0).toLocaleString()}`}
               trend={user?.totalEarned ? { value: 8.3, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
@@ -321,7 +323,7 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={Clock}
-              label="Pending Rewards"
+              label={t('pending_rewards')}
               value={`$${(stakingSummary?.totalPendingRewards ?? 0).toFixed(2)}`}
               trend={stakingSummary?.totalPendingRewards ? { value: 2.1, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
@@ -331,7 +333,7 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={Coins}
-              label="Active Stakes"
+              label={t('active_stakes')}
               value={`${stakingSummary?.activeStakesCount ?? 0}`}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"
@@ -340,7 +342,7 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={Users}
-              label="Network Size"
+              label={t('network_size')}
               value={`${userStats?.networkSize ?? 0}`}
               trend={userStats?.networkSize ? { value: 15.2, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
@@ -350,7 +352,7 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={Gift}
-              label="Commission Balance"
+              label={t('commission_balance')}
               value={`$${(commissionSummary?.pending?.amount ?? 0).toLocaleString()}`}
               trend={commissionSummary?.pending?.amount ? { value: 5.7, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
@@ -371,7 +373,7 @@ export function DashboardPage() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg text-white flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-[#F0B90B]" />
-                  Rewards Overview
+                  {t('rewards_overview')}
                 </CardTitle>
                 <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 hover:bg-[#F0B90B]/20">
                   Live
@@ -449,7 +451,7 @@ export function DashboardPage() {
             <CardHeader className="pb-2">
               <CardTitle className="text-lg text-white flex items-center gap-2">
                 <Zap className="h-5 w-5 text-[#F0B90B]" />
-                Quick Actions
+                {t('quick_actions')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -458,7 +460,7 @@ export function DashboardPage() {
                 className="btn-bnb w-full justify-start gap-3 rounded-xl h-12 text-sm"
               >
                 <ArrowUpRight className="h-4 w-4" />
-                Stake USDT
+                {t('stake_usdt')}
               </Button>
               <Button
                 variant="outline"
@@ -466,7 +468,7 @@ export function DashboardPage() {
                 className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-start gap-3 rounded-xl h-12 text-sm transition-all"
               >
                 <Gift className="h-4 w-4" />
-                Claim All Rewards
+                {t('claim_all_rewards')}
               </Button>
               <Button
                 variant="outline"
@@ -474,14 +476,14 @@ export function DashboardPage() {
                 className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-start gap-3 rounded-xl h-12 text-sm transition-all"
               >
                 <ArrowDownRight className="h-4 w-4" />
-                View Stakes
+                {t('view_stakes')}
               </Button>
               <Button
                 variant="outline"
                 className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:border-white/20 justify-start gap-3 rounded-xl h-12 text-sm transition-all"
               >
                 <ExternalLink className="h-4 w-4" />
-                View on BscScan
+                {t('view_bscscan')}
               </Button>
             </CardContent>
           </Card>
@@ -494,7 +496,7 @@ export function DashboardPage() {
           <CardHeader>
             <CardTitle className="text-lg text-white flex items-center gap-2">
               <Clock className="h-5 w-5 text-[#F0B90B]" />
-              Recent Activity
+              {t('recent_activity')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -503,15 +505,15 @@ export function DashboardPage() {
             ) : recentTransactions.length === 0 ? (
               <EmptyState
                 icon={Coins}
-                title="No Recent Activity"
-                description="Start staking to see your transaction history here."
+                title={t('no_activity')}
+                description={t('connect_wallet_desc')}
                 action={
                   <Button
                     onClick={() => setPage('staking')}
                     className="btn-bnb gap-2 rounded-xl"
                   >
                     <ArrowUpRight className="h-4 w-4" />
-                    Start Staking
+                    {t('start_staking')}
                   </Button>
                 }
               />
@@ -568,6 +570,12 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Return Calculator + Leaderboard */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ReturnCalculator />
+        <Leaderboard />
+      </div>
     </motion.div>
   )
 }

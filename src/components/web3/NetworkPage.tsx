@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAppStore } from '@/store/useAppStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -183,6 +184,7 @@ export function NetworkPage() {
   const currentWallet = useAppStore(s => s.currentWallet)
   const isConnected = useAppStore(s => s.isConnected)
   const [copied, setCopied] = useState(false)
+  const { t } = useTranslation()
 
   const { data: networkData, isLoading, error } = useQuery<NetworkData>({
     queryKey: ['network', currentWallet],
@@ -210,11 +212,11 @@ export function NetworkPage() {
   if (!isConnected) {
     return (
       <div>
-        <PageHeader title="Network" description="View your referral network" />
+        <PageHeader title={t('network_title')} description={t('network_description')} />
         <EmptyState
           icon={Wallet}
-          title="Wallet Not Connected"
-          description="Connect your wallet to view your referral network and tree structure."
+          title={t('connect_wallet_title')}
+          description={t('connect_wallet_desc')}
         />
       </div>
     )
@@ -224,7 +226,7 @@ export function NetworkPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Network" description="Your referral network on BNB Smart Chain" />
+      <PageHeader title={t('network_title')} description={t('network_description')} />
 
       {/* Referral Link - Glass card with golden accent */}
       <Card className="glass-card glow-bnb rounded-2xl">
@@ -234,7 +236,7 @@ export function NetworkPage() {
               <div className="p-2 rounded-lg bg-[#F0B90B]/10">
                 <Link2 className="h-5 w-5 text-[#F0B90B]" />
               </div>
-              <span className="text-sm font-medium text-white">Referral Link</span>
+              <span className="text-sm font-medium text-white">{t('referral_link')}</span>
             </div>
             <div className="flex-1 flex items-center gap-2 w-full sm:w-auto">
               <Input
@@ -264,10 +266,10 @@ export function NetworkPage() {
         <LoadingSkeleton variant="cards" count={4} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard icon={Users} label="Direct Referrals" value={`${stats?.directReferrals ?? 0}`} trend={stats?.directReferrals ? { value: 20, positive: true } : undefined} variant="gold" />
-          <StatsCard icon={TreePine} label="Total Network" value={`${stats?.totalNetworkSize ?? 0}`} trend={stats?.totalNetworkSize ? { value: 15, positive: true } : undefined} variant="gold" />
-          <StatsCard icon={GitBranch} label="Left Volume" value={`$${(stats?.leftVolume ?? 0).toLocaleString()}`} />
-          <StatsCard icon={GitBranch} label="Right Volume" value={`$${(stats?.rightVolume ?? 0).toLocaleString()}`} variant="gold" />
+          <StatsCard icon={Users} label={t('direct_referrals')} value={`${stats?.directReferrals ?? 0}`} trend={stats?.directReferrals ? { value: 20, positive: true } : undefined} variant="gold" />
+          <StatsCard icon={TreePine} label={t('total_network')} value={`${stats?.totalNetworkSize ?? 0}`} trend={stats?.totalNetworkSize ? { value: 15, positive: true } : undefined} variant="gold" />
+          <StatsCard icon={GitBranch} label={t('left_volume')} value={`$${(stats?.leftVolume ?? 0).toLocaleString()}`} />
+          <StatsCard icon={GitBranch} label={t('right_volume')} value={`$${(stats?.rightVolume ?? 0).toLocaleString()}`} variant="gold" />
         </div>
       )}
 
@@ -276,11 +278,11 @@ export function NetworkPage() {
         <TabsList className="bg-[#0a0a0f]/80 border border-[#F0B90B]/10 backdrop-blur-sm">
           <TabsTrigger value="unilevel" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
             <TreePine className="h-4 w-4 mr-2" />
-            Unilevel
+            {t('unilevel')}
           </TabsTrigger>
           <TabsTrigger value="binary" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
             <GitBranch className="h-4 w-4 mr-2" />
-            Binary
+            {t('binary')}
           </TabsTrigger>
         </TabsList>
 
@@ -289,7 +291,7 @@ export function NetworkPage() {
             <CardHeader>
               <CardTitle className="text-lg text-white flex items-center gap-2">
                 <TreePine className="h-5 w-5 text-[#F0B90B]" />
-                Unilevel Tree
+                {t('unilevel_tree')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -298,8 +300,8 @@ export function NetworkPage() {
               ) : !networkData?.unilevelTree ? (
                 <EmptyState
                   icon={TreePine}
-                  title="No Network Data"
-                  description="You don't have any referrals yet. Share your referral link to start building your network."
+                  title={t('no_network')}
+                  description={t('connect_wallet_desc')}
                 />
               ) : (
                 <>
@@ -311,11 +313,11 @@ export function NetworkPage() {
                   <div className="flex items-center justify-center gap-6 mt-4 text-xs text-gray-500">
                     <div className="flex items-center gap-1.5">
                       <div className="h-3 w-3 rounded border border-[#F0B90B]/30 bg-[#F0B90B]/10" />
-                      Active
+                      {t('active')}
                     </div>
                     <div className="flex items-center gap-1.5">
                       <div className="h-3 w-3 rounded border border-dashed border-gray-700 bg-[#0a0a0f]/50" />
-                      Inactive
+                      {t('inactive')}
                     </div>
                   </div>
                 </>
@@ -330,16 +332,16 @@ export function NetworkPage() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg text-white flex items-center gap-2">
                   <GitBranch className="h-5 w-5 text-[#F0B90B]" />
-                  Binary Tree
+                  {t('binary_tree')}
                 </CardTitle>
                 <div className="flex items-center gap-4 text-xs">
                   <div className="flex items-center gap-1.5">
                     <div className="h-3 w-3 rounded bg-emerald-500/20 border border-emerald-500/40" />
-                    Left Leg
+                    {t('left_leg')}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="h-3 w-3 rounded bg-[#F0B90B]/20 border border-[#F0B90B]/40" />
-                    Right Leg
+                    {t('right_leg')}
                   </div>
                 </div>
               </div>
@@ -350,8 +352,8 @@ export function NetworkPage() {
               ) : !networkData?.binaryTree ? (
                 <EmptyState
                   icon={GitBranch}
-                  title="No Binary Tree Data"
-                  description="Your binary tree will appear here once you have binary team members."
+                  title={t('no_binary')}
+                  description={t('connect_wallet_desc')}
                 />
               ) : (
                 <>
@@ -362,11 +364,11 @@ export function NetworkPage() {
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-4">
                     <div className="p-5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-center shadow-[0_0_20px_rgba(16,185,129,0.05)]">
-                      <p className="text-sm text-gray-400 mb-1">Left Volume</p>
+                      <p className="text-sm text-gray-400 mb-1">{t('left_volume')}</p>
                       <p className="text-2xl font-bold text-emerald-400">${(stats?.leftVolume ?? 0).toLocaleString()}</p>
                     </div>
                     <div className="p-5 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/20 text-center shadow-[0_0_20px_rgba(240,185,11,0.05)]">
-                      <p className="text-sm text-gray-400 mb-1">Right Volume</p>
+                      <p className="text-sm text-gray-400 mb-1">{t('right_volume')}</p>
                       <p className="text-2xl font-bold text-[#F0B90B]">${(stats?.rightVolume ?? 0).toLocaleString()}</p>
                     </div>
                   </div>

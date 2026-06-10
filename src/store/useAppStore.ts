@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 
-export type PageType = 'dashboard' | 'staking' | 'network' | 'commissions' | 'admin'
+export type PageType = 'dashboard' | 'staking' | 'network' | 'commissions' | 'achievements' | 'admin'
 
 interface AppState {
   currentWallet: string | null

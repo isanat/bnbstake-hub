@@ -26,6 +26,8 @@ model User {
   leftVolume     Float     @default(0)
   rightVolume    Float     @default(0)
   isActive       Boolean   @default(false)
+  xp             Int       @default(0)
+  level          Int       @default(1)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -35,6 +37,7 @@ model User {
   transactions     Transaction[]
   binaryChildren   User[]           @relation("BinaryTree")
   binaryParent     User?            @relation("BinaryTree", fields: [binaryParentId], references: [id])
+  achievements     UserAchievement[]
 }
 
 model StakingPlan {
@@ -121,5 +124,67 @@ model SystemConfig {
   key         String   @unique
   value       String
   description String   @default("")
+  updatedAt   DateTime @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  nameEn      String
+  nameEs      String
+  namePt      String
+  descEn      String
+  descEs      String
+  descPt      String
+  icon        String   @default("Trophy")
+  condition   String   @default("{}")
+  reward      String   @default("{}")
+  tier        String   @default("bronze")
+  xpReward    Int      @default(10)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+  claimed       Boolean     @default(false)
+  claimedAt     DateTime?
+
+  user        User        @relation(fields: [userId], references: [id])
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+}
+
+model Translation {
+  id        String   @id @default(cuid())
+  key       String
+  locale    String
+  value     String
+  category  String   @default("general")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([key, locale])
+}
+
+model NotificationTemplate {
+  id          String   @id @default(cuid())
+  type        String   @unique
+  titleEn     String
+  titleEs     String
+  titlePt     String
+  messageEn   String
+  messageEs   String
+  messagePt   String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

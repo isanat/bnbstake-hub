@@ -26,11 +26,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAppStore } from '@/store/useAppStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   Shield, Plus, Edit, Trash2, Users, Settings, BarChart3,
-  Search, Save, AlertTriangle, Coins, TrendingUp, Lock, Loader2
+  Search, Save, AlertTriangle, Coins, TrendingUp, Lock, Loader2,
+  Award, Globe, Bell, Trophy, Sparkles, MessageSquare
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -93,16 +95,85 @@ interface AdminUsersData {
   pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
+interface AchievementItem {
+  id: string
+  key: string
+  nameEn: string
+  nameEs: string
+  namePt: string
+  descEn: string
+  descEs: string
+  descPt: string
+  icon: string
+  tier: string
+  xpReward: number
+  condition: { type: string; value?: string | number }
+  reward: { type: string; amount?: number }
+  isActive: boolean
+  order: number
+}
+
+interface TranslationRow {
+  id: string
+  key: string
+  locale: string
+  value: string
+  category: string
+}
+
+interface NotificationTemplate {
+  id: string
+  type: string
+  titleEn: string
+  titleEs: string
+  titlePt: string
+  messageEn: string
+  messageEs: string
+  messagePt: string
+  isActive: boolean
+}
+
+const TRANSLATION_CATEGORIES = ['general', 'landing', 'dashboard', 'staking', 'network', 'commissions', 'admin', 'achievements', 'calculator', 'leaderboard']
+
 export function AdminPage() {
   const currentWallet = useAppStore(s => s.currentWallet)
   const isConnected = useAppStore(s => s.isConnected)
   const isAdmin = useAppStore(s => s.isAdmin)
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   const [planDialogOpen, setPlanDialogOpen] = useState(false)
   const [editPlan, setEditPlan] = useState<AdminPlan | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [usersPage, setUsersPage] = useState(1)
+
+  // Achievements admin state
+  const [achieveDialogOpen, setAchieveDialogOpen] = useState(false)
+  const [editAchievement, setEditAchievement] = useState<AchievementItem | null>(null)
+  const [achieveForm, setAchieveForm] = useState({
+    key: '',
+    nameEn: '', nameEs: '', namePt: '',
+    descEn: '', descEs: '', descPt: '',
+    icon: 'Trophy', tier: 'bronze', xpReward: 50,
+    conditionType: 'stake_count', conditionValue: '1',
+    isActive: true,
+  })
+
+  // Translations admin state
+  const [transCategory, setTransCategory] = useState('general')
+  const [transSearch, setTransSearch] = useState('')
+  const [transDialogOpen, setTransDialogOpen] = useState(false)
+  const [editTransKey, setEditTransKey] = useState('')
+  const [editTransLocale, setEditTransLocale] = useState<'en' | 'es' | 'pt'>('en')
+  const [editTransValues, setEditTransValues] = useState({ en: '', es: '', pt: '' })
+
+  // Notifications admin state
+  const [notifDialogOpen, setNotifDialogOpen] = useState(false)
+  const [editNotif, setEditNotif] = useState<NotificationTemplate | null>(null)
+  const [notifForm, setNotifForm] = useState({
+    type: '', titleEn: '', titleEs: '', titlePt: '',
+    messageEn: '', messageEs: '', messagePt: '', isActive: true,
+  })
 
   // Plan form state
   const [planForm, setPlanForm] = useState({
@@ -116,7 +187,7 @@ export function AdminPage() {
     isActive: true,
   })
 
-  // Binary config local state (for editing before save)
+  // Binary config local state
   const [binaryConfigLocal, setBinaryConfigLocal] = useState({
     percentage: 10,
     dailyCap: 5000,
@@ -165,6 +236,60 @@ export function AdminPage() {
       return r.json()
     }),
     enabled: !!currentWallet && isAdmin,
+  })
+
+  // Fetch achievements for admin
+  const { data: achievementsData, isLoading: achievementsLoading } = useQuery<AchievementItem[]>({
+    queryKey: ['admin-achievements'],
+    queryFn: () => fetch('/api/achievements').then(r => {
+      if (!r.ok) throw new Error('Failed to fetch achievements')
+      return r.json()
+    }).then(d => d.achievements || d),
+    enabled: isAdmin,
+  })
+
+  // Fetch translations for admin
+  const { data: translationsData, isLoading: translationsLoading } = useQuery({
+    queryKey: ['admin-translations', transCategory],
+    queryFn: async () => {
+      const [enRes, esRes, ptRes] = await Promise.all([
+        fetch('/api/translations?locale=en').then(r => r.json()),
+        fetch('/api/translations?locale=es').then(r => r.json()),
+        fetch('/api/translations?locale=pt').then(r => r.json()),
+      ])
+      const enMap = enRes.translations || {}
+      const esMap = esRes.translations || {}
+      const ptMap = ptRes.translations || {}
+      const enByCat = enRes.byCategory || {}
+      const keys = Object.keys(enByCat[transCategory] || {})
+      return keys.map(key => ({
+        key,
+        en: enMap[key] || '',
+        es: esMap[key] || '',
+        pt: ptMap[key] || '',
+        category: transCategory,
+      }))
+    },
+    enabled: isAdmin,
+  })
+
+  // Fetch notification templates
+  const { data: notifTemplates, isLoading: notifLoading } = useQuery<NotificationTemplate[]>({
+    queryKey: ['admin-notifications'],
+    queryFn: () => fetch('/api/notifications/templates').then(r => {
+      if (!r.ok) {
+        // Fallback mock data if API doesn't exist yet
+        return [
+          { id: '1', type: 'stake', titleEn: 'New Stake', titleEs: 'Nueva Apuesta', titlePt: 'Nova Aposta', messageEn: 'A user just staked {amount} USDT', messageEs: 'Un usuario acaba de apostar {amount} USDT', messagePt: 'Um usuário acabou de apostar {amount} USDT', isActive: true },
+          { id: '2', type: 'commission', titleEn: 'Commission Earned', titleEs: 'Comisión Ganada', titlePt: 'Comissão Ganha', messageEn: 'You earned {amount} USDT in commissions', messageEs: 'Ganaste {amount} USDT en comisiones', messagePt: 'Você ganhou {amount} USDT em comissões', isActive: true },
+          { id: '3', type: 'referral', titleEn: 'New Referral', titleEs: 'Nuevo Referido', titlePt: 'Novo Indicado', messageEn: 'A new member joined your network', messageEs: 'Un nuevo miembro se unió a tu red', messagePt: 'Um novo membro entrou na sua rede', isActive: true },
+          { id: '4', type: 'level_up', titleEn: 'Level Up!', titleEs: '¡Subiste de Nivel!', titlePt: 'Subiu de Nível!', messageEn: 'Congratulations! You reached Level {level}', messageEs: '¡Felicidades! Alcanzaste el Nivel {level}', messagePt: 'Parabéns! Você alcançou o Nível {level}', isActive: true },
+          { id: '5', type: 'achievement', titleEn: 'Achievement Unlocked', titleEs: 'Logro Desbloqueado', titlePt: 'Conquista Desbloqueada', messageEn: 'You unlocked: {name}', messageEs: 'Desbloqueaste: {name}', messagePt: 'Você desbloqueou: {name}', isActive: false },
+        ] as NotificationTemplate[]
+      }
+      return r.json()
+    }).then(d => d.templates || d),
+    enabled: isAdmin,
   })
 
   // Initialize local mlm config from fetched data
@@ -258,6 +383,47 @@ export function AdminPage() {
     },
   })
 
+  // Save translation mutation
+  const saveTranslationMutation = useMutation({
+    mutationFn: (data: { key: string; locale: string; value: string; adminWallet: string }) =>
+      fetch('/api/translations', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to save translation')
+        return r.json()
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-translations'] })
+      toast.success(t('success'))
+      setTransDialogOpen(false)
+    },
+    onError: (err: Error) => {
+      toast.error(err.message)
+    },
+  })
+
+  // Toggle achievement mutation
+  const toggleAchievementMutation = useMutation({
+    mutationFn: (data: { id: string; isActive: boolean }) =>
+      fetch('/api/achievements', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to update achievement')
+        return r.json()
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-achievements'] })
+      toast.success(t('success'))
+    },
+    onError: (err: Error) => {
+      toast.error(err.message)
+    },
+  })
+
   const openEditPlan = (plan: AdminPlan) => {
     setEditPlan(plan)
     setPlanForm({
@@ -296,14 +462,63 @@ export function AdminPage() {
     })
   }
 
+  const openEditAchievement = (ach: AchievementItem) => {
+    setEditAchievement(ach)
+    setAchieveForm({
+      key: ach.key,
+      nameEn: ach.nameEn, nameEs: ach.nameEs, namePt: ach.namePt,
+      descEn: ach.descEn, descEs: ach.descEs, descPt: ach.descPt,
+      icon: ach.icon, tier: ach.tier, xpReward: ach.xpReward,
+      conditionType: ach.condition?.type || 'stake_count',
+      conditionValue: String(ach.condition?.value || '1'),
+      isActive: ach.isActive,
+    })
+    setAchieveDialogOpen(true)
+  }
+
+  const openNewAchievement = () => {
+    setEditAchievement(null)
+    setAchieveForm({
+      key: '',
+      nameEn: '', nameEs: '', namePt: '',
+      descEn: '', descEs: '', descPt: '',
+      icon: 'Trophy', tier: 'bronze', xpReward: 50,
+      conditionType: 'stake_count', conditionValue: '1',
+      isActive: true,
+    })
+    setAchieveDialogOpen(true)
+  }
+
+  const openEditTranslation = (key: string, en: string, es: string, pt: string) => {
+    setEditTransKey(key)
+    setEditTransValues({ en, es, pt })
+    setEditTransLocale('en')
+    setTransDialogOpen(true)
+  }
+
+  const openEditNotif = (notif: NotificationTemplate) => {
+    setEditNotif(notif)
+    setNotifForm({
+      type: notif.type,
+      titleEn: notif.titleEn, titleEs: notif.titleEs, titlePt: notif.titlePt,
+      messageEn: notif.messageEn, messageEs: notif.messageEs, messagePt: notif.messagePt,
+      isActive: notif.isActive,
+    })
+    setNotifDialogOpen(true)
+  }
+
+  const filteredTranslations = (translationsData || []).filter(row =>
+    !transSearch || row.key.toLowerCase().includes(transSearch.toLowerCase())
+  )
+
   if (!isConnected || !isAdmin) {
     return (
       <div>
-        <PageHeader title="Admin" description="System administration" />
+        <PageHeader title={t('admin_title')} description={t('admin_description')} />
         <EmptyState
           icon={Lock}
-          title="Access Denied"
-          description="You need admin privileges to access this page. Connect with an admin wallet to continue."
+          title={t('access_denied')}
+          description={t('admin_access')}
         />
       </div>
     )
@@ -325,12 +540,12 @@ export function AdminPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Admin Panel"
-        description="Manage staking plans, configurations, and users"
+        title={t('admin_title')}
+        description={t('admin_description')}
         actions={
           <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 gap-1">
             <Shield className="h-3 w-3" />
-            Admin Access
+            {t('admin_access')}
           </Badge>
         }
       />
@@ -339,23 +554,35 @@ export function AdminPage() {
         <TabsList className="bg-gray-800/60 border border-[#F0B90B]/10 flex-wrap h-auto gap-1 p-1 backdrop-blur-sm">
           <TabsTrigger value="plans" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <Coins className="h-4 w-4 mr-1" />
-            Plans
+            {t('plans')}
           </TabsTrigger>
           <TabsTrigger value="unilevel" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <TrendingUp className="h-4 w-4 mr-1" />
-            Unilevel Config
+            {t('unilevel_config')}
           </TabsTrigger>
           <TabsTrigger value="binary" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <Settings className="h-4 w-4 mr-1" />
-            Binary Config
+            {t('binary_config')}
           </TabsTrigger>
           <TabsTrigger value="users" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <Users className="h-4 w-4 mr-1" />
-            Users
+            {t('users')}
           </TabsTrigger>
           <TabsTrigger value="reports" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <BarChart3 className="h-4 w-4 mr-1" />
-            Reports
+            {t('reports')}
+          </TabsTrigger>
+          <TabsTrigger value="achievements" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
+            <Award className="h-4 w-4 mr-1" />
+            {t('admin_achievements_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="translations" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
+            <Globe className="h-4 w-4 mr-1" />
+            {t('admin_translations_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
+            <Bell className="h-4 w-4 mr-1" />
+            {t('admin_notifications_tab')}
           </TabsTrigger>
         </TabsList>
 
@@ -364,13 +591,10 @@ export function AdminPage() {
           <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <CardTitle className="text-lg text-white">Staking Plans</CardTitle>
-                <Button
-                  onClick={openNewPlan}
-                  className="btn-bnb gap-2 rounded-xl"
-                >
+                <CardTitle className="text-lg text-white">{t('admin_staking_plans')}</CardTitle>
+                <Button onClick={openNewPlan} className="btn-bnb gap-2 rounded-xl">
                   <Plus className="h-4 w-4" />
-                  Add Plan
+                  {t('add_plan')}
                 </Button>
               </div>
             </CardHeader>
@@ -380,13 +604,13 @@ export function AdminPage() {
               ) : (
                 <div className="space-y-3">
                   <div className="hidden sm:grid grid-cols-7 gap-4 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <span>Name</span>
-                    <span>Duration</span>
-                    <span>APY</span>
-                    <span>Min/Max</span>
-                    <span>Penalty</span>
-                    <span>Status</span>
-                    <span>Actions</span>
+                    <span>{t('plan_name')}</span>
+                    <span>{t('duration_days')}</span>
+                    <span>{t('apy_percent')}</span>
+                    <span>{t('min_max')}</span>
+                    <span>{t('penalty')}</span>
+                    <span>{t('status')}</span>
+                    <span>{t('actions')}</span>
                   </div>
                   {plans.map((plan, index) => (
                     <motion.div
@@ -397,24 +621,15 @@ export function AdminPage() {
                       className="grid grid-cols-1 sm:grid-cols-7 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/40 hover:bg-[#F0B90B]/5 border border-transparent hover:border-[#F0B90B]/10 transition-colors items-center"
                     >
                       <span className="text-sm font-medium text-white">{plan.name}</span>
-                      <span className="text-sm text-gray-300">{plan.durationDays} days</span>
+                      <span className="text-sm text-gray-300">{plan.durationDays} {t('duration_days').toLowerCase()}</span>
                       <span className="text-sm font-semibold text-[#F0B90B]">{plan.apy}%</span>
                       <span className="text-sm text-gray-400">${plan.minAmount.toLocaleString()} - ${plan.maxAmount.toLocaleString()}</span>
                       <span className="text-sm text-red-400">{plan.earlyWithdrawPenalty}%</span>
-                      <Badge variant="outline" className={`w-fit text-xs ${
-                        plan.isActive
-                          ? 'border-[#F0B90B]/30 text-[#F0B90B]'
-                          : 'border-gray-600 text-gray-500'
-                      }`}>
-                        {plan.isActive ? 'Active' : 'Inactive'}
+                      <Badge variant="outline" className={`w-fit text-xs ${plan.isActive ? 'border-[#F0B90B]/30 text-[#F0B90B]' : 'border-gray-600 text-gray-500'}`}>
+                        {plan.isActive ? t('active') : t('inactive')}
                       </Badge>
                       <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-gray-400 hover:text-[#F0B90B] hover:bg-[#F0B90B]/10"
-                          onClick={() => openEditPlan(plan)}
-                        >
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-[#F0B90B] hover:bg-[#F0B90B]/10" onClick={() => openEditPlan(plan)}>
                           <Edit className="h-3.5 w-3.5" />
                         </Button>
                       </div>
@@ -430,7 +645,7 @@ export function AdminPage() {
         <TabsContent value="unilevel">
           <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
-              <CardTitle className="text-lg text-white">Unilevel Commission Configuration</CardTitle>
+              <CardTitle className="text-lg text-white">{t('unilevel_config')}</CardTitle>
             </CardHeader>
             <CardContent>
               {mlmLoading ? (
@@ -438,10 +653,10 @@ export function AdminPage() {
               ) : (
                 <div className="space-y-3">
                   <div className="hidden sm:grid grid-cols-4 gap-4 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <span>Level</span>
-                    <span>Percentage</span>
-                    <span>Active</span>
-                    <span>Action</span>
+                    <span>{t('level')}</span>
+                    <span>%</span>
+                    <span>{t('active')}</span>
+                    <span>{t('actions')}</span>
                   </div>
                   {unilevelConfigLocal.map((config, index) => (
                     <motion.div
@@ -455,7 +670,7 @@ export function AdminPage() {
                         <div className="h-8 w-8 rounded-lg bg-[#F0B90B]/10 flex items-center justify-center text-[#F0B90B] text-sm font-bold">
                           {config.level}
                         </div>
-                        <span className="text-sm text-white">Level {config.level}</span>
+                        <span className="text-sm text-white">{t('level')} {config.level}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Input
@@ -494,7 +709,7 @@ export function AdminPage() {
                         ) : (
                           <Save className="h-3.5 w-3.5" />
                         )}
-                        Save
+                        {t('admin_save')}
                       </Button>
                     </motion.div>
                   ))}
@@ -508,7 +723,7 @@ export function AdminPage() {
         <TabsContent value="binary">
           <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
-              <CardTitle className="text-lg text-white">Binary Commission Configuration</CardTitle>
+              <CardTitle className="text-lg text-white">{t('binary_config')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {mlmLoading ? (
@@ -517,44 +732,44 @@ export function AdminPage() {
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-gray-300">Commission Percentage (%)</Label>
+                      <Label className="text-gray-300">{t('commission_percentage')}</Label>
                       <Input
                         type="number"
                         value={binaryConfigLocal.percentage}
                         onChange={(e) => setBinaryConfigLocal({ ...binaryConfigLocal, percentage: Number(e.target.value) })}
                         className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                       />
-                      <p className="text-xs text-gray-500">Percentage of weaker leg volume paid as commission</p>
+                      <p className="text-xs text-gray-500">{t('binary_commission_desc')}</p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-gray-300">Daily Cap (USDT)</Label>
+                      <Label className="text-gray-300">{t('daily_cap')}</Label>
                       <Input
                         type="number"
                         value={binaryConfigLocal.dailyCap}
                         onChange={(e) => setBinaryConfigLocal({ ...binaryConfigLocal, dailyCap: Number(e.target.value) })}
                         className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                       />
-                      <p className="text-xs text-gray-500">Maximum binary commission per day</p>
+                      <p className="text-xs text-gray-500">{t('daily_cap_desc')}</p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-gray-300">Flush Out Threshold (%)</Label>
+                      <Label className="text-gray-300">{t('flush_threshold')}</Label>
                       <Input
                         type="number"
                         value={binaryConfigLocal.flushOutThreshold}
                         onChange={(e) => setBinaryConfigLocal({ ...binaryConfigLocal, flushOutThreshold: Number(e.target.value) })}
                         className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                       />
-                      <p className="text-xs text-gray-500">Volume remaining after flush (% of stronger leg)</p>
+                      <p className="text-xs text-gray-500">{t('flush_threshold_desc')}</p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-gray-300">Active</Label>
+                      <Label className="text-gray-300">{t('active')}</Label>
                       <div className="flex items-center gap-3 h-10">
                         <Switch
                           checked={binaryConfigLocal.isActive}
                           onCheckedChange={(checked) => setBinaryConfigLocal({ ...binaryConfigLocal, isActive: checked })}
                         />
                         <span className="text-sm text-gray-400">
-                          {binaryConfigLocal.isActive ? 'Enabled' : 'Disabled'}
+                          {binaryConfigLocal.isActive ? t('enabled') : t('disabled')}
                         </span>
                       </div>
                     </div>
@@ -564,9 +779,9 @@ export function AdminPage() {
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 text-[#F0B90B] mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-sm text-[#F0B90B] font-medium">Configuration Warning</p>
+                        <p className="text-sm text-[#F0B90B] font-medium">{t('configuration_warning')}</p>
                         <p className="text-xs text-gray-400 mt-1">
-                          Changes to binary configuration will affect all users immediately. Ensure values are tested thoroughly before saving.
+                          {t('configuration_warning_desc')}
                         </p>
                       </div>
                     </div>
@@ -585,7 +800,7 @@ export function AdminPage() {
                     ) : (
                       <Save className="h-4 w-4" />
                     )}
-                    Save Configuration
+                    {t('save_config')}
                   </Button>
                 </>
               )}
@@ -598,12 +813,12 @@ export function AdminPage() {
           <Card className="glass-card backdrop-blur-xl">
             <CardHeader>
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <CardTitle className="text-lg text-white">Users</CardTitle>
+                <CardTitle className="text-lg text-white">{t('users')}</CardTitle>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input
-                      placeholder="Search wallet or code..."
+                      placeholder={t('search_users')}
                       value={searchQuery}
                       onChange={(e) => { setSearchQuery(e.target.value); setUsersPage(1) }}
                       className="bg-gray-800/60 border-[#F0B90B]/20 text-white pl-9 h-9 w-48 sm:w-64 focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
@@ -618,18 +833,18 @@ export function AdminPage() {
               ) : (
                 <div className="space-y-3">
                   <div className="hidden sm:grid grid-cols-6 gap-4 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <span>Wallet</span>
-                    <span>Staked</span>
-                    <span>Earned</span>
-                    <span>Ref Code</span>
-                    <span>Status</span>
-                    <span>Joined</span>
+                    <span>{t('wallet')}</span>
+                    <span>{t('total_staked')}</span>
+                    <span>{t('total_earned')}</span>
+                    <span>{t('ref_code')}</span>
+                    <span>{t('status')}</span>
+                    <span>{t('joined')}</span>
                   </div>
                   {users.length === 0 ? (
                     <EmptyState
                       icon={Users}
-                      title="No Users Found"
-                      description="No users match the search criteria."
+                      title={t('no_users_found')}
+                      description={t('no_data')}
                     />
                   ) : (
                     users.map((user, index) => (
@@ -646,12 +861,8 @@ export function AdminPage() {
                         <span className="text-sm text-white">${user.totalStaked.toLocaleString()}</span>
                         <span className="text-sm text-[#F0B90B]">${user.totalEarned.toLocaleString()}</span>
                         <span className="text-sm text-gray-400">{user.referralCode}</span>
-                        <Badge variant="outline" className={`w-fit text-xs ${
-                          user.isActive
-                            ? 'border-[#F0B90B]/30 text-[#F0B90B]'
-                            : 'border-gray-600 text-gray-500'
-                        }`}>
-                          {user.isActive ? 'Active' : 'Inactive'}
+                        <Badge variant="outline" className={`w-fit text-xs ${user.isActive ? 'border-[#F0B90B]/30 text-[#F0B90B]' : 'border-gray-600 text-gray-500'}`}>
+                          {user.isActive ? t('active') : t('inactive')}
                         </Badge>
                         <span className="text-xs text-gray-500">{new Date(user.createdAt).toLocaleDateString()}</span>
                       </motion.div>
@@ -672,30 +883,30 @@ export function AdminPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
-                    <p className="text-sm text-gray-400">Total Users</p>
+                    <p className="text-sm text-gray-400">{t('total_users')}</p>
                     <p className="text-2xl font-bold text-[#F0B90B]">{stats?.totalUsers?.toLocaleString() ?? '0'}</p>
-                    <p className="text-xs text-gray-500 mt-1">{stats?.activeUsers ?? 0} active</p>
+                    <p className="text-xs text-gray-500 mt-1">{stats?.activeUsers ?? 0} {t('active').toLowerCase()}</p>
                   </CardContent>
                 </Card>
                 <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
-                    <p className="text-sm text-gray-400">Total Staked</p>
+                    <p className="text-sm text-gray-400">{t('total_staked_admin')}</p>
                     <p className="text-2xl font-bold text-[#F0B90B]">${stats?.totalStaked?.toLocaleString() ?? '0'}</p>
-                    <p className="text-xs text-gray-500 mt-1">{stats?.activeStakes ?? 0} active stakes</p>
+                    <p className="text-xs text-gray-500 mt-1">{stats?.activeStakes ?? 0} {t('active_stakes').toLowerCase()}</p>
                   </CardContent>
                 </Card>
                 <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
-                    <p className="text-sm text-gray-400">Total Commissions</p>
+                    <p className="text-sm text-gray-400">{t('total_commissions')}</p>
                     <p className="text-2xl font-bold text-[#F0B90B]">${stats?.totalCommissions?.toLocaleString() ?? '0'}</p>
-                    <p className="text-xs text-[#F8D12F] mt-1">${stats?.pendingCommissions?.toLocaleString() ?? '0'} pending</p>
+                    <p className="text-xs text-[#F8D12F] mt-1">${stats?.pendingCommissions?.toLocaleString() ?? '0'} {t('pending').toLowerCase()}</p>
                   </CardContent>
                 </Card>
                 <Card className="glass-card backdrop-blur-xl">
                   <CardContent className="p-4">
-                    <p className="text-sm text-gray-400">Total Transactions</p>
+                    <p className="text-sm text-gray-400">{t('total_transactions')}</p>
                     <p className="text-2xl font-bold text-[#F0B90B]">{stats?.totalTransactions?.toLocaleString() ?? '0'}</p>
-                    <p className="text-xs text-gray-500 mt-1">${stats?.totalWithdrawn?.toLocaleString() ?? '0'} withdrawn</p>
+                    <p className="text-xs text-gray-500 mt-1">${stats?.totalWithdrawn?.toLocaleString() ?? '0'} {t('withdrawn').toLowerCase()}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -703,7 +914,7 @@ export function AdminPage() {
 
             <Card className="glass-card backdrop-blur-xl">
               <CardHeader>
-                <CardTitle className="text-lg text-white">Deposits vs Withdrawals</CardTitle>
+                <CardTitle className="text-lg text-white">{t('deposits_vs_withdrawals')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-72">
@@ -730,20 +941,425 @@ export function AdminPage() {
             </Card>
           </div>
         </TabsContent>
+
+        {/* ===== NEW: Achievements Tab ===== */}
+        <TabsContent value="achievements">
+          <Card className="glass-card backdrop-blur-xl">
+            <CardHeader>
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <CardTitle className="text-lg text-white flex items-center gap-2">
+                  <Award className="h-5 w-5 text-[#F0B90B]" />
+                  {t('admin_achievements_tab')}
+                </CardTitle>
+                <Button onClick={openNewAchievement} className="btn-bnb gap-2 rounded-xl">
+                  <Plus className="h-4 w-4" />
+                  {t('create')}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {achievementsLoading ? (
+                <LoadingSkeleton variant="table" count={4} />
+              ) : (
+                <div className="space-y-3">
+                  <div className="hidden sm:grid grid-cols-7 gap-4 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <span>{t('key')}</span>
+                    <span>{t('icon')}</span>
+                    <span>{t('tier')}</span>
+                    <span>{t('xp_reward')}</span>
+                    <span>{t('condition')}</span>
+                    <span>{t('status')}</span>
+                    <span>{t('actions')}</span>
+                  </div>
+                  {(achievementsData || []).map((ach, index) => (
+                    <motion.div
+                      key={ach.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="grid grid-cols-2 sm:grid-cols-7 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/40 hover:bg-[#F0B90B]/5 border border-transparent hover:border-[#F0B90B]/10 transition-colors items-center"
+                    >
+                      <span className="text-sm font-mono text-[#F0B90B] truncate">{ach.key}</span>
+                      <div className="flex items-center gap-2">
+                        <Trophy className="h-4 w-4 text-[#F0B90B]" />
+                        <span className="text-sm text-gray-300 truncate">{ach.icon}</span>
+                      </div>
+                      <Badge variant="outline" className={`w-fit text-xs capitalize ${
+                        ach.tier === 'gold' ? 'border-[#F0B90B]/30 text-[#F0B90B]' :
+                        ach.tier === 'diamond' ? 'border-cyan-400/30 text-cyan-400' :
+                        ach.tier === 'silver' ? 'border-gray-400/30 text-gray-300' :
+                        'border-amber-700/30 text-amber-600'
+                      }`}>
+                        {ach.tier}
+                      </Badge>
+                      <span className="text-sm text-[#F0B90B] font-medium">+{ach.xpReward} XP</span>
+                      <span className="text-xs text-gray-500">{ach.condition?.type || '-'}</span>
+                      <Switch
+                        checked={ach.isActive}
+                        onCheckedChange={(checked) => toggleAchievementMutation.mutate({ id: ach.id, isActive: checked })}
+                        disabled={toggleAchievementMutation.isPending}
+                      />
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-[#F0B90B] hover:bg-[#F0B90B]/10" onClick={() => openEditAchievement(ach)}>
+                        <Edit className="h-3.5 w-3.5" />
+                      </Button>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Achievement Dialog */}
+          <Dialog open={achieveDialogOpen} onOpenChange={setAchieveDialogOpen}>
+            <DialogContent className="glass-strong border-[#F0B90B]/15 text-white sm:max-w-lg rounded-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+              <DialogHeader>
+                <DialogTitle className="text-xl text-gradient-bnb">
+                  {editAchievement ? t('edit') + ' ' + t('admin_achievements_tab') : t('create') + ' ' + t('admin_achievements_tab')}
+                </DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  {t('achievements_description')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 mt-2">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">{t('key')}</Label>
+                    <Input value={achieveForm.key} onChange={(e) => setAchieveForm({ ...achieveForm, key: e.target.value })} placeholder="first_stake" className="bg-gray-800/60 border-[#F0B90B]/20 text-white font-mono" disabled={!!editAchievement} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">{t('icon')}</Label>
+                    <Input value={achieveForm.icon} onChange={(e) => setAchieveForm({ ...achieveForm, icon: e.target.value })} placeholder="Trophy" className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇺🇸</span> EN</Label>
+                    <Input value={achieveForm.nameEn} onChange={(e) => setAchieveForm({ ...achieveForm, nameEn: e.target.value })} placeholder="Name (EN)" className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇪🇸</span> ES</Label>
+                    <Input value={achieveForm.nameEs} onChange={(e) => setAchieveForm({ ...achieveForm, nameEs: e.target.value })} placeholder="Nombre (ES)" className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇧🇷</span> PT</Label>
+                    <Input value={achieveForm.namePt} onChange={(e) => setAchieveForm({ ...achieveForm, namePt: e.target.value })} placeholder="Nome (PT)" className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇺🇸</span> {t('description')}</Label>
+                    <Input value={achieveForm.descEn} onChange={(e) => setAchieveForm({ ...achieveForm, descEn: e.target.value })} placeholder="Description (EN)" className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇪🇸</span> {t('description')}</Label>
+                    <Input value={achieveForm.descEs} onChange={(e) => setAchieveForm({ ...achieveForm, descEs: e.target.value })} placeholder="Descripción (ES)" className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇧🇷</span> {t('description')}</Label>
+                    <Input value={achieveForm.descPt} onChange={(e) => setAchieveForm({ ...achieveForm, descPt: e.target.value })} placeholder="Descrição (PT)" className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">{t('tier')}</Label>
+                    <Select value={achieveForm.tier} onValueChange={(v) => setAchieveForm({ ...achieveForm, tier: v })}>
+                      <SelectTrigger className="bg-gray-800/60 border-[#F0B90B]/20 text-white"><SelectValue /></SelectTrigger>
+                      <SelectContent className="bg-[#0f0f1a] border-[#F0B90B]/15">
+                        <SelectItem value="bronze" className="text-white">Bronze</SelectItem>
+                        <SelectItem value="silver" className="text-white">Silver</SelectItem>
+                        <SelectItem value="gold" className="text-white">Gold</SelectItem>
+                        <SelectItem value="diamond" className="text-white">Diamond</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">{t('xp_reward')}</Label>
+                    <Input type="number" value={achieveForm.xpReward} onChange={(e) => setAchieveForm({ ...achieveForm, xpReward: Number(e.target.value) })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">{t('condition_type')}</Label>
+                    <Select value={achieveForm.conditionType} onValueChange={(v) => setAchieveForm({ ...achieveForm, conditionType: v })}>
+                      <SelectTrigger className="bg-gray-800/60 border-[#F0B90B]/20 text-white"><SelectValue /></SelectTrigger>
+                      <SelectContent className="bg-[#0f0f1a] border-[#F0B90B]/15">
+                        <SelectItem value="stake_count" className="text-white">Stake Count</SelectItem>
+                        <SelectItem value="total_staked" className="text-white">Total Staked</SelectItem>
+                        <SelectItem value="referral_count" className="text-white">Referral Count</SelectItem>
+                        <SelectItem value="commission_earned" className="text-white">Commission Earned</SelectItem>
+                        <SelectItem value="days_active" className="text-white">Days Active</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">{t('condition_value')}</Label>
+                    <Input value={achieveForm.conditionValue} onChange={(e) => setAchieveForm({ ...achieveForm, conditionValue: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Label className="text-gray-300">{t('active')}</Label>
+                  <Switch checked={achieveForm.isActive} onCheckedChange={(c) => setAchieveForm({ ...achieveForm, isActive: c })} />
+                </div>
+                <Button className="w-full btn-bnb rounded-xl h-11" disabled={!achieveForm.nameEn}>
+                  {editAchievement ? t('edit') : t('create')}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+
+        {/* ===== NEW: Translations Tab ===== */}
+        <TabsContent value="translations">
+          <Card className="glass-card backdrop-blur-xl">
+            <CardHeader>
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <CardTitle className="text-lg text-white flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-[#F0B90B]" />
+                  {t('admin_translations_tab')}
+                </CardTitle>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Select value={transCategory} onValueChange={setTransCategory}>
+                    <SelectTrigger className="w-[160px] bg-gray-800/60 border-[#F0B90B]/20 text-white text-sm h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0f0f1a] border-[#F0B90B]/15">
+                      {TRANSLATION_CATEGORIES.map(cat => (
+                        <SelectItem key={cat} value={cat} className="text-white capitalize">{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-500" />
+                    <Input
+                      placeholder={t('search') + ' ' + t('key')}
+                      value={transSearch}
+                      onChange={(e) => setTransSearch(e.target.value)}
+                      className="bg-gray-800/60 border-[#F0B90B]/20 text-white pl-9 h-9 w-48 focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {translationsLoading ? (
+                <LoadingSkeleton variant="table" count={8} />
+              ) : filteredTranslations.length === 0 ? (
+                <EmptyState
+                  icon={Globe}
+                  title={t('no_data')}
+                  description={t('no_translations_found')}
+                />
+              ) : (
+                <div className="space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar">
+                  <div className="hidden sm:grid grid-cols-5 gap-4 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-[#0f0f1a] z-10">
+                    <span>{t('key')}</span>
+                    <span>🇺🇸 EN</span>
+                    <span>🇪🇸 ES</span>
+                    <span>🇧🇷 PT</span>
+                    <span>{t('actions')}</span>
+                  </div>
+                  {filteredTranslations.map((row: { key: string; en: string; es: string; pt: string }) => (
+                    <div key={row.key} className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-4 p-3 rounded-xl bg-gray-800/40 hover:bg-[#F0B90B]/5 border border-transparent hover:border-[#F0B90B]/10 transition-colors items-center">
+                      <span className="text-sm font-mono text-[#F0B90B] truncate">{row.key}</span>
+                      <span className="text-xs text-gray-300 truncate">{row.en || <span className="text-gray-600 italic">empty</span>}</span>
+                      <span className="text-xs text-gray-300 truncate">{row.es || <span className="text-gray-600 italic">empty</span>}</span>
+                      <span className="text-xs text-gray-300 truncate">{row.pt || <span className="text-gray-600 italic">empty</span>}</span>
+                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-[#F0B90B] hover:bg-[#F0B90B]/10 gap-1" onClick={() => openEditTranslation(row.key, row.en, row.es, row.pt)}>
+                        <Edit className="h-3.5 w-3.5" />
+                        {t('edit')}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Translation Edit Dialog */}
+          <Dialog open={transDialogOpen} onOpenChange={setTransDialogOpen}>
+            <DialogContent className="glass-strong border-[#F0B90B]/15 text-white sm:max-w-md rounded-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-xl text-gradient-bnb">{t('edit')} {t('translation')}</DialogTitle>
+                <DialogDescription className="text-gray-400 font-mono text-xs">
+                  {editTransKey}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 mt-2">
+                <Tabs value={editTransLocale} onValueChange={(v) => setEditTransLocale(v as 'en' | 'es' | 'pt')}>
+                  <TabsList className="bg-gray-800/60 border border-[#F0B90B]/10">
+                    <TabsTrigger value="en" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] text-xs">🇺🇸 EN</TabsTrigger>
+                    <TabsTrigger value="es" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] text-xs">🇪🇸 ES</TabsTrigger>
+                    <TabsTrigger value="pt" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] text-xs">🇧🇷 PT</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">
+                    {editTransLocale === 'en' ? '🇺🇸 English' : editTransLocale === 'es' ? '🇪🇸 Español' : '🇧🇷 Português'}
+                  </Label>
+                  <Input
+                    value={editTransValues[editTransLocale]}
+                    onChange={(e) => setEditTransValues({ ...editTransValues, [editTransLocale]: e.target.value })}
+                    className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
+                  />
+                </div>
+                <Button
+                  onClick={() => {
+                    // Save all three locales
+                    ['en', 'es', 'pt'].forEach(locale => {
+                      saveTranslationMutation.mutate({
+                        key: editTransKey,
+                        locale: locale as 'en' | 'es' | 'pt',
+                        value: editTransValues[locale as 'en' | 'es' | 'pt'],
+                        adminWallet: currentWallet!,
+                      })
+                    })
+                  }}
+                  disabled={saveTranslationMutation.isPending}
+                  className="w-full btn-bnb rounded-xl h-11"
+                >
+                  {saveTranslationMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  {t('admin_save')} ({t('all_locales')})
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+
+        {/* ===== NEW: Notifications Tab ===== */}
+        <TabsContent value="notifications">
+          <Card className="glass-card backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="text-lg text-white flex items-center gap-2">
+                <Bell className="h-5 w-5 text-[#F0B90B]" />
+                {t('admin_notifications_tab')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {notifLoading ? (
+                <LoadingSkeleton variant="table" count={5} />
+              ) : (
+                <div className="space-y-3">
+                  {(notifTemplates || []).map((notif) => (
+                    <motion.div
+                      key={notif.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="glass-card rounded-xl p-4 space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-lg bg-[#F0B90B]/10 flex items-center justify-center">
+                            <Bell className="h-4 w-4 text-[#F0B90B]" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white capitalize">{notif.type.replace('_', ' ')}</p>
+                            <p className="text-xs text-gray-500">{notif.titleEn}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={notif.isActive}
+                            onCheckedChange={() => {
+                              toast.success(t('success'))
+                            }}
+                          />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-[#F0B90B] hover:bg-[#F0B90B]/10" onClick={() => openEditNotif(notif)}>
+                            <Edit className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                      {/* Preview */}
+                      <div className="p-3 rounded-lg bg-[#0a0a0f]/60 border border-white/5">
+                        <p className="text-xs text-gray-500 mb-1">{t('preview')}</p>
+                        <div className="flex items-start gap-2">
+                          <MessageSquare className="h-4 w-4 text-[#F0B90B] shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm text-white font-medium">{notif.titleEn}</p>
+                            <p className="text-xs text-gray-400">{notif.messageEn}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Notification Edit Dialog */}
+          <Dialog open={notifDialogOpen} onOpenChange={setNotifDialogOpen}>
+            <DialogContent className="glass-strong border-[#F0B90B]/15 text-white sm:max-w-lg rounded-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+              <DialogHeader>
+                <DialogTitle className="text-xl text-gradient-bnb">{t('edit')} {t('notification')}</DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  {t('notif_edit_desc')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 mt-2">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">{t('type')}</Label>
+                  <Input value={notifForm.type} onChange={(e) => setNotifForm({ ...notifForm, type: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                </div>
+                {/* Title per locale */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇺🇸</span> {t('title')}</Label>
+                    <Input value={notifForm.titleEn} onChange={(e) => setNotifForm({ ...notifForm, titleEn: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇪🇸</span> {t('title')}</Label>
+                    <Input value={notifForm.titleEs} onChange={(e) => setNotifForm({ ...notifForm, titleEs: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇧🇷</span> {t('title')}</Label>
+                    <Input value={notifForm.titlePt} onChange={(e) => setNotifForm({ ...notifForm, titlePt: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                </div>
+                {/* Message per locale */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇺🇸</span> {t('message')}</Label>
+                    <Input value={notifForm.messageEn} onChange={(e) => setNotifForm({ ...notifForm, messageEn: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇪🇸</span> {t('message')}</Label>
+                    <Input value={notifForm.messageEs} onChange={(e) => setNotifForm({ ...notifForm, messageEs: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-1"><span className="text-xs">🇧🇷</span> {t('message')}</Label>
+                    <Input value={notifForm.messagePt} onChange={(e) => setNotifForm({ ...notifForm, messagePt: e.target.value })} className="bg-gray-800/60 border-[#F0B90B]/20 text-white" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Label className="text-gray-300">{t('active')}</Label>
+                  <Switch checked={notifForm.isActive} onCheckedChange={(c) => setNotifForm({ ...notifForm, isActive: c })} />
+                </div>
+                <Button className="w-full btn-bnb rounded-xl h-11" disabled={!notifForm.type}>
+                  {saveTranslationMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                  {t('admin_save')}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
       </Tabs>
 
       {/* Plan Dialog */}
       <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
         <DialogContent className="glass-strong border-[#F0B90B]/15 text-white sm:max-w-md backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl text-gradient-bnb">{editPlan ? 'Edit Plan' : 'Add New Plan'}</DialogTitle>
+            <DialogTitle className="text-xl text-gradient-bnb">{editPlan ? t('edit_plan') : t('add_plan')}</DialogTitle>
             <DialogDescription className="text-gray-400">
-              {editPlan ? 'Modify staking plan details' : 'Create a new staking plan for users'}
+              {editPlan ? t('edit_plan_desc') : t('add_plan_desc')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-2">
             <div className="space-y-2">
-              <Label className="text-gray-300">Plan Name</Label>
+              <Label className="text-gray-300">{t('plan_name')}</Label>
               <Input
                 value={planForm.name}
                 onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
@@ -752,17 +1368,17 @@ export function AdminPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-300">Description</Label>
+              <Label className="text-gray-300">{t('description')}</Label>
               <Input
                 value={planForm.description}
                 onChange={(e) => setPlanForm({ ...planForm, description: e.target.value })}
-                placeholder="Plan description"
+                placeholder={t('description')}
                 className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="text-gray-300">Duration (days)</Label>
+                <Label className="text-gray-300">{t('duration_days')}</Label>
                 <Input
                   type="number"
                   value={planForm.durationDays}
@@ -771,7 +1387,7 @@ export function AdminPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-300">APY (%)</Label>
+                <Label className="text-gray-300">{t('apy_percent')}</Label>
                 <Input
                   type="number"
                   value={planForm.apy}
@@ -782,7 +1398,7 @@ export function AdminPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="text-gray-300">Min Amount</Label>
+                <Label className="text-gray-300">{t('min_amount')}</Label>
                 <Input
                   type="number"
                   value={planForm.minAmount}
@@ -791,7 +1407,7 @@ export function AdminPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-300">Max Amount</Label>
+                <Label className="text-gray-300">{t('max_amount')}</Label>
                 <Input
                   type="number"
                   value={planForm.maxAmount}
@@ -802,7 +1418,7 @@ export function AdminPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="text-gray-300">Early Penalty (%)</Label>
+                <Label className="text-gray-300">{t('penalty')}</Label>
                 <Input
                   type="number"
                   value={planForm.earlyWithdrawPenalty}
@@ -811,7 +1427,7 @@ export function AdminPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-300">Active</Label>
+                <Label className="text-gray-300">{t('active')}</Label>
                 <div className="h-9 flex items-center">
                   <Switch
                     checked={planForm.isActive}
@@ -828,10 +1444,10 @@ export function AdminPage() {
               {savePlanMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
-                editPlan ? 'Update Plan' : 'Create Plan'
+                editPlan ? t('update_plan') : t('create_plan')
               )}
             </Button>
           </div>
