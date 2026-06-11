@@ -161,7 +161,7 @@ function ScenarioCard({ scenario, returnAmount, apy, dailyReturn, durationDays }
           ${animatedReturn.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </motion.p>
         <p className="text-xs text-gray-500">
-          {t('daily_yield')}: <span className="text-gray-400 font-medium">${dailyReturn.toFixed(2)}</span>
+          {t('daily_rate')}: <span className="text-gray-400 font-medium">{apy > 0 ? (apy / 365).toFixed(2) : '0.00'}%</span>
         </p>
         <p className="text-[10px] text-gray-600">
           ({apy.toFixed(1)}% APY)
@@ -343,8 +343,8 @@ export function ReturnCalculator() {
                     <SelectItem key={plan.id} value={plan.id} className="text-white focus:bg-[#F0B90B]/10 focus:text-[#F8D12F]">
                       <div className="flex items-center gap-2">
                         <span>{plan.name}</span>
-                        <span className="text-[#F0B90B] text-xs font-medium">~${((plan.apy / 100) / 365 * 1000).toFixed(2)}/day</span>
-                        <span className="text-gray-500 text-xs">({plan.apy}% APY)</span>
+                        <span className="text-[#F0B90B] text-xs font-bold">{(plan.apy / 365).toFixed(2)}%/dia</span>
+                        <span className="text-gray-600 text-xs">({plan.apy}% APY)</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -396,8 +396,8 @@ export function ReturnCalculator() {
 
           {/* Daily & Monthly Returns */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <AnimatedStatItem label={t('daily_reward')} value={calculations[1].dailyReturn} icon="📅" isPercentage={false} />
-            <AnimatedStatItem label={t('monthly_reward')} value={calculations[1].monthlyReturn} icon="📆" isPercentage={false} />
+            <AnimatedStatItem label={t('daily_rate')} value={selectedPlan?.apy ? selectedPlan.apy / 365 : 0} icon="📅" isPercentage={true} />
+            <AnimatedStatItem label={t('estimated_daily')} value={calculations[1].dailyReturn} icon="📆" isPercentage={false} />
             <AnimatedStatItem label={t('total_return')} value={calculations[1].totalReturn} icon="💰" isPercentage={false} />
             <AnimatedStatItem label={t('roi')} value={((calculations[1].totalReturn / investmentAmount) * 100)} icon="📈" isPercentage={true} />
           </div>

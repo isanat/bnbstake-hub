@@ -317,8 +317,15 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={TrendingUp}
-              label={t('daily_earnings')}
-              value={`$${dailyEarnings.toFixed(2)}`}
+              label={t('daily_rate')}
+              value={(() => {
+                const activeStakes = stakingData?.stakes?.filter(s => s.status === 'active') || []
+                if (activeStakes.length === 0) return '0.00%'
+                const totalStakedAmt = activeStakes.reduce((sum, s) => sum + Number(s.amount), 0)
+                const dailyTotal = activeStakes.reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0)
+                const weightedDailyRate = (dailyTotal / totalStakedAmt) * 100
+                return `${weightedDailyRate.toFixed(2)}%`
+              })()}
               trend={dailyEarnings > 0 ? { value: 0, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"

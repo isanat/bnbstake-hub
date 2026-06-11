@@ -125,7 +125,7 @@ export const defaultTranslations: Record<string, string> = {
   stat_stakers_value: '1,200+',
   stat_rewards_value: '$850K+',
   stat_avg_apy: 'Avg APY',
-  stat_avg_daily_yield: 'Avg Daily Yield / $1K',
+  stat_avg_daily_yield: 'Avg Daily Rate',
   landing_nav_features: 'Features',
   landing_nav_how: 'How It Works',
   landing_nav_stats: 'Stats',
@@ -139,6 +139,8 @@ export const defaultTranslations: Record<string, string> = {
   total_staked: 'Total Staked',
   total_earned: 'Total Earned',
   daily_earnings: 'Daily Earnings',
+  daily_rate: 'Daily Rate',
+  per_day: 'per day',
   pending_rewards: 'Pending Rewards',
   active_stakes: 'Active Stakes',
   network_size: 'Network Size',
@@ -158,7 +160,7 @@ export const defaultTranslations: Record<string, string> = {
   connect_wallet_desc: 'Connect your BNB Chain wallet to start staking and earning rewards',
   non_custodial: 'Non-Custodial',
   up_to_apy: 'Up to 25% APY',
-  up_to_daily: 'Up to $0.68/day per $1K',
+  up_to_daily: 'Up to 0.07%/day',
   bnb_chain_label: 'BNB Chain',
 
   // ========================
@@ -190,6 +192,8 @@ export const defaultTranslations: Record<string, string> = {
   annual_percentage_yield: 'Annual Percentage Yield',
   daily_yield: 'Daily Yield',
   per_1000_staked: 'per $1,000 staked',
+  daily_rate: 'Daily Rate',
+  per_day: 'per day',
   stake_now: 'Stake Now',
 
   // ========================
