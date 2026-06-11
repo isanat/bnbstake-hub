@@ -258,6 +258,11 @@ export function DashboardPage() {
     commissionType: c.type,
   })) || []
 
+  // Calculate daily earnings from active stakes
+  const dailyEarnings = stakingData?.stakes
+    ?.filter(s => s.status === 'active')
+    .reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0) ?? 0
+
   return (
     <motion.div
       className="space-y-6"
@@ -305,7 +310,6 @@ export function DashboardPage() {
               icon={Wallet}
               label={t('total_staked')}
               value={`$${(stakingSummary?.totalStaked ?? user?.totalStaked ?? 0).toLocaleString()}`}
-              trend={user?.totalStaked ? { value: 12.5, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"
             />
@@ -313,9 +317,9 @@ export function DashboardPage() {
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={TrendingUp}
-              label={t('total_earned')}
-              value={`$${(user?.totalEarned ?? 0).toLocaleString()}`}
-              trend={user?.totalEarned ? { value: 8.3, positive: true } : undefined}
+              label={t('daily_earnings')}
+              value={`$${dailyEarnings.toFixed(2)}`}
+              trend={dailyEarnings > 0 ? { value: 0, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"
             />
@@ -325,7 +329,6 @@ export function DashboardPage() {
               icon={Clock}
               label={t('pending_rewards')}
               value={`$${(stakingSummary?.totalPendingRewards ?? 0).toFixed(2)}`}
-              trend={stakingSummary?.totalPendingRewards ? { value: 2.1, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"
             />
@@ -341,10 +344,9 @@ export function DashboardPage() {
           </motion.div>
           <motion.div variants={itemVariants}>
             <StatsCard
-              icon={Users}
-              label={t('network_size')}
-              value={`${userStats?.networkSize ?? 0}`}
-              trend={userStats?.networkSize ? { value: 15.2, positive: true } : undefined}
+              icon={TrendingUp}
+              label={t('total_earned')}
+              value={`$${(user?.totalEarned ?? 0).toLocaleString()}`}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"
             />
@@ -354,7 +356,6 @@ export function DashboardPage() {
               icon={Gift}
               label={t('commission_balance')}
               value={`$${(commissionSummary?.pending?.amount ?? 0).toLocaleString()}`}
-              trend={commissionSummary?.pending?.amount ? { value: 5.7, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"
             />

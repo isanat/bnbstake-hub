@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useRef, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 const navItemConfigs: { page: PageType; labelKey: string; icon: React.ComponentType<{ className?: string }>; adminOnly?: boolean }[] = [
   { page: 'dashboard', labelKey: 'nav_dashboard', icon: LayoutDashboard },
@@ -42,6 +43,13 @@ const mobileNavItemConfigs: { page: PageType; labelKey: string; icon: React.Comp
   { page: 'admin', labelKey: 'nav_admin', icon: Shield, adminOnly: true },
 ]
 
+// ===== Helper to format large numbers =====
+function formatLargeNumber(num: number): string {
+  if (num >= 1000000) return `$${(num / 1000000).toFixed(1)}M+`
+  if (num >= 1000) return `${(num / 1000).toFixed(num % 1000 === 0 ? 0 : 1)}K+`
+  return num.toLocaleString()
+}
+
 // ===== LANDING PAGE =====
 function LandingPage() {
   const { isConnected, setPage } = useAppStore()
@@ -50,6 +58,13 @@ function LandingPage() {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroY = useTransform(scrollYProgress, [0, 1], [0, -100])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+
+  // Fetch real platform stats
+  const { data: stats } = useQuery({
+    queryKey: ['platform-stats'],
+    queryFn: () => fetch('/api/stats').then(r => r.json()),
+    staleTime: 60000, // Cache for 1 minute
+  })
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
@@ -178,10 +193,10 @@ function LandingPage() {
             className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto"
           >
             {[
-              { label: t('stat_tvl'), value: '$12.5M+', icon: Lock },
-              { label: t('stat_stakers'), value: '8,420+', icon: Users },
-              { label: t('stat_rewards'), value: '$3.2M+', icon: TrendingUp },
-              { label: t('stat_network'), value: '24K+', icon: Globe },
+              { label: t('stat_tvl'), value: stats ? formatLargeNumber(stats.totalTVL) : '...', icon: Lock },
+              { label: t('stat_stakers'), value: stats ? formatLargeNumber(stats.totalStakers) : '...', icon: Users },
+              { label: t('stat_rewards'), value: stats ? formatLargeNumber(stats.totalRewardsDistributed) : '...', icon: TrendingUp },
+              { label: t('stat_network'), value: stats ? formatLargeNumber(stats.totalNetworkSize) : '...', icon: Globe },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -398,10 +413,10 @@ function LandingPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { label: t('stat_tvl'), value: '$12,547,832', change: '+12.5%' },
-                { label: t('stat_stakers'), value: '8,421', change: '+8.3%' },
-                { label: t('stat_rewards'), value: '$3,241,567', change: '+15.2%' },
-                { label: t('stat_avg_apy'), value: '18.7%', change: '+2.1%' },
+                { label: t('stat_tvl'), value: stats ? `$${stats.totalTVL.toLocaleString()}` : '...', change: stats?.trends?.staked ? `${stats.trends.staked > 0 ? '+' : ''}${stats.trends.staked.toFixed(1)}%` : '' },
+                { label: t('stat_stakers'), value: stats ? stats.totalStakers.toLocaleString() : '...', change: stats?.trends?.users ? `${stats.trends.users > 0 ? '+' : ''}${stats.trends.users.toFixed(1)}%` : '' },
+                { label: t('stat_rewards'), value: stats ? `$${stats.totalRewardsDistributed.toLocaleString()}` : '...', change: stats?.trends?.rewards ? `${stats.trends.rewards > 0 ? '+' : ''}${stats.trends.rewards.toFixed(1)}%` : '' },
+                { label: t('stat_avg_apy'), value: stats ? `${stats.averageAPY}%` : '...', change: stats?.averageAPY ? `${stats.averageAPY}% APY` : '' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -712,8 +727,8 @@ function AppLayout() {
                 <ExternalLink className="h-4 w-4" />
                 <span>{t('bnb_chain')}</span>
               </div>
-              <p className="text-xs text-gray-600">{t('block_number')}: #38,521,847</p>
-              <p className="text-xs text-gray-600">{t('gas_price')}: 3 Gwei</p>
+              <p className="text-xs text-gray-600">{t('bnb_chain')}</p>
+              <p className="text-xs text-emerald-500 flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />{t('network_active')}</p>
             </div>
           </div>
         </aside>

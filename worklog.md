@@ -1,32 +1,28 @@
-# Worklog
-
 ---
 Task ID: 1
-Agent: Main
-Task: Set up GitHub repo, Vercel deployment, Neon database, and fix i18n
+Agent: Main Agent
+Task: Fix admin data not reflecting dynamically on user dashboard and landing page
 
 Work Log:
-- Created GitHub repo: https://github.com/isanat/bnbstake-hub
-- Pushed all project files to main branch
-- Created Vercel project: prj_MB0HfsgQOYAT9x0YGg5X28A6ok5D
-- Created Neon PostgreSQL branch "bnbstake-hub" on project lingering-cake-91686638
-- Created endpoint: ep-dawn-cloud-ai27xf2d-pooler.c-4.us-east-1.aws.neon.tech
-- Created role: bnbstake with password npg_jNY8Hka6iJGc
-- Created database: bnbstake
-- Updated Prisma schema to use PostgreSQL with relationMode="prisma"
-- Set DATABASE_URL and DIRECT_URL in Vercel env vars
-- Pushed Prisma schema to Neon (db:push successful)
-- Seeded database with admin user, demo users, plans, configs, achievements, translations
-- Fixed SSO protection on Vercel (disabled to allow public access)
-- Verified Vercel deployment working
-- Tested with Agent Browser - Landing page, Dashboard, Staking, Achievements, Admin all working
-- i18n working: EN, ES, PT-BR language switching verified
-- Added missing i18n keys for LiveFeed and Toast components
-- Added livefeed translations to Neon database (EN, ES, PT)
+- Investigated full codebase - identified all hardcoded/mock data locations
+- Created `/api/stats` endpoint for platform-wide statistics (TVL, stakers, rewards, APY, plans)
+- Fixed LandingPage to fetch stats from `/api/stats` instead of hardcoded values ($12.5M+, 8,420+, etc.)
+- Fixed DashboardPage - replaced hardcoded trend percentages, added "Daily Earnings" card
+- Fixed StakingPage - added daily earnings display prominently on plan cards (~$X.XX/day per $1,000 staked)
+- Fixed AdminPage - added query invalidation for `['staking']`, `['plans']`, `['platform-stats']` when admin saves plans/config
+- Fixed AdminPage - replaced mockDepositData chart with real data from admin stats API
+- Fixed sidebar - removed hardcoded blockchain info (block number, gas price)
+- Added `daily_earnings` translation key to defaultTranslations.ts
+- Made `/api/stats` resilient to DB connection issues with fallback data
+- Tested API - confirmed it returns real data from Neon PostgreSQL: TVL=$8,000, 6 stakers, 18.3% avg APY, 3 plans
+- Tested page rendering via Agent Browser - page loads, calculator works with DB-fetched plans
+- Neon database is intermittently reachable from sandbox (causes stats to show "..." when DB is unreachable)
 
 Stage Summary:
-- GitHub repo: https://github.com/isanat/bnbstake-hub
-- Vercel deployment: auto-deploys from main branch
-- Neon database: PostgreSQL on aws-us-east-1
-- All features from previous conversation are intact and working
-- i18n fully functional with 3 languages
+- Core fix: Admin plan/config mutations now invalidate user-facing query caches (staking, plans, platform-stats)
+- Landing page stats now fetched dynamically from /api/stats instead of hardcoded
+- Dashboard now shows "Daily Earnings" prominently instead of just total earned
+- Staking plan cards now show "~$X.XX/day per $1,000 staked" below the APY
+- Admin reports chart uses real data instead of mock monthly deposits
+- All lint checks pass
+- Dev server intermittent connectivity issue (Neon DB from sandbox) - works when DB is reachable

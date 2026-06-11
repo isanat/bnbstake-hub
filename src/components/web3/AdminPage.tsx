@@ -334,6 +334,10 @@ export function AdminPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-plans', currentWallet] })
       queryClient.invalidateQueries({ queryKey: ['admin', currentWallet] })
+      // CRITICAL: Invalidate user-facing queries so changes reflect on Dashboard/Staking
+      queryClient.invalidateQueries({ queryKey: ['staking'] })
+      queryClient.invalidateQueries({ queryKey: ['plans'] })
+      queryClient.invalidateQueries({ queryKey: ['platform-stats'] })
       toast.success(editPlan ? 'Plan updated successfully!' : 'Plan created successfully!')
       setPlanDialogOpen(false)
       setEditPlan(null)
@@ -356,6 +360,9 @@ export function AdminPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-mlm-config', currentWallet] })
+      // Also invalidate user-facing data
+      queryClient.invalidateQueries({ queryKey: ['commissions'] })
+      queryClient.invalidateQueries({ queryKey: ['platform-stats'] })
       toast.success('Binary configuration saved!')
     },
     onError: (err: Error) => {
@@ -376,6 +383,9 @@ export function AdminPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-mlm-config', currentWallet] })
+      // Also invalidate user-facing data
+      queryClient.invalidateQueries({ queryKey: ['commissions'] })
+      queryClient.invalidateQueries({ queryKey: ['platform-stats'] })
       toast.success('Unilevel level updated!')
     },
     onError: (err: Error) => {
@@ -528,13 +538,12 @@ export function AdminPage() {
   const plans = plansData || []
   const users = usersData?.users || []
 
-  const mockDepositData = [
-    { month: 'Jan', deposits: 45000, withdrawals: 12000 },
-    { month: 'Feb', deposits: 52000, withdrawals: 15000 },
-    { month: 'Mar', deposits: 38000, withdrawals: 8000 },
-    { month: 'Apr', deposits: 65000, withdrawals: 20000 },
-    { month: 'May', deposits: 48000, withdrawals: 18000 },
-    { month: 'Jun', deposits: 72000, withdrawals: 25000 },
+  // Generate chart data from real stats
+  const depositChartData = [
+    { month: t('total_staked_admin'), value: stats?.totalStaked ?? 0 },
+    { month: t('total_earned'), value: stats?.totalEarned ?? 0 },
+    { month: t('total_commissions'), value: stats?.totalCommissions ?? 0 },
+    { month: t('withdrawn'), value: stats?.totalWithdrawn ?? 0 },
   ]
 
   return (
@@ -919,7 +928,7 @@ export function AdminPage() {
               <CardContent>
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={mockDepositData}>
+                    <BarChart data={depositChartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                       <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
                       <YAxis stroke="#6b7280" fontSize={12} />
@@ -932,8 +941,7 @@ export function AdminPage() {
                           backdropFilter: 'blur(20px)',
                         }}
                       />
-                      <Bar dataKey="deposits" fill="#F0B90B" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="withdrawals" fill="#F8D12F" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="value" fill="#F0B90B" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

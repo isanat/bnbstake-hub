@@ -137,6 +137,7 @@ export const defaultTranslations: Record<string, string> = {
   description: 'Overview of your staking portfolio',
   total_staked: 'Total Staked',
   total_earned: 'Total Earned',
+  daily_earnings: 'Daily Earnings',
   pending_rewards: 'Pending Rewards',
   active_stakes: 'Active Stakes',
   network_size: 'Network Size',

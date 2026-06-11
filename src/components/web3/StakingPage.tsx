@@ -200,6 +200,11 @@ export function StakingPage() {
   const totalStaked = summary?.totalStaked ?? 0
   const totalPendingRewards = summary?.totalPendingRewards ?? 0
 
+  // Calculate daily earnings from all active stakes
+  const dailyEarnings = stakes
+    .filter(s => s.status === 'active')
+    .reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0)
+
   const selectedPlanData = plans.find(p => p.id === selectedPlan)
 
   const handleApprove = () => {
@@ -259,7 +264,7 @@ export function StakingPage() {
             <StatsCard icon={Coins} label={t('total_staked')} value={`$${totalStaked.toLocaleString()}`} theme="bnb" />
           </motion.div>
           <motion.div variants={itemVariants}>
-            <StatsCard icon={TrendingUp} label={t('total_rewards')} value={`$${(stakes.reduce((sum, s) => sum + Number(s.pendingRewards || 0), 0) + totalStaked * 0.01).toFixed(2)}`} trend={{ value: 8.5, positive: true }} theme="bnb" />
+            <StatsCard icon={TrendingUp} label={t('daily_earnings')} value={`$${dailyEarnings.toFixed(2)}`} trend={dailyEarnings > 0 ? { value: 0, positive: true } : undefined} theme="bnb" />
           </motion.div>
           <motion.div variants={itemVariants}>
             <StatsCard icon={Clock} label={t('pending_rewards_label')} value={`$${totalPendingRewards.toFixed(2)}`} theme="bnb" />
@@ -334,6 +339,13 @@ export function StakingPage() {
                             <p className="text-xs text-gray-500 mt-2 uppercase tracking-wider font-medium">
                               {t('annual_percentage_yield')}
                             </p>
+                            {/* Daily earnings per $1000 */}
+                            <div className="mt-2 pt-2 border-t border-[#F0B90B]/10">
+                              <p className="text-xs text-[#F8D12F] font-semibold">
+                                ~${((plan.apy / 100) / 365 * 1000).toFixed(2)}/day
+                              </p>
+                              <p className="text-[10px] text-gray-600">per $1,000 staked</p>
+                            </div>
                           </div>
                         </div>
 
