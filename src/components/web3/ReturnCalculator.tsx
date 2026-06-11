@@ -116,12 +116,15 @@ function AnimatedStatItem({ label, value, icon, isPercentage }: {
 }
 
 // Scenario card component
-function ScenarioCard({ scenario, returnAmount, apy }: {
+function ScenarioCard({ scenario, returnAmount, apy, dailyReturn, durationDays }: {
   scenario: typeof SCENARIOS[0]
   returnAmount: number
   apy: number
+  dailyReturn: number
+  durationDays: number
 }) {
   const animatedReturn = useAnimatedNumber(returnAmount)
+  const { t } = useTranslation()
 
   return (
     <motion.div
@@ -158,6 +161,9 @@ function ScenarioCard({ scenario, returnAmount, apy }: {
           ${animatedReturn.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </motion.p>
         <p className="text-xs text-gray-500">
+          {t('daily_yield')}: <span className="text-gray-400 font-medium">${dailyReturn.toFixed(2)}</span>
+        </p>
+        <p className="text-[10px] text-gray-600">
           ({apy.toFixed(1)}% APY)
         </p>
       </div>
@@ -337,8 +343,8 @@ export function ReturnCalculator() {
                     <SelectItem key={plan.id} value={plan.id} className="text-white focus:bg-[#F0B90B]/10 focus:text-[#F8D12F]">
                       <div className="flex items-center gap-2">
                         <span>{plan.name}</span>
-                        <span className="text-[#F0B90B] text-xs font-medium">{plan.apy}% APY</span>
-                        <span className="text-gray-500 text-xs">({plan.durationDays}d)</span>
+                        <span className="text-[#F0B90B] text-xs font-medium">~${((plan.apy / 100) / 365 * 1000).toFixed(2)}/day</span>
+                        <span className="text-gray-500 text-xs">({plan.apy}% APY)</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -381,6 +387,8 @@ export function ReturnCalculator() {
                   scenario={scenario}
                   returnAmount={scenario.totalReturn}
                   apy={scenario.effectiveApy}
+                  dailyReturn={scenario.dailyReturn}
+                  durationDays={selectedDuration}
                 />
               ))}
             </AnimatePresence>

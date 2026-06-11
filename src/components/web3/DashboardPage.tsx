@@ -211,7 +211,7 @@ export function DashboardPage() {
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
                 <Flame className="h-4 w-4 text-[#F0B90B]" />
-                {t('up_to_apy')}
+                {t('up_to_daily')}
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
                 <Hexagon className="h-4 w-4 text-[#F0B90B]" />

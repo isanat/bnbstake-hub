@@ -615,7 +615,7 @@ export function AdminPage() {
                   <div className="hidden sm:grid grid-cols-7 gap-4 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <span>{t('plan_name')}</span>
                     <span>{t('duration_days')}</span>
-                    <span>{t('apy_percent')}</span>
+                    <span>{t('daily_yield')} / $1K</span>
                     <span>{t('min_max')}</span>
                     <span>{t('penalty')}</span>
                     <span>{t('status')}</span>
@@ -631,7 +631,10 @@ export function AdminPage() {
                     >
                       <span className="text-sm font-medium text-white">{plan.name}</span>
                       <span className="text-sm text-gray-300">{plan.durationDays} {t('duration_days').toLowerCase()}</span>
-                      <span className="text-sm font-semibold text-[#F0B90B]">{plan.apy}%</span>
+                      <div className="text-sm">
+                        <span className="font-semibold text-[#F0B90B]">${((plan.apy / 100) / 365 * 1000).toFixed(2)}/day</span>
+                        <span className="text-gray-500 text-xs ml-1">({plan.apy}% APY)</span>
+                      </div>
                       <span className="text-sm text-gray-400">${plan.minAmount.toLocaleString()} - ${plan.maxAmount.toLocaleString()}</span>
                       <span className="text-sm text-red-400">{plan.earlyWithdrawPenalty}%</span>
                       <Badge variant="outline" className={`w-fit text-xs ${plan.isActive ? 'border-[#F0B90B]/30 text-[#F0B90B]' : 'border-gray-600 text-gray-500'}`}>
@@ -1402,6 +1405,11 @@ export function AdminPage() {
                   onChange={(e) => setPlanForm({ ...planForm, apy: Number(e.target.value) })}
                   className="bg-gray-800/60 border-[#F0B90B]/20 text-white focus:ring-[#F0B90B]/50 focus:border-[#F0B90B]/50"
                 />
+                {planForm.apy > 0 && (
+                  <p className="text-xs text-[#F8D12F] font-medium">
+                    = ${((planForm.apy / 100) / 365 * 1000).toFixed(2)}/day per $1,000 staked
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">

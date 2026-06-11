@@ -329,22 +329,24 @@ export function StakingPage() {
                         {/* Description */}
                         <p className="text-xs text-gray-500 leading-relaxed">{plan.description}</p>
 
-                        {/* APY - Big and bold */}
+                        {/* Daily Earnings - Big and bold (primary display) */}
                         <div className="text-center py-4 relative">
                           <div className="absolute inset-0 bg-[#F0B90B]/3 rounded-xl" />
                           <div className="relative">
-                            <span className="text-5xl sm:text-6xl font-black text-gradient-bnb leading-none">
-                              {plan.apy}%
-                            </span>
-                            <p className="text-xs text-gray-500 mt-2 uppercase tracking-wider font-medium">
-                              {t('annual_percentage_yield')}
+                            <p className="text-xs text-gray-500 mb-1 uppercase tracking-wider font-medium">
+                              {t('daily_yield')}
                             </p>
-                            {/* Daily earnings per $1000 */}
+                            <span className="text-5xl sm:text-6xl font-black text-gradient-bnb leading-none">
+                              ${((plan.apy / 100) / 365 * 1000).toFixed(2)}
+                            </span>
+                            <p className="text-sm text-[#F8D12F] font-semibold mt-1">
+                              {t('per_1000_staked')}
+                            </p>
+                            {/* APY - secondary info */}
                             <div className="mt-2 pt-2 border-t border-[#F0B90B]/10">
-                              <p className="text-xs text-[#F8D12F] font-semibold">
-                                ~${((plan.apy / 100) / 365 * 1000).toFixed(2)}/day
+                              <p className="text-xs text-gray-500">
+                                {t('apy_label')}: <span className="text-gray-400 font-medium">{plan.apy}%</span>
                               </p>
-                              <p className="text-[10px] text-gray-600">per $1,000 staked</p>
                             </div>
                           </div>
                         </div>
@@ -601,8 +603,8 @@ export function StakingPage() {
                     <SelectItem key={plan.id} value={plan.id} className="text-white focus:bg-[#F0B90B]/10 focus:text-[#F8D12F]">
                       <div className="flex items-center gap-2">
                         <span>{plan.name}</span>
-                        <span className="text-[#F0B90B] text-xs font-medium">{plan.apy}% APY</span>
-                        <span className="text-gray-500 text-xs">({plan.durationDays}d)</span>
+                        <span className="text-[#F0B90B] text-xs font-medium">~${((plan.apy / 100) / 365 * 1000).toFixed(2)}/day</span>
+                        <span className="text-gray-500 text-xs">({plan.apy}% APY)</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -613,8 +615,12 @@ export function StakingPage() {
             {selectedPlanData && (
               <div className="p-3.5 rounded-xl glass border border-[#F0B90B]/10 space-y-2 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">APY</span>
-                  <span className="text-[#F0B90B] font-bold">{selectedPlanData.apy}%</span>
+                  <span className="text-gray-400">{t('daily_yield')}</span>
+                  <span className="text-[#F0B90B] font-bold text-base">~${((selectedPlanData.apy / 100) / 365 * 1000).toFixed(2)} <span className="text-xs font-normal text-gray-500">/ $1K</span></span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">{t('apy_label')}</span>
+                  <span className="text-gray-400 font-medium">{selectedPlanData.apy}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Duration</span>
@@ -645,10 +651,18 @@ export function StakingPage() {
                 </div>
               </div>
               {selectedPlanData && depositAmount && (
-                <div className="flex items-center gap-1.5 text-xs">
-                  <Sparkles className="h-3 w-3 text-[#F0B90B]" />
-                  <span className="text-gray-400">Estimated daily reward:</span>
-                  <span className="text-[#F8D12F] font-medium">${((Number(depositAmount) * selectedPlanData.apy / 100) / 365).toFixed(2)}</span>
+                <div className="p-3 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/15 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400 flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-[#F0B90B]" />
+                      {t('daily_yield')}
+                    </span>
+                    <span className="text-lg font-bold text-gradient-bnb">${((Number(depositAmount) * selectedPlanData.apy / 100) / 365).toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-500">{t('monthly_reward')}</span>
+                    <span className="text-[#F8D12F] font-medium">${(((Number(depositAmount) * selectedPlanData.apy / 100) / 365) * 30).toFixed(2)}</span>
+                  </div>
                 </div>
               )}
             </div>

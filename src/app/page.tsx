@@ -416,7 +416,7 @@ function LandingPage() {
                 { label: t('stat_tvl'), value: stats ? `$${stats.totalTVL.toLocaleString()}` : '...', change: stats?.trends?.staked ? `${stats.trends.staked > 0 ? '+' : ''}${stats.trends.staked.toFixed(1)}%` : '' },
                 { label: t('stat_stakers'), value: stats ? stats.totalStakers.toLocaleString() : '...', change: stats?.trends?.users ? `${stats.trends.users > 0 ? '+' : ''}${stats.trends.users.toFixed(1)}%` : '' },
                 { label: t('stat_rewards'), value: stats ? `$${stats.totalRewardsDistributed.toLocaleString()}` : '...', change: stats?.trends?.rewards ? `${stats.trends.rewards > 0 ? '+' : ''}${stats.trends.rewards.toFixed(1)}%` : '' },
-                { label: t('stat_avg_apy'), value: stats ? `${stats.averageAPY}%` : '...', change: stats?.averageAPY ? `${stats.averageAPY}% APY` : '' },
+                { label: t('stat_avg_daily_yield'), value: stats ? `$${((stats.averageAPY / 100) / 365 * 1000).toFixed(2)}` : '...', change: stats?.averageAPY ? `${stats.averageAPY}% APY` : '' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
