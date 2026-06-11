@@ -53,16 +53,16 @@ export function StatsCard({ icon: Icon, label, value, trend, className, iconClas
         styles.hoverBorder,
         className
       )}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-400">{label}</p>
-              <p className={cn('text-2xl font-bold', styles.value)}>
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="space-y-0.5 sm:space-y-1 min-w-0">
+              <p className="text-[10px] sm:text-sm text-gray-400 truncate">{label}</p>
+              <p className={cn('text-lg sm:text-2xl font-bold truncate', styles.value)}>
                 {value}
               </p>
               {trend && (
                 <p className={cn(
-                  'text-xs font-medium',
+                  'text-[10px] sm:text-xs font-medium',
                   trend.positive ? styles.trendPositive : 'text-red-400'
                 )}>
                   {trend.positive ? '↑' : '↓'} {Math.abs(trend.value)}%
@@ -70,11 +70,11 @@ export function StatsCard({ icon: Icon, label, value, trend, className, iconClas
               )}
             </div>
             <div className={cn(
-              'p-3 rounded-xl',
+              'p-2 sm:p-3 rounded-lg sm:rounded-xl shrink-0',
               variant === 'gold' ? 'bg-[#F0B90B]/10' : variant === 'purple' ? 'bg-purple-500/10' : 'bg-emerald-500/10',
               iconClassName
             )}>
-              <Icon className={cn('h-5 w-5', styles.icon)} />
+              <Icon className={cn('h-4 w-4 sm:h-5 sm:w-5', styles.icon)} />
             </div>
           </div>
         </CardContent>

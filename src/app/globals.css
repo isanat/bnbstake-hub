@@ -367,6 +367,15 @@
   transform: rotate(45deg) translateY(100%);
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Mobile bottom nav safe area */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);

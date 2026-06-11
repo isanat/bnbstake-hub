@@ -17,7 +17,6 @@ import {
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { motion } from 'framer-motion'
-import { ReturnCalculator } from '@/components/web3/ReturnCalculator'
 import { Leaderboard } from '@/components/web3/Leaderboard'
 
 interface UserData {
@@ -93,31 +92,30 @@ interface CommissionData {
   }
 }
 
-// Staggered animation variants
+// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
   },
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 24, scale: 0.96 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
   },
 }
 
 const fadeUpVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
   },
 }
 
@@ -125,8 +123,8 @@ const fadeUpVariants = {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="glass-strong rounded-xl px-4 py-3 shadow-2xl glow-bnb">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
+    <div className="glass-strong rounded-xl px-3 py-2 shadow-2xl glow-bnb">
+      <p className="text-[10px] text-gray-400 mb-0.5">{label}</p>
       <p className="text-sm font-bold text-gradient-bnb">
         ${payload[0].value.toLocaleString()}
       </p>
@@ -170,7 +168,6 @@ export function DashboardPage() {
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-center max-w-md mx-auto px-4"
           >
-            {/* Wallet icon with golden glow */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -227,7 +224,6 @@ export function DashboardPage() {
   const isLoading = userLoading || stakingLoading || commissionLoading
 
   const user = userData?.user
-  const userStats = userData?.stats
   const stakingSummary = stakingData?.summary
   const commissionSummary = commissionData?.summary
 
@@ -250,7 +246,6 @@ export function DashboardPage() {
   // Build recent transactions from commissions
   const recentTransactions = commissionData?.commissions?.slice(0, 6).map(c => ({
     id: c.id,
-    type: c.type === 'unilevel' || c.type === 'binary' ? 'commission' as const : 'commission' as const,
     amount: Number(c.amount),
     description: c.description,
     date: new Date(c.createdAt).toLocaleDateString(),
@@ -258,14 +253,21 @@ export function DashboardPage() {
     commissionType: c.type,
   })) || []
 
-  // Calculate daily earnings from active stakes
-  const dailyEarnings = stakingData?.stakes
-    ?.filter(s => s.status === 'active')
-    .reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0) ?? 0
+  // Calculate daily rate from active stakes
+  const activeStakes = stakingData?.stakes?.filter(s => s.status === 'active') || []
+  const dailyRate = activeStakes.length > 0
+    ? (() => {
+        const totalStakedAmt = activeStakes.reduce((sum, s) => sum + Number(s.amount), 0)
+        const dailyTotal = activeStakes.reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0)
+        return (dailyTotal / totalStakedAmt) * 100
+      })()
+    : 0
+
+  const dailyEarnings = activeStakes.reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0)
 
   return (
     <motion.div
-      className="space-y-6"
+      className="space-y-5 sm:space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -279,31 +281,32 @@ export function DashboardPage() {
             <div className="flex gap-2">
               <Button
                 onClick={() => setPage('staking')}
-                className="btn-bnb gap-2 rounded-xl h-10 px-5"
+                className="btn-bnb gap-1.5 rounded-xl h-9 px-4 text-sm"
               >
                 <Zap className="h-4 w-4" />
-                {t('deposit')}
+                <span className="hidden xs:inline">{t('deposit')}</span>
+                <span className="xs:hidden">{t('deposit')}</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setPage('commissions')}
-                className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 gap-2 rounded-xl h-10 px-5 transition-all"
+                className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 gap-1.5 rounded-xl h-9 px-4 text-sm transition-all"
               >
                 <Gift className="h-4 w-4" />
-                {t('claim_rewards')}
+                <span className="hidden sm:inline">{t('claim_rewards')}</span>
               </Button>
             </div>
           }
         />
       </motion.div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid — Mobile: 2 cols, Tablet: 2 cols, Desktop: 3 cols */}
       {isLoading ? (
         <LoadingSkeleton variant="cards" count={6} />
       ) : (
         <motion.div
           variants={containerVariants}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
         >
           <motion.div variants={itemVariants}>
             <StatsCard
@@ -318,14 +321,7 @@ export function DashboardPage() {
             <StatsCard
               icon={TrendingUp}
               label={t('daily_rate')}
-              value={(() => {
-                const activeStakes = stakingData?.stakes?.filter(s => s.status === 'active') || []
-                if (activeStakes.length === 0) return '0.00%'
-                const totalStakedAmt = activeStakes.reduce((sum, s) => sum + Number(s.amount), 0)
-                const dailyTotal = activeStakes.reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0)
-                const weightedDailyRate = (dailyTotal / totalStakedAmt) * 100
-                return `${weightedDailyRate.toFixed(2)}%`
-              })()}
+              value={`${dailyRate.toFixed(2)}%`}
               trend={dailyEarnings > 0 ? { value: 0, positive: true } : undefined}
               className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
               iconClassName="bg-[#F0B90B]/10"
@@ -370,219 +366,252 @@ export function DashboardPage() {
         </motion.div>
       )}
 
-      {/* Chart + Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <motion.div
-          variants={fadeUpVariants}
-          className="lg:col-span-2"
-        >
-          <Card className="glass-card glow-bnb overflow-hidden transition-all duration-300">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-white flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-[#F0B90B]" />
-                  {t('rewards_overview')}
-                </CardTitle>
-                <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 hover:bg-[#F0B90B]/20">
-                  Live
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 sm:h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="bnbRewardGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#F0B90B" stopOpacity={0.35} />
-                        <stop offset="50%" stopColor="#F0B90B" stopOpacity={0.12} />
-                        <stop offset="100%" stopColor="#F0B90B" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="bnbStrokeGradient" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#C99A00" />
-                        <stop offset="50%" stopColor="#F0B90B" />
-                        <stop offset="100%" stopColor="#F8D12F" />
-                      </linearGradient>
-                      <filter id="bnbGlow">
-                        <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                        <feMerge>
-                          <feMergeNode in="coloredBlur" />
-                          <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                      </filter>
-                    </defs>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="rgba(240, 185, 11, 0.06)"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="date"
-                      stroke="rgba(240, 185, 11, 0.3)"
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={false}
-                      dy={8}
-                    />
-                    <YAxis
-                      stroke="rgba(240, 185, 11, 0.3)"
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={false}
-                      dx={-4}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Area
-                      type="monotone"
-                      dataKey="rewards"
-                      stroke="url(#bnbStrokeGradient)"
-                      strokeWidth={2.5}
-                      fill="url(#bnbRewardGradient)"
-                      filter="url(#bnbGlow)"
-                      dot={false}
-                      activeDot={{
-                        r: 6,
-                        fill: '#F0B90B',
-                        stroke: '#0a0a0f',
-                        strokeWidth: 3,
-                      }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+      {/* Quick Actions — Mobile: horizontal scroll pills, Desktop: card */}
+      <motion.div variants={fadeUpVariants}>
+        {/* Mobile: Compact action pills */}
+        <div className="flex gap-2 sm:hidden overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+          <Button
+            onClick={() => setPage('staking')}
+            className="btn-bnb gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0"
+          >
+            <ArrowUpRight className="h-4 w-4" />
+            {t('stake_usdt')}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setPage('commissions')}
+            className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0 transition-all"
+          >
+            <Gift className="h-4 w-4" />
+            {t('claim_all_rewards')}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setPage('staking')}
+            className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0 transition-all"
+          >
+            <ArrowDownRight className="h-4 w-4" />
+            {t('view_stakes')}
+          </Button>
+          <Button
+            variant="outline"
+            className="border-white/10 text-gray-400 hover:bg-white/5 gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0 transition-all"
+          >
+            <ExternalLink className="h-4 w-4" />
+            {t('view_bscscan')}
+          </Button>
+        </div>
 
-        <motion.div variants={fadeUpVariants}>
-          <Card className="glass-card h-full transition-all duration-300">
+        {/* Desktop: Card with actions */}
+        <div className="hidden sm:block">
+          <Card className="glass-card transition-all duration-300">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg text-white flex items-center gap-2">
                 <Zap className="h-5 w-5 text-[#F0B90B]" />
                 {t('quick_actions')}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                onClick={() => setPage('staking')}
-                className="btn-bnb w-full justify-start gap-3 rounded-xl h-12 text-sm"
-              >
-                <ArrowUpRight className="h-4 w-4" />
-                {t('stake_usdt')}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setPage('commissions')}
-                className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-start gap-3 rounded-xl h-12 text-sm transition-all"
-              >
-                <Gift className="h-4 w-4" />
-                {t('claim_all_rewards')}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setPage('staking')}
-                className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-start gap-3 rounded-xl h-12 text-sm transition-all"
-              >
-                <ArrowDownRight className="h-4 w-4" />
-                {t('view_stakes')}
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:border-white/20 justify-start gap-3 rounded-xl h-12 text-sm transition-all"
-              >
-                <ExternalLink className="h-4 w-4" />
-                {t('view_bscscan')}
-              </Button>
+            <CardContent>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <Button
+                  onClick={() => setPage('staking')}
+                  className="btn-bnb w-full justify-center gap-2 rounded-xl h-11 text-sm"
+                >
+                  <ArrowUpRight className="h-4 w-4" />
+                  {t('stake_usdt')}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setPage('commissions')}
+                  className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-center gap-2 rounded-xl h-11 text-sm transition-all"
+                >
+                  <Gift className="h-4 w-4" />
+                  {t('claim_all_rewards')}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setPage('staking')}
+                  className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-center gap-2 rounded-xl h-11 text-sm transition-all"
+                >
+                  <ArrowDownRight className="h-4 w-4" />
+                  {t('view_stakes')}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:border-white/20 justify-center gap-2 rounded-xl h-11 text-sm transition-all"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  {t('view_bscscan')}
+                </Button>
+              </div>
             </CardContent>
           </Card>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
-      {/* Recent Activity */}
+      {/* Rewards Chart */}
       <motion.div variants={fadeUpVariants}>
-        <Card className="glass-card transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="text-lg text-white flex items-center gap-2">
-              <Clock className="h-5 w-5 text-[#F0B90B]" />
-              {t('recent_activity')}
-            </CardTitle>
+        <Card className="glass-card glow-bnb overflow-hidden transition-all duration-300">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base sm:text-lg text-white flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-[#F0B90B]" />
+                {t('rewards_overview')}
+              </CardTitle>
+              <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 hover:bg-[#F0B90B]/20 text-xs">
+                Live
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent>
-            {commissionLoading ? (
-              <LoadingSkeleton variant="table" count={4} />
-            ) : recentTransactions.length === 0 ? (
-              <EmptyState
-                icon={Coins}
-                title={t('no_activity')}
-                description={t('connect_wallet_desc')}
-                action={
-                  <Button
-                    onClick={() => setPage('staking')}
-                    className="btn-bnb gap-2 rounded-xl"
-                  >
-                    <ArrowUpRight className="h-4 w-4" />
-                    {t('start_staking')}
-                  </Button>
-                }
-              />
-            ) : (
-              <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
-                {recentTransactions.map((tx, index) => (
-                  <motion.div
-                    key={tx.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      duration: 0.4,
-                      delay: index * 0.06,
-                      ease: [0.25, 0.46, 0.45, 0.94],
+            <div className="h-48 sm:h-64 lg:h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="bnbRewardGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F0B90B" stopOpacity={0.35} />
+                      <stop offset="50%" stopColor="#F0B90B" stopOpacity={0.12} />
+                      <stop offset="100%" stopColor="#F0B90B" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="bnbStrokeGradient" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#C99A00" />
+                      <stop offset="50%" stopColor="#F0B90B" />
+                      <stop offset="100%" stopColor="#F8D12F" />
+                    </linearGradient>
+                    <filter id="bnbGlow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                      <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(240, 185, 11, 0.06)"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="date"
+                    stroke="rgba(240, 185, 11, 0.3)"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    dy={8}
+                  />
+                  <YAxis
+                    stroke="rgba(240, 185, 11, 0.3)"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    dx={-4}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area
+                    type="monotone"
+                    dataKey="rewards"
+                    stroke="url(#bnbStrokeGradient)"
+                    strokeWidth={2.5}
+                    fill="url(#bnbRewardGradient)"
+                    filter="url(#bnbGlow)"
+                    dot={false}
+                    activeDot={{
+                      r: 5,
+                      fill: '#F0B90B',
+                      stroke: '#0a0a0f',
+                      strokeWidth: 3,
                     }}
-                    className="flex items-center justify-between p-3 sm:p-4 rounded-xl glass-card border-l-2 border-l-[#F0B90B]/60 hover:border-l-[#F0B90B] transition-all duration-200 group"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`p-2.5 rounded-xl shrink-0 ${
-                        tx.commissionType === 'binary'
-                          ? 'bg-[#F0B90B]/10 group-hover:bg-[#F0B90B]/20'
-                          : 'bg-[#F0B90B]/10 group-hover:bg-[#F0B90B]/20'
-                      } transition-colors`}>
-                        {tx.commissionType === 'binary' ? (
-                          <Gift className="h-4 w-4 text-[#F0B90B]" />
-                        ) : (
-                          <TrendingUp className="h-4 w-4 text-[#F0B90B]" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{tx.description}</p>
-                        <p className="text-xs text-gray-500">{tx.date}</p>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0 ml-3">
-                      <p className="text-sm font-semibold text-[#F0B90B]">
-                        +${tx.amount.toLocaleString()}
-                      </p>
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${
-                          tx.status === 'completed'
-                            ? 'border-[#F0B90B]/30 text-[#F0B90B]'
-                            : 'border-amber-500/30 text-amber-400'
-                        }`}
-                      >
-                        {tx.status}
-                      </Badge>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* Return Calculator + Leaderboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ReturnCalculator />
-        <Leaderboard />
+      {/* Recent Activity + Leaderboard — side by side on desktop, stacked on mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+        {/* Recent Activity */}
+        <motion.div variants={fadeUpVariants}>
+          <Card className="glass-card transition-all duration-300 h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base sm:text-lg text-white flex items-center gap-2">
+                <Clock className="h-5 w-5 text-[#F0B90B]" />
+                {t('recent_activity')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {commissionLoading ? (
+                <LoadingSkeleton variant="table" count={3} />
+              ) : recentTransactions.length === 0 ? (
+                <EmptyState
+                  icon={Coins}
+                  title={t('no_activity')}
+                  description={t('connect_wallet_desc')}
+                  action={
+                    <Button
+                      onClick={() => setPage('staking')}
+                      className="btn-bnb gap-2 rounded-xl text-sm"
+                    >
+                      <ArrowUpRight className="h-4 w-4" />
+                      {t('start_staking')}
+                    </Button>
+                  }
+                />
+              ) : (
+                <div className="space-y-2 max-h-80 overflow-y-auto custom-scrollbar">
+                  {recentTransactions.map((tx, index) => (
+                    <motion.div
+                      key={tx.id}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: 0.3,
+                        delay: index * 0.05,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
+                      className="flex items-center justify-between p-3 rounded-xl glass-card border-l-2 border-l-[#F0B90B]/60 hover:border-l-[#F0B90B] transition-all duration-200 group"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="p-2 rounded-lg shrink-0 bg-[#F0B90B]/10 group-hover:bg-[#F0B90B]/20 transition-colors">
+                          {tx.commissionType === 'binary' ? (
+                            <Gift className="h-3.5 w-3.5 text-[#F0B90B]" />
+                          ) : (
+                            <TrendingUp className="h-3.5 w-3.5 text-[#F0B90B]" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-medium text-white truncate">{tx.description}</p>
+                          <p className="text-[10px] sm:text-xs text-gray-500">{tx.date}</p>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0 ml-2">
+                        <p className="text-xs sm:text-sm font-semibold text-[#F0B90B]">
+                          +${tx.amount.toLocaleString()}
+                        </p>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] px-1.5 py-0 ${
+                            tx.status === 'completed'
+                              ? 'border-[#F0B90B]/30 text-[#F0B90B]'
+                              : 'border-amber-500/30 text-amber-400'
+                          }`}
+                        >
+                          {tx.status}
+                        </Badge>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Leaderboard */}
+        <motion.div variants={fadeUpVariants}>
+          <Leaderboard />
+        </motion.div>
       </div>
     </motion.div>
   )
