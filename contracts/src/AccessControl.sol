@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 /**
  * @title AccessControl
- * @notice Role-based access control with emergency pause for the StakeBNB system.
+ * @notice Role-based access control with emergency pause for the PolyStake system.
  * @dev Implements:
  *      - Default admin role (deployer)
  *      - Operator role (for authorized contracts like Vault, Distributors)

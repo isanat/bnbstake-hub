@@ -11,14 +11,14 @@ import "./src/StakingPool.sol";
 import "./src/ReferralNFT.sol";
 
 /**
- * @title StakeBNBDeployer
- * @notice Deployment helper contract that deploys all StakeBNB system contracts in the
+ * @title PolyStakeDeployer
+ * @notice Deployment helper contract that deploys all PolyStake system contracts in the
  *         correct order with proper initialization, wiring, and operator setup.
  * @dev This contract serves as a REFERENCE deployment script. It documents the exact
  *      deployment order, initialization parameters, and cross-contract wiring required
- *      for the StakeBNB system.
+ *      for the PolyStake system.
  *
- *      NOTE: Due to the contract size limit (24KB on BSC), this contract may exceed
+ *      NOTE: Due to the contract size limit (24KB on Polygon), this contract may exceed
  *      the deployment limit. For production deployment, use Hardhat or Foundry scripts
  *      that deploy each contract individually in separate transactions, following the
  *      same order and initialization steps documented here.
@@ -47,7 +47,7 @@ import "./src/ReferralNFT.sol";
  *      3. Execute scheduled APY changes on RewardDistributor
  *      4. Verify all contract addresses and operator settings
  */
-contract StakeBNBDeployer {
+contract PolyStakeDeployer {
     // ============================================================
     //                        Data Structures
     // ============================================================
@@ -151,7 +151,7 @@ contract StakeBNBDeployer {
     // ============================================================
 
     modifier onlyAdmin() {
-        require(msg.sender == admin, "StakeBNBDeployer: caller is not admin");
+        require(msg.sender == admin, "PolyStakeDeployer: caller is not admin");
         _;
     }
 
@@ -160,9 +160,9 @@ contract StakeBNBDeployer {
     // ============================================================
 
     /**
-     * @notice Deploys all StakeBNB contracts, wires them together, and configures defaults.
+     * @notice Deploys all PolyStake contracts, wires them together, and configures defaults.
      * @dev Can only be called once by the admin. The `usdt` address must be a valid
-     *      BEP-20 USDT contract on BNB Smart Chain. The `multisig` address is the
+     *      ERC-20 USDT contract on Polygon. The `multisig` address is the
      *      target admin address (typically a Gnosis Safe or hardware wallet).
      *
      *      After calling this function:
@@ -170,7 +170,7 @@ contract StakeBNBDeployer {
      *      2. Wait 2 days for the timelocked APY changes on RewardDistributor
      *      3. The multisig must call `rewardDistributor.setAPY()` for each plan
      *
-     * @param usdt     The USDT (BEP-20) token contract address on BSC.
+     * @param usdt     The USDT (ERC-20) token contract address on Polygon.
      * @param multisig The multisig wallet address to receive admin rights.
      * @return contracts The DeployedContracts struct with all deployed addresses.
      */
@@ -178,9 +178,9 @@ contract StakeBNBDeployer {
         address usdt,
         address multisig
     ) external onlyAdmin returns (DeployedContracts memory) {
-        require(!isDeployed, "StakeBNBDeployer: already deployed");
-        require(usdt != address(0), "StakeBNBDeployer: zero USDT address");
-        require(multisig != address(0), "StakeBNBDeployer: zero multisig address");
+        require(!isDeployed, "PolyStakeDeployer: already deployed");
+        require(usdt != address(0), "PolyStakeDeployer: zero USDT address");
+        require(multisig != address(0), "PolyStakeDeployer: zero multisig address");
 
         proposedMultisig = multisig;
 

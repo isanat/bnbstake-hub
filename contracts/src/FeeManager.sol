@@ -7,7 +7,7 @@ import "./libraries/CommissionMath.sol";
 
 /**
  * @title FeeManager
- * @notice Manages early withdrawal penalties and standard withdrawal fees for the StakeBNB system.
+ * @notice Manages early withdrawal penalties and standard withdrawal fees for the PolyStake system.
  * @dev All rates are expressed in basis points (1 bp = 0.01%, e.g., 500 = 5%).
  *
  *      Early withdrawal penalties are plan-specific and may use a sliding scale

@@ -56,7 +56,7 @@ export const useI18nStore = create<I18nState>()(
       },
     }),
     {
-      name: 'stakebnb-i18n',
+      name: 'polystake-i18n',
       partialize: (state) => ({ locale: state.locale }),
     }
   )

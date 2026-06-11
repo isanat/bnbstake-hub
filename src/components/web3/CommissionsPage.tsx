@@ -142,7 +142,7 @@ export function CommissionsPage() {
           <Button
             onClick={() => claimAllMutation.mutate({ walletAddress: currentWallet! })}
             disabled={claimAllMutation.isPending || !summary?.pending?.count}
-            className="btn-bnb gap-2 rounded-xl"
+            className="btn-poly gap-2 rounded-xl"
           >
             {claimAllMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -171,27 +171,27 @@ export function CommissionsPage() {
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-[#F0B90B]/10">
-                <Filter className="h-4 w-4 text-[#F0B90B]" />
+              <div className="p-1.5 rounded-lg bg-[#8247E5]/10">
+                <Filter className="h-4 w-4 text-[#8247E5]" />
               </div>
               <span className="text-sm text-gray-400">{t('filter')}:</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[140px] bg-[#0a0a0f]/60 border-[#F0B90B]/15 text-white text-sm">
+                <SelectTrigger className="w-[140px] bg-[#0a0a0f]/60 border-[#8247E5]/15 text-white text-sm">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0a0a0f] border-[#F0B90B]/15">
+                <SelectContent className="bg-[#0a0a0f] border-[#8247E5]/15">
                   <SelectItem value="all" className="text-white">{t('all_types')}</SelectItem>
                   <SelectItem value="unilevel" className="text-white">{t('unilevel')}</SelectItem>
                   <SelectItem value="binary" className="text-white">{t('binary')}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[140px] bg-[#0a0a0f]/60 border-[#F0B90B]/15 text-white text-sm">
+                <SelectTrigger className="w-[140px] bg-[#0a0a0f]/60 border-[#8247E5]/15 text-white text-sm">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0a0a0f] border-[#F0B90B]/15">
+                <SelectContent className="bg-[#0a0a0f] border-[#8247E5]/15">
                   <SelectItem value="all" className="text-white">{t('all_status')}</SelectItem>
                   <SelectItem value="pending" className="text-white">{t('pending')}</SelectItem>
                   <SelectItem value="distributed" className="text-white">{t('distributed')}</SelectItem>
@@ -207,14 +207,14 @@ export function CommissionsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg text-white flex items-center gap-2">
-              <Gift className="h-5 w-5 text-[#F0B90B]" />
+              <Gift className="h-5 w-5 text-[#8247E5]" />
               {t('commission_history')}
             </CardTitle>
             <Button
               variant="outline"
               size="sm"
               onClick={handleExport}
-              className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 gap-1 rounded-xl"
+              className="border-[#8247E5]/30 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/50 gap-1 rounded-xl"
             >
               <Download className="h-3.5 w-3.5" />
               {t('commissions_export')}
@@ -249,23 +249,23 @@ export function CommissionsPage() {
                   transition={{ delay: index * 0.05 }}
                   className={`grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-4 p-3 rounded-xl backdrop-blur-sm bg-[#0a0a0f]/60 border border-transparent hover:bg-[#0a0a0f]/80 transition-all items-center ${
                     commission.type === 'unilevel'
-                      ? 'border-l-2 border-l-[#F0B90B]/60 hover:border-l-[#F0B90B]'
+                      ? 'border-l-2 border-l-[#8247E5]/60 hover:border-l-[#8247E5]'
                       : 'border-l-2 border-l-purple-500/60 hover:border-l-purple-400'
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <div className={`p-1.5 rounded-lg ${
-                      commission.type === 'unilevel' ? 'bg-[#F0B90B]/10' : 'bg-purple-500/10'
+                      commission.type === 'unilevel' ? 'bg-[#8247E5]/10' : 'bg-purple-500/10'
                     }`}>
                       {commission.type === 'unilevel' ? (
-                        <TrendingUp className="h-3.5 w-3.5 text-[#F0B90B]" />
+                        <TrendingUp className="h-3.5 w-3.5 text-[#8247E5]" />
                       ) : (
                         <ArrowUpRight className="h-3.5 w-3.5 text-purple-400" />
                       )}
                     </div>
                     <div>
                       <span className={`text-xs font-medium sm:hidden ${
-                        commission.type === 'unilevel' ? 'text-[#F0B90B]' : 'text-purple-400'
+                        commission.type === 'unilevel' ? 'text-[#8247E5]' : 'text-purple-400'
                       }`}>
                         {commission.type.charAt(0).toUpperCase() + commission.type.slice(1)}
                       </span>
@@ -281,7 +281,7 @@ export function CommissionsPage() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-[#F0B90B]">
+                    <span className="text-sm font-semibold text-[#8247E5]">
                       ${Number(commission.amount).toLocaleString()}
                     </span>
                   </div>
@@ -295,7 +295,7 @@ export function CommissionsPage() {
                     <Badge variant="outline" className={`text-xs ${
                       commission.status === 'distributed'
                         ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
-                        : 'border-[#F0B90B]/30 text-[#F0B90B] bg-[#F0B90B]/5'
+                        : 'border-[#8247E5]/30 text-[#8247E5] bg-[#8247E5]/5'
                     }`}>
                       {commission.status}
                     </Badge>

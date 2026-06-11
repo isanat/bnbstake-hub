@@ -27,8 +27,8 @@ const typeConfig: Record<
 > = {
   stake: {
     icon: ArrowUpRight,
-    color: 'text-[#F0B90B]',
-    bgColor: 'bg-[#F0B90B]/10',
+    color: 'text-[#8247E5]',
+    bgColor: 'bg-[#8247E5]/10',
   },
   commission: {
     icon: Gift,
@@ -82,7 +82,7 @@ export function LiveToast() {
 
       toast.custom(
         () => (
-          <div className="glass-strong rounded-xl p-3 border border-[#F0B90B]/20 glow-bnb max-w-xs">
+          <div className="glass-strong rounded-xl p-3 border border-[#8247E5]/20 glow-poly max-w-xs">
             <div className="flex items-center gap-2.5">
               <div
                 className={`p-1.5 rounded-lg ${config.bgColor} shrink-0`}
@@ -100,7 +100,7 @@ export function LiveToast() {
                   {tx.type === 'referral' && 'joined via referral'}
                   {tx.type === 'withdraw' && 'withdrew'}{' '}
                   {tx.amount !== undefined && tx.amount > 0 && (
-                    <span className="text-[#F0B90B] font-semibold">
+                    <span className="text-[#8247E5] font-semibold">
                       ${tx.amount.toLocaleString()} USDT
                     </span>
                   )}

@@ -24,16 +24,16 @@ export function EmptyState({ icon: Icon, title, description, action, className }
       )}
     >
       <div className="glass-card rounded-2xl p-8 sm:p-10 max-w-md w-full space-y-5">
-        {/* Icon with golden glow */}
+        {/* Icon with purple glow */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.5 }}
           className="mx-auto relative"
         >
-          <div className="absolute inset-0 rounded-2xl bg-bnb/15 blur-xl animate-pulse-glow" />
-          <div className="relative p-4 sm:p-5 rounded-2xl bg-bnb/8 border border-bnb/15 inline-flex">
-            <Icon className="h-10 w-10 sm:h-12 sm:w-12 text-bnb" />
+          <div className="absolute inset-0 rounded-2xl bg-poly/15 blur-xl animate-pulse-glow" />
+          <div className="relative p-4 sm:p-5 rounded-2xl bg-poly/8 border border-poly/15 inline-flex">
+            <Icon className="h-10 w-10 sm:h-12 sm:w-12 text-poly" />
           </div>
         </motion.div>
 
@@ -71,7 +71,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
 
         {/* Decorative bottom line */}
         <div className="pt-2">
-          <div className="h-px w-1/2 mx-auto bg-gradient-to-r from-transparent via-bnb/20 to-transparent" />
+          <div className="h-px w-1/2 mx-auto bg-gradient-to-r from-transparent via-poly/20 to-transparent" />
         </div>
       </div>
     </motion.div>

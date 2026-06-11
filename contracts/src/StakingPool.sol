@@ -15,7 +15,7 @@ import "./libraries/CommissionMath.sol";
 
 /**
  * @title StakingPool
- * @notice The main staking contract for the StakeBNB system on BNB Smart Chain.
+ * @notice The main staking contract for the PolyStake system on Polygon.
  * @dev Orchestrates deposits, withdrawals, reward claims, MLM commission triggers,
  *      and binary volume updates. Users interact exclusively with this contract.
  *
@@ -80,7 +80,7 @@ contract StakingPool is IStakingPool, AccessControl {
     //                        State Variables
     // ============================================================
 
-    /// @notice The USDT (BEP-20) token contract — immutable for security.
+    /// @notice The USDT (ERC-20) token contract — immutable for security.
     IERC20Extended public immutable usdt;
 
     /// @notice The Vault contract that holds all deposited funds.
@@ -135,7 +135,7 @@ contract StakingPool is IStakingPool, AccessControl {
 
     /**
      * @notice Initializes the StakingPool with the USDT token address.
-     * @param _usdt The address of the USDT (BEP-20) token contract.
+     * @param _usdt The address of the USDT (ERC-20) token contract.
      */
     constructor(address _usdt) {
         require(_usdt != address(0), "StakingPool: zero USDT address");

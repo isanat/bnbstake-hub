@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StakeBNB - Web3 Staking & MLM on BNB Smart Chain",
-  description: "Stake USDT on BNB Smart Chain and earn passive income through staking rewards and MLM commissions.",
-  keywords: ["BNB", "Staking", "MLM", "DeFi", "USDT", "BNB Smart Chain", "Web3"],
-  authors: [{ name: "StakeBNB Team" }],
+  title: "PolyStake - Web3 Staking & MLM on Polygon",
+  description: "Stake USDT on Polygon and earn passive income through staking rewards and MLM commissions.",
+  keywords: ["Polygon", "Staking", "MLM", "DeFi", "USDT", "Polygon Network", "Web3", "MATIC", "POL"],
+  authors: [{ name: "PolyStake Team" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },

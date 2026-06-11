@@ -27,7 +27,7 @@ export function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-1.5 text-gray-400 hover:text-[#F0B90B] hover:bg-[#F0B90B]/10 h-8 px-2.5 rounded-lg border border-white/5 hover:border-[#F0B90B]/20 transition-all"
+          className="gap-1.5 text-gray-400 hover:text-[#8247E5] hover:bg-[#8247E5]/10 h-8 px-2.5 rounded-lg border border-white/5 hover:border-[#8247E5]/20 transition-all"
         >
           <span className="text-sm leading-none">{currentLanguage.flag}</span>
           <span className="text-xs font-medium hidden sm:inline">{currentLanguage.nativeLabel}</span>
@@ -36,7 +36,7 @@ export function LanguageSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="bg-[#13131a] border-[#F0B90B]/15 shadow-xl shadow-black/40 min-w-[160px] rounded-xl p-1.5"
+        className="bg-[#13131a] border-[#8247E5]/15 shadow-xl shadow-black/40 min-w-[160px] rounded-xl p-1.5"
       >
         {languages.map((lang) => (
           <DropdownMenuItem
@@ -44,14 +44,14 @@ export function LanguageSwitcher() {
             onClick={() => setLocale(lang.code)}
             className={`flex items-center gap-2.5 rounded-lg px-3 py-2 cursor-pointer transition-all text-sm ${
               locale === lang.code
-                ? 'bg-[#F0B90B]/10 text-[#F0B90B] focus:bg-[#F0B90B]/15 focus:text-[#F0B90B]'
+                ? 'bg-[#8247E5]/10 text-[#8247E5] focus:bg-[#8247E5]/15 focus:text-[#8247E5]'
                 : 'text-gray-400 focus:bg-white/5 focus:text-gray-200'
             }`}
           >
             <span className="text-base leading-none">{lang.flag}</span>
             <span className="font-medium">{lang.label}</span>
             {locale === lang.code && (
-              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#F0B90B]" />
+              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#8247E5]" />
             )}
           </DropdownMenuItem>
         ))}

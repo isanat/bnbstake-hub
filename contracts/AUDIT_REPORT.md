@@ -1,10 +1,10 @@
-# 🔒 StakeBNB Smart Contract Security Audit Report
+# 🔒 PolyStake Smart Contract Security Audit Report
 
 **Date**: 2025-06-11  
 **Auditor**: Z.ai Code (Automated Security Analysis)  
 **Scope**: All 16 Solidity files in `/contracts/src/`  
 **Solidity Version**: ^0.8.20  
-**Network Target**: BNB Smart Chain (BSC)  
+**Network Target**: Polygon Network  
 
 ---
 
@@ -89,7 +89,7 @@ try unilevelDistributor.distributeUnilevel(msg.sender, amount) {
 **Severity**: Medium  
 **Status**: ⚠️ Acknowledged (inherent to MLM structure)
 
-**Issue**: The volume propagation loops (`updateVolumesUp` and `_reduceVolumesUp`) walk from a user to the tree root with no iteration limit. In a very deep tree (>100 levels), these functions could exceed the block gas limit on BSC.
+**Issue**: The volume propagation loops (`updateVolumesUp` and `_reduceVolumesUp`) walk from a user to the tree root with no iteration limit. In a very deep tree (>100 levels), these functions could exceed the block gas limit on Polygon.
 
 **Mitigation**:
 1. Binary trees naturally balance (BFS placement), so depth = log2(N)
@@ -129,10 +129,10 @@ try unilevelDistributor.distributeUnilevel(msg.sender, amount) {
 **Impact**: Low — NFT is cosmetic, not functional.
 **Recommendation**: Add an admin function to manually mint NFTs for users who missed them.
 
-### L2: USDT Approve Pattern on BSC
+### L2: USDT Approve Pattern on Polygon
 **File**: `StakingPool.sol` — `deposit()`  
 **Issue**: The `usdt.approve(address(vault), amount)` call may require setting approval to 0 first on some USDT implementations.
-**Impact**: Low — USDT on BSC doesn't require zero-approval reset.
+**Impact**: Low — USDT on Polygon doesn't require zero-approval reset.
 **Recommendation**: Use SafeERC20's `safeIncreaseAllowance` or `forceApprove` pattern.
 
 ### L3: CommissionMath.bpsToPercent() Precision Loss
@@ -168,7 +168,7 @@ try unilevelDistributor.distributeUnilevel(msg.sender, amount) {
 1. **External Audit**: Commission a professional audit (CertiK, PeckShield, or Trail of Bits) before mainnet deployment
 2. **Formal Verification**: Use Halmos or Certora for formal verification of critical math (reward calculations, commission distribution)
 3. **Fuzz Testing**: Use Foundry's fuzz testing with large input ranges
-4. **Testnet Deployment**: Deploy on BSC testnet with full integration testing
+4. **Testnet Deployment**: Deploy on Polygon testnet with full integration testing
 5. **Monitoring**: Implement on-chain monitoring for Vault solvency, tree depth, and gas usage
 6. **Multisig**: Use a 3/5 Gnosis Safe as admin
 7. **Bug Bounty**: Launch a bug bounty program on Immunefi after mainnet deployment
@@ -188,7 +188,7 @@ try unilevelDistributor.distributeUnilevel(msg.sender, amount) {
 | 7 | `StakingPool.sol` | 620 | ✅ PASS (try/catch fix applied) |
 | 8 | `FeeManager.sol` | 224 | ✅ PASS |
 | 9 | `ReferralNFT.sol` | 290 | ✅ PASS |
-| 10 | `StakeBNBDeployer.sol` | 290 | ✅ PASS |
+| 10 | `PolyStakeDeployer.sol` | 290 | ✅ PASS |
 | 11 | `libraries/BinaryTree.sol` | 364 | ✅ PASS |
 | 12 | `libraries/CommissionMath.sol` | 123 | ✅ PASS |
 | 13 | `libraries/RewardMath.sol` | 227 | ✅ PASS |
@@ -205,11 +205,11 @@ try unilevelDistributor.distributeUnilevel(msg.sender, amount) {
 
 ## 🔐 Deployment Checklist
 
-Before deploying to BSC Mainnet:
+Before deploying to Polygon Mainnet:
 
 - [ ] Professional external audit completed
 - [ ] All test cases passing (unit + integration + fuzz)
-- [ ] Testnet deployment verified with real USDT (BSC testnet)
+- [ ] Testnet deployment verified with real USDT (Polygon testnet)
 - [ ] Multisig wallet configured as admin (3/5 Gnosis Safe)
 - [ ] All contract addresses verified and wired correctly
 - [ ] Timelock duration reviewed (currently 2 days)

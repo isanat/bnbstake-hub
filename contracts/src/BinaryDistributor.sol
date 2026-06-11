@@ -119,7 +119,7 @@ contract BinaryDistributor is IBinaryDistributor, AccessControl {
      * @notice Initializes the BinaryDistributor with required contract references.
      * @param _mlmNetwork Address of the MLM network contract.
      * @param _vault      Address of the Vault contract.
-     * @param _usdt       Address of the USDT (BEP-20) token contract.
+     * @param _usdt       Address of the USDT (ERC-20) token contract.
      */
     constructor(address _mlmNetwork, address _vault, address _usdt) {
         require(_mlmNetwork != address(0), "BinaryDistributor: zero mlmNetwork");

@@ -13,7 +13,7 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, accentWord, description, actions, className }: PageHeaderProps) {
-  // If accentWord is provided, highlight that word in the title with the BNB gradient
+  // If accentWord is provided, highlight that word in the title with the Polygon gradient
   const renderTitle = () => {
     if (!accentWord) {
       return <span className="text-white">{title}</span>
@@ -28,7 +28,7 @@ export function PageHeader({ title, accentWord, description, actions, className 
     return (
       <>
         {parts[0] && <span className="text-white">{parts[0]}</span>}
-        <span className="text-gradient-bnb glow-bnb-text">{accentWord}</span>
+        <span className="text-gradient-poly glow-poly-text">{accentWord}</span>
         {parts[1] && <span className="text-white">{parts[1]}</span>}
       </>
     )

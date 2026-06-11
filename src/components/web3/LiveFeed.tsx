@@ -40,8 +40,8 @@ const typeConfig: Record<
 > = {
   stake: {
     icon: ArrowUpRight,
-    color: 'text-[#F0B90B]',
-    bgColor: 'bg-[#F0B90B]/10',
+    color: 'text-[#8247E5]',
+    bgColor: 'bg-[#8247E5]/10',
     label: 'Stake',
   },
   commission: {
@@ -100,9 +100,9 @@ function FeedVariant({ transactions }: { transactions: LiveTransaction[] }) {
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#F0B90B]/10">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#8247E5]/10">
         <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-[#F0B90B]" />
+          <Activity className="h-4 w-4 text-[#8247E5]" />
           <span className="text-sm font-semibold text-white">{t('live_feed')}</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -171,7 +171,7 @@ function FeedVariant({ transactions }: { transactions: LiveTransaction[] }) {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2 border-t border-[#F0B90B]/10">
+      <div className="px-4 py-2 border-t border-[#8247E5]/10">
         <p className="text-[10px] text-gray-600 text-center">
           {t('updates_every')} 15s &middot; {t('last_refresh')}: {' '}
           {new Date().toLocaleTimeString()}
@@ -230,7 +230,7 @@ function TickerVariant({ transactions }: { transactions: LiveTransaction[] }) {
             {tx.message}
           </span>
           {tx.amount !== undefined && tx.amount > 0 && (
-            <span className="text-xs font-semibold text-[#F0B90B] shrink-0">
+            <span className="text-xs font-semibold text-[#8247E5] shrink-0">
               {formatAmount(tx.amount)}
             </span>
           )}
@@ -263,16 +263,16 @@ export function LiveFeed({ variant = 'feed' }: LiveFeedProps) {
     if (variant === 'ticker') {
       return (
         <div className="flex items-center gap-2 h-8">
-          <Coins className="h-4 w-4 text-[#F0B90B] animate-pulse" />
+          <Coins className="h-4 w-4 text-[#8247E5] animate-pulse" />
           <span className="text-xs text-gray-500">{t('loading')}...</span>
         </div>
       )
     }
     return (
       <div className="glass-card rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#F0B90B]/10">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#8247E5]/10">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-[#F0B90B]" />
+            <Activity className="h-4 w-4 text-[#8247E5]" />
             <span className="text-sm font-semibold text-white">{t('live_feed')}</span>
           </div>
         </div>

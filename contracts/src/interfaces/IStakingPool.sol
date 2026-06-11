@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 /**
  * @title IStakingPool
- * @notice Interface for the main staking pool contract on BNB Smart Chain.
+ * @notice Interface for the main staking pool contract on Polygon.
  * @dev Handles user deposits, withdrawals, and reward claims across multiple staking plans.
  *      All state-modifying functions require the caller to be a registered user.
  *      Access control is enforced at the implementation level.

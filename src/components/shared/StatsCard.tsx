@@ -15,7 +15,7 @@ interface StatsCardProps {
   }
   className?: string
   iconClassName?: string
-  variant?: 'default' | 'gold' | 'purple'
+  variant?: 'default' | 'poly' | 'purple'
 }
 
 const variantStyles = {
@@ -25,11 +25,11 @@ const variantStyles = {
     hoverBorder: 'hover:border-emerald-500/30',
     trendPositive: 'text-emerald-400',
   },
-  gold: {
-    value: 'bg-gradient-to-r from-[#F0B90B] to-[#F8D12F] bg-clip-text text-transparent',
-    icon: 'text-[#F0B90B]',
-    hoverBorder: 'hover:border-[#F0B90B]/30',
-    trendPositive: 'text-[#F0B90B]',
+  poly: {
+    value: 'bg-gradient-to-r from-[#8247E5] to-[#9B6DFF] bg-clip-text text-transparent',
+    icon: 'text-[#8247E5]',
+    hoverBorder: 'hover:border-[#8247E5]/30',
+    trendPositive: 'text-[#8247E5]',
   },
   purple: {
     value: 'bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent',
@@ -49,7 +49,7 @@ export function StatsCard({ icon: Icon, label, value, trend, className, iconClas
       transition={{ duration: 0.3 }}
     >
       <Card className={cn(
-        'glass-card hover:border-[#F0B90B]/25 transition-colors',
+        'glass-card hover:border-[#8247E5]/25 transition-colors',
         styles.hoverBorder,
         className
       )}>
@@ -71,7 +71,7 @@ export function StatsCard({ icon: Icon, label, value, trend, className, iconClas
             </div>
             <div className={cn(
               'p-2 sm:p-3 rounded-lg sm:rounded-xl shrink-0',
-              variant === 'gold' ? 'bg-[#F0B90B]/10' : variant === 'purple' ? 'bg-purple-500/10' : 'bg-emerald-500/10',
+              variant === 'poly' ? 'bg-[#8247E5]/10' : variant === 'purple' ? 'bg-purple-500/10' : 'bg-emerald-500/10',
               iconClassName
             )}>
               <Icon className={cn('h-4 w-4 sm:h-5 sm:w-5', styles.icon)} />

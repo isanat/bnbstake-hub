@@ -10,7 +10,7 @@ interface AppState {
   isAdmin: boolean
   currentPage: PageType
   sidebarOpen: boolean
-  bnbBalance: number
+  polBalance: number
   usdtBalance: number
 
   connectWallet: (address: string) => void
@@ -28,7 +28,7 @@ export const useAppStore = create<AppState>((set) => ({
   isAdmin: false,
   currentPage: 'dashboard',
   sidebarOpen: false,
-  bnbBalance: 0,
+  polBalance: 0,
   usdtBalance: 0,
 
   connectWallet: (address: string) => {
@@ -37,7 +37,7 @@ export const useAppStore = create<AppState>((set) => ({
       currentWallet: address,
       isConnected: true,
       isAdmin,
-      bnbBalance: Math.random() * 5 + 0.5,
+      polBalance: Math.random() * 50 + 5,
       usdtBalance: Math.random() * 10000 + 500,
     })
   },
@@ -48,7 +48,7 @@ export const useAppStore = create<AppState>((set) => ({
       isConnected: false,
       isAdmin: false,
       currentPage: 'dashboard',
-      bnbBalance: 0,
+      polBalance: 0,
       usdtBalance: 0,
     })
   },
@@ -65,3 +65,8 @@ export const useAppStore = create<AppState>((set) => ({
     set({ sidebarOpen: open })
   },
 }))
+
+// Expose store to window for testing/debugging
+if (typeof window !== 'undefined') {
+  (window as unknown as Record<string, unknown>).__APP_STORE__ = useAppStore
+}

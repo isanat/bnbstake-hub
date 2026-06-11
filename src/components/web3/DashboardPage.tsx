@@ -12,8 +12,8 @@ import { useTranslation } from '@/hooks/useTranslation'
 import { useQuery } from '@tanstack/react-query'
 import {
   Wallet, TrendingUp, Clock, Coins, Users, Gift,
-  ArrowUpRight, ArrowDownRight, ExternalLink, Zap,
-  Hexagon, Shield, Flame
+  ArrowUpRight, ExternalLink, Zap,
+  Hexagon, Shield, Flame, Network, Layers
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { motion } from 'framer-motion'
@@ -123,9 +123,9 @@ const fadeUpVariants = {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="glass-strong rounded-xl px-3 py-2 shadow-2xl glow-bnb">
+    <div className="glass-strong rounded-xl px-3 py-2 shadow-2xl glow-poly">
       <p className="text-[10px] text-gray-400 mb-0.5">{label}</p>
-      <p className="text-sm font-bold text-gradient-bnb">
+      <p className="text-sm font-bold text-gradient-poly">
         ${payload[0].value.toLocaleString()}
       </p>
     </div>
@@ -173,9 +173,9 @@ export function DashboardPage() {
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               className="relative inline-block mb-8"
             >
-              <div className="absolute inset-0 rounded-3xl bg-[#F0B90B]/10 blur-3xl scale-150" />
-              <div className="relative p-6 rounded-3xl glass-card glow-bnb-strong">
-                <Wallet className="h-14 w-14 text-[#F0B90B]" strokeWidth={1.5} />
+              <div className="absolute inset-0 rounded-3xl bg-[#8247E5]/10 blur-3xl scale-150" />
+              <div className="relative p-6 rounded-3xl glass-card glow-poly-strong">
+                <Wallet className="h-14 w-14 text-[#8247E5]" strokeWidth={1.5} />
               </div>
             </motion.div>
 
@@ -203,15 +203,15 @@ export function DashboardPage() {
               className="flex flex-col sm:flex-row gap-3 justify-center"
             >
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
-                <Shield className="h-4 w-4 text-[#F0B90B]" />
+                <Shield className="h-4 w-4 text-[#8247E5]" />
                 {t('non_custodial')}
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
-                <Flame className="h-4 w-4 text-[#F0B90B]" />
+                <Flame className="h-4 w-4 text-[#8247E5]" />
                 {t('up_to_daily')}
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
-                <Hexagon className="h-4 w-4 text-[#F0B90B]" />
+                <Hexagon className="h-4 w-4 text-[#8247E5]" />
                 {t('bnb_chain_label')}
               </div>
             </motion.div>
@@ -226,6 +226,7 @@ export function DashboardPage() {
   const user = userData?.user
   const stakingSummary = stakingData?.summary
   const commissionSummary = commissionData?.summary
+  const userStats = userData?.stats
 
   // Generate chart data from stakes or use fallback
   const chartData = stakingData?.stakes && stakingData.stakes.length > 0
@@ -264,15 +265,16 @@ export function DashboardPage() {
     : 0
 
   const dailyEarnings = activeStakes.reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0)
+  const totalStaked = stakingSummary?.totalStaked ?? user?.totalStaked ?? 0
 
   return (
     <motion.div
-      className="space-y-5 sm:space-y-6"
+      className="space-y-4 sm:space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      {/* Page Header */}
+      {/* Page Header with Actions */}
       <motion.div variants={fadeUpVariants}>
         <PageHeader
           title={t('title')}
@@ -281,40 +283,48 @@ export function DashboardPage() {
             <div className="flex gap-2">
               <Button
                 onClick={() => setPage('staking')}
-                className="btn-bnb gap-1.5 rounded-xl h-9 px-4 text-sm"
+                className="btn-poly gap-1.5 rounded-xl h-9 px-4 text-sm"
               >
                 <Zap className="h-4 w-4" />
-                <span className="hidden xs:inline">{t('deposit')}</span>
-                <span className="xs:hidden">{t('deposit')}</span>
+                <span className="hidden sm:inline">{t('deposit')}</span>
+                <span className="sm:hidden">{t('deposit')}</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setPage('commissions')}
-                className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 gap-1.5 rounded-xl h-9 px-4 text-sm transition-all"
+                className="border-[#8247E5]/30 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/50 gap-1.5 rounded-xl h-9 px-4 text-sm transition-all"
               >
                 <Gift className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('claim_rewards')}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setPage('network')}
+                className="text-gray-400 hover:text-[#8247E5] hover:bg-[#8247E5]/10 gap-1.5 rounded-xl h-9 px-3 text-sm transition-all hidden sm:flex"
+              >
+                <Network className="h-4 w-4" />
+                <span>{t('nav_network')}</span>
               </Button>
             </div>
           }
         />
       </motion.div>
 
-      {/* Stats Grid — Mobile: 2 cols, Tablet: 2 cols, Desktop: 3 cols */}
+      {/* Main Stats - Top Row - Most Important */}
       {isLoading ? (
         <LoadingSkeleton variant="cards" count={6} />
       ) : (
         <motion.div
           variants={containerVariants}
-          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
         >
           <motion.div variants={itemVariants}>
             <StatsCard
               icon={Wallet}
               label={t('total_staked')}
-              value={`$${(stakingSummary?.totalStaked ?? user?.totalStaked ?? 0).toLocaleString()}`}
-              className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
-              iconClassName="bg-[#F0B90B]/10"
+              value={`$${totalStaked.toLocaleString()}`}
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
             />
           </motion.div>
           <motion.div variants={itemVariants}>
@@ -323,8 +333,8 @@ export function DashboardPage() {
               label={t('daily_rate')}
               value={`${dailyRate.toFixed(2)}%`}
               trend={dailyEarnings > 0 ? { value: 0, positive: true } : undefined}
-              className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
-              iconClassName="bg-[#F0B90B]/10"
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
             />
           </motion.div>
           <motion.div variants={itemVariants}>
@@ -332,17 +342,8 @@ export function DashboardPage() {
               icon={Clock}
               label={t('pending_rewards')}
               value={`$${(stakingSummary?.totalPendingRewards ?? 0).toFixed(2)}`}
-              className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
-              iconClassName="bg-[#F0B90B]/10"
-            />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <StatsCard
-              icon={Coins}
-              label={t('active_stakes')}
-              value={`${stakingSummary?.activeStakesCount ?? 0}`}
-              className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
-              iconClassName="bg-[#F0B90B]/10"
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
             />
           </motion.div>
           <motion.div variants={itemVariants}>
@@ -350,115 +351,107 @@ export function DashboardPage() {
               icon={TrendingUp}
               label={t('total_earned')}
               value={`$${(user?.totalEarned ?? 0).toLocaleString()}`}
-              className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
-              iconClassName="bg-[#F0B90B]/10"
-            />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <StatsCard
-              icon={Gift}
-              label={t('commission_balance')}
-              value={`$${(commissionSummary?.pending?.amount ?? 0).toLocaleString()}`}
-              className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300"
-              iconClassName="bg-[#F0B90B]/10"
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
             />
           </motion.div>
         </motion.div>
       )}
 
-      {/* Quick Actions — Mobile: horizontal scroll pills, Desktop: card */}
-      <motion.div variants={fadeUpVariants}>
-        {/* Mobile: Compact action pills */}
-        <div className="flex gap-2 sm:hidden overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-          <Button
-            onClick={() => setPage('staking')}
-            className="btn-bnb gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0"
-          >
-            <ArrowUpRight className="h-4 w-4" />
-            {t('stake_usdt')}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setPage('commissions')}
-            className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0 transition-all"
-          >
-            <Gift className="h-4 w-4" />
-            {t('claim_all_rewards')}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setPage('staking')}
-            className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0 transition-all"
-          >
-            <ArrowDownRight className="h-4 w-4" />
-            {t('view_stakes')}
-          </Button>
-          <Button
-            variant="outline"
-            className="border-white/10 text-gray-400 hover:bg-white/5 gap-1.5 rounded-xl h-10 px-4 text-sm shrink-0 transition-all"
-          >
-            <ExternalLink className="h-4 w-4" />
-            {t('view_bscscan')}
-          </Button>
-        </div>
+      {/* Secondary Stats + Quick Actions Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+        {/* Secondary Stats */}
+        <motion.div variants={fadeUpVariants} className="lg:col-span-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatsCard
+              icon={Coins}
+              label={t('active_stakes')}
+              value={`${stakingSummary?.activeStakesCount ?? 0}`}
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
+            />
+            <StatsCard
+              icon={Gift}
+              label={t('commission_balance')}
+              value={`$${(commissionSummary?.pending?.amount ?? 0).toLocaleString()}`}
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
+            />
+            <StatsCard
+              icon={Users}
+              label={t('network_size')}
+              value={`${userStats?.networkSize ?? 0}`}
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
+            />
+            <StatsCard
+              icon={Layers}
+              label={t('direct_referrals')}
+              value={`${userStats?.directReferrals ?? 0}`}
+              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+              iconClassName="bg-[#8247E5]/10"
+            />
+          </div>
+        </motion.div>
 
-        {/* Desktop: Card with actions */}
-        <div className="hidden sm:block">
-          <Card className="glass-card transition-all duration-300">
+        {/* Quick Actions Card */}
+        <motion.div variants={fadeUpVariants}>
+          <Card className="glass-card h-full transition-all duration-300">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-white flex items-center gap-2">
-                <Zap className="h-5 w-5 text-[#F0B90B]" />
+              <CardTitle className="text-sm sm:text-base text-white flex items-center gap-2">
+                <Zap className="h-4 w-4 text-[#8247E5]" />
                 {t('quick_actions')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   onClick={() => setPage('staking')}
-                  className="btn-bnb w-full justify-center gap-2 rounded-xl h-11 text-sm"
+                  className="btn-poly w-full justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm"
                 >
-                  <ArrowUpRight className="h-4 w-4" />
+                  <ArrowUpRight className="h-3.5 w-3.5" />
                   {t('stake_usdt')}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setPage('commissions')}
-                  className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-center gap-2 rounded-xl h-11 text-sm transition-all"
+                  className="w-full border-[#8247E5]/30 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/50 justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm transition-all"
                 >
-                  <Gift className="h-4 w-4" />
+                  <Gift className="h-3.5 w-3.5" />
                   {t('claim_all_rewards')}
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setPage('staking')}
-                  className="w-full border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/50 justify-center gap-2 rounded-xl h-11 text-sm transition-all"
+                  onClick={() => setPage('network')}
+                  className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:text-white justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm transition-all"
                 >
-                  <ArrowDownRight className="h-4 w-4" />
-                  {t('view_stakes')}
+                  <Users className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">{t('nav_network')}</span>
+                  <span className="sm:hidden">{t('nav_network')}</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:border-white/20 justify-center gap-2 rounded-xl h-11 text-sm transition-all"
+                  className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:text-white justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm transition-all"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="h-3.5 w-3.5" />
                   {t('view_bscscan')}
                 </Button>
               </div>
             </CardContent>
           </Card>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* Rewards Chart */}
       <motion.div variants={fadeUpVariants}>
-        <Card className="glass-card glow-bnb overflow-hidden transition-all duration-300">
+        <Card className="glass-card glow-poly overflow-hidden transition-all duration-300">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base sm:text-lg text-white flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-[#F0B90B]" />
+                <TrendingUp className="h-5 w-5 text-[#8247E5]" />
                 {t('rewards_overview')}
               </CardTitle>
-              <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 hover:bg-[#F0B90B]/20 text-xs">
+              <Badge className="bg-[#8247E5]/10 text-[#8247E5] border-[#8247E5]/20 hover:bg-[#8247E5]/20 text-xs">
                 Live
               </Badge>
             </div>
@@ -468,17 +461,17 @@ export function DashboardPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="bnbRewardGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#F0B90B" stopOpacity={0.35} />
-                      <stop offset="50%" stopColor="#F0B90B" stopOpacity={0.12} />
-                      <stop offset="100%" stopColor="#F0B90B" stopOpacity={0} />
+                    <linearGradient id="polyRewardGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#8247E5" stopOpacity={0.35} />
+                      <stop offset="50%" stopColor="#8247E5" stopOpacity={0.12} />
+                      <stop offset="100%" stopColor="#8247E5" stopOpacity={0} />
                     </linearGradient>
-                    <linearGradient id="bnbStrokeGradient" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#C99A00" />
-                      <stop offset="50%" stopColor="#F0B90B" />
-                      <stop offset="100%" stopColor="#F8D12F" />
+                    <linearGradient id="polyStrokeGradient" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#6B33D4" />
+                      <stop offset="50%" stopColor="#8247E5" />
+                      <stop offset="100%" stopColor="#9B6DFF" />
                     </linearGradient>
-                    <filter id="bnbGlow">
+                    <filter id="polyGlow">
                       <feGaussianBlur stdDeviation="3" result="coloredBlur" />
                       <feMerge>
                         <feMergeNode in="coloredBlur" />
@@ -488,19 +481,19 @@ export function DashboardPage() {
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="rgba(240, 185, 11, 0.06)"
+                    stroke="rgba(130, 71, 229, 0.06)"
                     vertical={false}
                   />
                   <XAxis
                     dataKey="date"
-                    stroke="rgba(240, 185, 11, 0.3)"
+                    stroke="rgba(130, 71, 229, 0.3)"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
                     dy={8}
                   />
                   <YAxis
-                    stroke="rgba(240, 185, 11, 0.3)"
+                    stroke="rgba(130, 71, 229, 0.3)"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
@@ -510,14 +503,14 @@ export function DashboardPage() {
                   <Area
                     type="monotone"
                     dataKey="rewards"
-                    stroke="url(#bnbStrokeGradient)"
+                    stroke="url(#polyStrokeGradient)"
                     strokeWidth={2.5}
-                    fill="url(#bnbRewardGradient)"
-                    filter="url(#bnbGlow)"
+                    fill="url(#polyRewardGradient)"
+                    filter="url(#polyGlow)"
                     dot={false}
                     activeDot={{
                       r: 5,
-                      fill: '#F0B90B',
+                      fill: '#8247E5',
                       stroke: '#0a0a0f',
                       strokeWidth: 3,
                     }}
@@ -536,7 +529,7 @@ export function DashboardPage() {
           <Card className="glass-card transition-all duration-300 h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-base sm:text-lg text-white flex items-center gap-2">
-                <Clock className="h-5 w-5 text-[#F0B90B]" />
+                <Clock className="h-5 w-5 text-[#8247E5]" />
                 {t('recent_activity')}
               </CardTitle>
             </CardHeader>
@@ -551,7 +544,7 @@ export function DashboardPage() {
                   action={
                     <Button
                       onClick={() => setPage('staking')}
-                      className="btn-bnb gap-2 rounded-xl text-sm"
+                      className="btn-poly gap-2 rounded-xl text-sm"
                     >
                       <ArrowUpRight className="h-4 w-4" />
                       {t('start_staking')}
@@ -570,14 +563,14 @@ export function DashboardPage() {
                         delay: index * 0.05,
                         ease: [0.25, 0.46, 0.45, 0.94],
                       }}
-                      className="flex items-center justify-between p-3 rounded-xl glass-card border-l-2 border-l-[#F0B90B]/60 hover:border-l-[#F0B90B] transition-all duration-200 group"
+                      className="flex items-center justify-between p-3 rounded-xl glass-card border-l-2 border-l-[#8247E5]/60 hover:border-l-[#8247E5] transition-all duration-200 group"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="p-2 rounded-lg shrink-0 bg-[#F0B90B]/10 group-hover:bg-[#F0B90B]/20 transition-colors">
+                        <div className="p-2 rounded-lg shrink-0 bg-[#8247E5]/10 group-hover:bg-[#8247E5]/20 transition-colors">
                           {tx.commissionType === 'binary' ? (
-                            <Gift className="h-3.5 w-3.5 text-[#F0B90B]" />
+                            <Gift className="h-3.5 w-3.5 text-[#8247E5]" />
                           ) : (
-                            <TrendingUp className="h-3.5 w-3.5 text-[#F0B90B]" />
+                            <TrendingUp className="h-3.5 w-3.5 text-[#8247E5]" />
                           )}
                         </div>
                         <div className="min-w-0">
@@ -586,14 +579,14 @@ export function DashboardPage() {
                         </div>
                       </div>
                       <div className="text-right shrink-0 ml-2">
-                        <p className="text-xs sm:text-sm font-semibold text-[#F0B90B]">
+                        <p className="text-xs sm:text-sm font-semibold text-[#8247E5]">
                           +${tx.amount.toLocaleString()}
                         </p>
                         <Badge
                           variant="outline"
                           className={`text-[10px] px-1.5 py-0 ${
                             tx.status === 'completed'
-                              ? 'border-[#F0B90B]/30 text-[#F0B90B]'
+                              ? 'border-[#8247E5]/30 text-[#8247E5]'
                               : 'border-amber-500/30 text-amber-400'
                           }`}
                         >

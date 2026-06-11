@@ -6,7 +6,7 @@ import "./AccessControl.sol";
 
 /**
  * @title ReferralNFT
- * @notice Soulbound ERC-721 NFT representing a user's position in the StakeBNB MLM network.
+ * @notice Soulbound ERC-721 NFT representing a user's position in the PolyStake MLM network.
  * @dev Each registered MLM user receives a unique, non-transferable NFT with their referral
  *      code and registration timestamp stored on-chain. The NFT is "soulbound" — it cannot
  *      be transferred or approved, as it represents the user's identity in the network.
@@ -106,7 +106,7 @@ contract ReferralNFT is AccessControl {
      * @return The name string.
      */
     function name() external pure returns (string memory) {
-        return "StakeBNB Referral";
+        return "PolyStake Referral";
     }
 
     /**
@@ -114,7 +114,7 @@ contract ReferralNFT is AccessControl {
      * @return The symbol string.
      */
     function symbol() external pure returns (string memory) {
-        return "SBNB-R";
+        return "SPOLY-R";
     }
 
     /**
@@ -141,8 +141,8 @@ contract ReferralNFT is AccessControl {
 
         return string(abi.encodePacked(
             "data:application/json;utf8,{",
-            '"name":"StakeBNB Referral #', _toString(tokenId), '",',
-            '"description":"Soulbound NFT representing your position in the StakeBNB MLM network",',
+            '"name":"PolyStake Referral #', _toString(tokenId), '",',
+            '"description":"Soulbound NFT representing your position in the PolyStake MLM network",',
             '"attributes":[',
             '{"trait_type":"Referral Code","value":"', referralCode, '"},',
             '{"trait_type":"Registration Date","display_type":"date","value":', _toString(regTime), '}',
@@ -320,7 +320,7 @@ contract ReferralNFT is AccessControl {
      * @notice Updates the base URI for off-chain token metadata resolution.
      * @dev Only admin can call this. If set, tokenURI returns baseURI + tokenId.
      *      Set to empty string to revert to on-chain JSON metadata.
-     * @param newBaseURI The new base URI (e.g., "https://api.stakebnb.com/nft/").
+     * @param newBaseURI The new base URI (e.g., "https://api.polystake.io/nft/").
      */
     function updateBaseURI(string memory newBaseURI) external onlyAdmin {
         _baseURI = newBaseURI;

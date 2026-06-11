@@ -51,9 +51,9 @@ function MedalBadge({ rank }: { rank: number }) {
   const medals: Record<number, { emoji: string; bgClass: string; borderClass: string; glowClass: string }> = {
     1: {
       emoji: '🥇',
-      bgClass: 'bg-[#F0B90B]/10',
-      borderClass: 'border-[#F0B90B]/30',
-      glowClass: 'shadow-[0_0_15px_rgba(240,185,11,0.2)]',
+      bgClass: 'bg-[#8247E5]/10',
+      borderClass: 'border-[#8247E5]/30',
+      glowClass: 'shadow-[0_0_15px_rgba(130,71,229,0.2)]',
     },
     2: {
       emoji: '🥈',
@@ -82,7 +82,7 @@ function MedalBadge({ rank }: { rank: number }) {
 // Level badge
 function LevelBadge({ level }: { level: number }) {
   const getLevelColor = (lvl: number) => {
-    if (lvl >= 8) return 'text-[#F0B90B] bg-[#F0B90B]/10 border-[#F0B90B]/20'
+    if (lvl >= 8) return 'text-[#8247E5] bg-[#8247E5]/10 border-[#8247E5]/20'
     if (lvl >= 5) return 'text-purple-400 bg-purple-500/10 border-purple-500/20'
     if (lvl >= 3) return 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20'
     return 'text-gray-400 bg-gray-500/10 border-gray-500/20'
@@ -121,11 +121,11 @@ function LeaderboardRow({
 
   const rowStyles = isTop3
     ? entry.rank === 1
-      ? 'bg-[#F0B90B]/5 border-[#F0B90B]/20 hover:bg-[#F0B90B]/10'
+      ? 'bg-[#8247E5]/5 border-[#8247E5]/20 hover:bg-[#8247E5]/10'
       : entry.rank === 2
       ? 'bg-gray-400/5 border-gray-400/15 hover:bg-gray-400/8'
       : 'bg-amber-600/5 border-amber-600/15 hover:bg-amber-600/8'
-    : 'border-white/5 hover:border-[#F0B90B]/15 hover:bg-white/[0.02]'
+    : 'border-white/5 hover:border-[#8247E5]/15 hover:bg-white/[0.02]'
 
   return (
     <motion.div
@@ -139,7 +139,7 @@ function LeaderboardRow({
       className={`
         flex items-center gap-3 p-3 rounded-xl border transition-all duration-200
         ${rowStyles}
-        ${isCurrentUser ? 'ring-1 ring-[#F0B90B]/30 bg-[#F0B90B]/5' : ''}
+        ${isCurrentUser ? 'ring-1 ring-[#8247E5]/30 bg-[#8247E5]/5' : ''}
       `}
     >
       {/* Rank / Medal */}
@@ -158,7 +158,7 @@ function LeaderboardRow({
             {entry.walletAddress}
           </span>
           {isCurrentUser && (
-            <Badge className="bg-[#F0B90B]/15 text-[#F0B90B] border-[#F0B90B]/20 text-[9px] h-4 px-1.5">
+            <Badge className="bg-[#8247E5]/15 text-[#8247E5] border-[#8247E5]/20 text-[9px] h-4 px-1.5">
               YOU
             </Badge>
           )}
@@ -171,7 +171,7 @@ function LeaderboardRow({
 
       {/* Value */}
       <div className="text-right shrink-0">
-        <p className={`text-sm font-bold ${isTop3 ? 'text-gradient-bnb' : 'text-white'}`}>
+        <p className={`text-sm font-bold ${isTop3 ? 'text-gradient-poly' : 'text-white'}`}>
           {formatValue(entry.value, type)}
         </p>
         {type === 'stakers' && entry.totalStaked && (
@@ -205,8 +205,8 @@ function EmptyLeaderboard() {
   const { t } = useTranslation()
   return (
     <div className="py-12 text-center">
-      <div className="h-14 w-14 rounded-2xl bg-[#F0B90B]/10 flex items-center justify-center mx-auto mb-4">
-        <Trophy className="h-7 w-7 text-[#F0B90B]/50" />
+      <div className="h-14 w-14 rounded-2xl bg-[#8247E5]/10 flex items-center justify-center mx-auto mb-4">
+        <Trophy className="h-7 w-7 text-[#8247E5]/50" />
       </div>
       <p className="text-sm text-gray-500 mb-1">{t('no_data')}</p>
       <p className="text-xs text-gray-600">{t('leaderboard_description')}</p>
@@ -251,12 +251,12 @@ export function Leaderboard() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl text-white flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-[#F0B90B]/10">
-                <Trophy className="h-5 w-5 text-[#F0B90B]" />
+              <div className="p-1.5 rounded-lg bg-[#8247E5]/10">
+                <Trophy className="h-5 w-5 text-[#8247E5]" />
               </div>
               {t('leaderboard_title')}
             </CardTitle>
-            <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 hover:bg-[#F0B90B]/20 text-xs">
+            <Badge className="bg-[#8247E5]/10 text-[#8247E5] border-[#8247E5]/20 hover:bg-[#8247E5]/20 text-xs">
               <Crown className="h-3 w-3 mr-1" />
               {data?.total || 0} {t('players')}
             </Badge>
@@ -274,7 +274,7 @@ export function Leaderboard() {
                   flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium
                   transition-all duration-300 whitespace-nowrap shrink-0
                   ${activeType === tab.key
-                    ? 'bg-[#F0B90B]/15 text-[#F0B90B] border border-[#F0B90B]/25 shadow-[0_0_12px_rgba(240,185,11,0.1)]'
+                    ? 'bg-[#8247E5]/15 text-[#8247E5] border border-[#8247E5]/25 shadow-[0_0_12px_rgba(130,71,229,0.1)]'
                     : 'bg-[#0a0a0f]/40 text-gray-500 border border-white/5 hover:text-gray-300 hover:border-white/10'
                   }
                 `}
@@ -345,13 +345,13 @@ export function Leaderboard() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="p-3 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/15 flex items-center justify-between"
+              className="p-3 rounded-xl bg-[#8247E5]/5 border border-[#8247E5]/15 flex items-center justify-between"
             >
               <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-[#F0B90B]" />
+                <Zap className="h-4 w-4 text-[#8247E5]" />
                 <span className="text-sm text-gray-300">{t('you_rank')}</span>
               </div>
-              <span className="text-sm font-bold text-[#F0B90B]">
+              <span className="text-sm font-bold text-[#8247E5]">
                 {userRank ? `#${userRank}` : t('not_ranked')}
               </span>
             </motion.div>

@@ -80,16 +80,16 @@ function UnilevelNodeComponent({ node, level }: UnilevelNodeProps) {
       >
         <div className={`px-4 py-3 rounded-xl text-center min-w-[150px] backdrop-blur-md transition-all duration-300 ${
           node.isActive
-            ? 'bg-[#0a0a0f]/80 border border-[#F0B90B]/30 shadow-[0_0_15px_rgba(240,185,11,0.08)]'
+            ? 'bg-[#0a0a0f]/80 border border-[#8247E5]/30 shadow-[0_0_15px_rgba(130,71,229,0.08)]'
             : 'bg-[#0a0a0f]/50 border border-dashed border-gray-700'
         }`}>
           <p className="text-xs font-mono text-gray-300">{truncateAddress(node.walletAddress)}</p>
-          <p className="text-sm font-semibold text-[#F0B90B] mt-1">
+          <p className="text-sm font-semibold text-[#8247E5] mt-1">
             ${node.totalStaked.toLocaleString()}
           </p>
           <Badge variant="outline" className={`mt-1 text-xs ${
             node.isActive
-              ? 'border-[#F0B90B]/30 text-[#F0B90B] bg-[#F0B90B]/5'
+              ? 'border-[#8247E5]/30 text-[#8247E5] bg-[#8247E5]/5'
               : 'border-gray-600 text-gray-500'
           }`}>
             {node.isActive ? 'Active' : 'Inactive'}
@@ -98,9 +98,9 @@ function UnilevelNodeComponent({ node, level }: UnilevelNodeProps) {
       </motion.div>
       {node.children && node.children.length > 0 && (
         <>
-          <div className="w-px h-5 bg-gradient-to-b from-[#F0B90B]/40 to-[#F0B90B]/10" />
+          <div className="w-px h-5 bg-gradient-to-b from-[#8247E5]/40 to-[#8247E5]/10" />
           <div className="relative flex gap-4 sm:gap-8">
-            <div className="absolute top-0 left-1/2 right-1/2 h-px bg-gradient-to-r from-transparent via-[#F0B90B]/30 to-transparent" />
+            <div className="absolute top-0 left-1/2 right-1/2 h-px bg-gradient-to-r from-transparent via-[#8247E5]/30 to-transparent" />
             {node.children.map((child, i) => (
               <UnilevelNodeComponent key={child.id || i} node={child} level={level + 1} />
             ))}
@@ -135,8 +135,8 @@ function BinaryNodeComponent({ node, side = 'root', level }: BinaryNodeProps) {
   const borderColor = side === 'left'
     ? 'border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.06)]'
     : side === 'right'
-    ? 'border-[#F0B90B]/40 shadow-[0_0_12px_rgba(240,185,11,0.06)]'
-    : 'border-[#F0B90B]/20'
+    ? 'border-[#8247E5]/40 shadow-[0_0_12px_rgba(130,71,229,0.06)]'
+    : 'border-[#8247E5]/20'
 
   return (
     <div className="flex flex-col items-center">
@@ -150,11 +150,11 @@ function BinaryNodeComponent({ node, side = 'root', level }: BinaryNodeProps) {
           <p className="text-xs font-mono text-gray-300">{truncateAddress(node.walletAddress)}</p>
           <div className="flex justify-between gap-2 mt-1 text-xs">
             <span className="text-emerald-400">L: ${node.leftVolume.toLocaleString()}</span>
-            <span className="text-[#F0B90B]">R: ${node.rightVolume.toLocaleString()}</span>
+            <span className="text-[#8247E5]">R: ${node.rightVolume.toLocaleString()}</span>
           </div>
           <Badge variant="outline" className={`mt-1 text-xs ${
             node.isActive
-              ? 'border-[#F0B90B]/30 text-[#F0B90B] bg-[#F0B90B]/5'
+              ? 'border-[#8247E5]/30 text-[#8247E5] bg-[#8247E5]/5'
               : 'border-gray-600 text-gray-500'
           }`}>
             {node.isActive ? 'Active' : 'Inactive'}
@@ -167,8 +167,8 @@ function BinaryNodeComponent({ node, side = 'root', level }: BinaryNodeProps) {
             side === 'left'
               ? 'bg-gradient-to-b from-emerald-500/40 to-emerald-500/10'
               : side === 'right'
-              ? 'bg-gradient-to-b from-[#F0B90B]/40 to-[#F0B90B]/10'
-              : 'bg-gradient-to-b from-[#F0B90B]/30 to-[#F0B90B]/10'
+              ? 'bg-gradient-to-b from-[#8247E5]/40 to-[#8247E5]/10'
+              : 'bg-gradient-to-b from-[#8247E5]/30 to-[#8247E5]/10'
           }`} />
           <div className="flex gap-4 sm:gap-6">
             <BinaryNodeComponent node={node.left} side="left" level={level + 1} />
@@ -196,7 +196,7 @@ export function NetworkPage() {
   })
 
   const referralCode = networkData?.referralLink?.referralCode || 'demo'
-  const referralLink = `https://stakebnb.io/ref/${referralCode}`
+  const referralLink = `https://polystake.io/ref/${referralCode}`
 
   const handleCopy = async () => {
     try {
@@ -229,12 +229,12 @@ export function NetworkPage() {
       <PageHeader title={t('network_title')} description={t('network_description')} />
 
       {/* Referral Link - Glass card with golden accent */}
-      <Card className="glass-card glow-bnb rounded-2xl">
+      <Card className="glass-card glow-poly rounded-2xl">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <div className="p-2 rounded-lg bg-[#F0B90B]/10">
-                <Link2 className="h-5 w-5 text-[#F0B90B]" />
+              <div className="p-2 rounded-lg bg-[#8247E5]/10">
+                <Link2 className="h-5 w-5 text-[#8247E5]" />
               </div>
               <span className="text-sm font-medium text-white">{t('referral_link')}</span>
             </div>
@@ -242,7 +242,7 @@ export function NetworkPage() {
               <Input
                 value={referralLink}
                 readOnly
-                className="bg-[#0a0a0f]/60 border-[#F0B90B]/15 text-gray-300 text-sm font-mono focus-visible:ring-[#F0B90B]/30"
+                className="bg-[#0a0a0f]/60 border-[#8247E5]/15 text-gray-300 text-sm font-mono focus-visible:ring-[#8247E5]/30"
               />
               <Button
                 onClick={handleCopy}
@@ -250,11 +250,11 @@ export function NetworkPage() {
                 size="icon"
                 className={`shrink-0 rounded-xl transition-all duration-300 ${
                   copied
-                    ? 'border-[#F0B90B]/50 bg-[#F0B90B]/10 text-[#F0B90B]'
-                    : 'border-[#F0B90B]/20 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/40'
+                    ? 'border-[#8247E5]/50 bg-[#8247E5]/10 text-[#8247E5]'
+                    : 'border-[#8247E5]/20 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/40'
                 }`}
               >
-                {copied ? <Check className="h-4 w-4 text-[#F0B90B]" /> : <Copy className="h-4 w-4 text-[#F0B90B]" />}
+                {copied ? <Check className="h-4 w-4 text-[#8247E5]" /> : <Copy className="h-4 w-4 text-[#8247E5]" />}
               </Button>
             </div>
           </div>
@@ -275,12 +275,12 @@ export function NetworkPage() {
 
       {/* Tree Tabs */}
       <Tabs defaultValue="unilevel" className="space-y-4">
-        <TabsList className="bg-[#0a0a0f]/80 border border-[#F0B90B]/10 backdrop-blur-sm">
-          <TabsTrigger value="unilevel" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
+        <TabsList className="bg-[#0a0a0f]/80 border border-[#8247E5]/10 backdrop-blur-sm">
+          <TabsTrigger value="unilevel" className="data-[state=active]:bg-[#8247E5] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
             <TreePine className="h-4 w-4 mr-2" />
             {t('unilevel')}
           </TabsTrigger>
-          <TabsTrigger value="binary" className="data-[state=active]:bg-[#F0B90B] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
+          <TabsTrigger value="binary" className="data-[state=active]:bg-[#8247E5] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold">
             <GitBranch className="h-4 w-4 mr-2" />
             {t('binary')}
           </TabsTrigger>
@@ -290,7 +290,7 @@ export function NetworkPage() {
           <Card className="glass-card rounded-2xl">
             <CardHeader>
               <CardTitle className="text-lg text-white flex items-center gap-2">
-                <TreePine className="h-5 w-5 text-[#F0B90B]" />
+                <TreePine className="h-5 w-5 text-[#8247E5]" />
                 {t('unilevel_tree')}
               </CardTitle>
             </CardHeader>
@@ -312,7 +312,7 @@ export function NetworkPage() {
                   </div>
                   <div className="flex items-center justify-center gap-6 mt-4 text-xs text-gray-500">
                     <div className="flex items-center gap-1.5">
-                      <div className="h-3 w-3 rounded border border-[#F0B90B]/30 bg-[#F0B90B]/10" />
+                      <div className="h-3 w-3 rounded border border-[#8247E5]/30 bg-[#8247E5]/10" />
                       {t('active')}
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -331,7 +331,7 @@ export function NetworkPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg text-white flex items-center gap-2">
-                  <GitBranch className="h-5 w-5 text-[#F0B90B]" />
+                  <GitBranch className="h-5 w-5 text-[#8247E5]" />
                   {t('binary_tree')}
                 </CardTitle>
                 <div className="flex items-center gap-4 text-xs">
@@ -340,7 +340,7 @@ export function NetworkPage() {
                     {t('left_leg')}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="h-3 w-3 rounded bg-[#F0B90B]/20 border border-[#F0B90B]/40" />
+                    <div className="h-3 w-3 rounded bg-[#8247E5]/20 border border-[#8247E5]/40" />
                     {t('right_leg')}
                   </div>
                 </div>
@@ -367,9 +367,9 @@ export function NetworkPage() {
                       <p className="text-sm text-gray-400 mb-1">{t('left_volume')}</p>
                       <p className="text-2xl font-bold text-emerald-400">${(stats?.leftVolume ?? 0).toLocaleString()}</p>
                     </div>
-                    <div className="p-5 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/20 text-center shadow-[0_0_20px_rgba(240,185,11,0.05)]">
+                    <div className="p-5 rounded-xl bg-[#8247E5]/5 border border-[#8247E5]/20 text-center shadow-[0_0_20px_rgba(130,71,229,0.05)]">
                       <p className="text-sm text-gray-400 mb-1">{t('right_volume')}</p>
-                      <p className="text-2xl font-bold text-[#F0B90B]">${(stats?.rightVolume ?? 0).toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-[#8247E5]">${(stats?.rightVolume ?? 0).toLocaleString()}</p>
                     </div>
                   </div>
                 </>

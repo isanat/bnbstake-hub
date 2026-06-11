@@ -94,7 +94,7 @@ function AchievementIcon({ name, className }: { name: string; className?: string
 const tierConfig: Record<string, { bg: string; border: string; text: string; label: string }> = {
   bronze: { bg: 'bg-amber-700/20', border: 'border-amber-700/40', text: 'text-amber-600', label: 'Bronze' },
   silver: { bg: 'bg-gray-400/20', border: 'border-gray-400/40', text: 'text-gray-300', label: 'Silver' },
-  gold: { bg: 'bg-[#F0B90B]/20', border: 'border-[#F0B90B]/40', text: 'text-[#F0B90B]', label: 'Gold' },
+  gold: { bg: 'bg-[#8247E5]/20', border: 'border-[#8247E5]/40', text: 'text-[#8247E5]', label: 'Gold' },
   diamond: { bg: 'bg-cyan-400/20', border: 'border-cyan-400/40', text: 'text-cyan-400', label: 'Diamond' },
 }
 
@@ -103,7 +103,7 @@ const tierConfig: Record<string, { bg: string; border: string; text: string; lab
 // ========================
 function getStakerTier(level: number): { key: string; label: string; color: string; bg: string; border: string; icon: React.ComponentType<{ className?: string }> } {
   if (level >= 10) return { key: 'diamond', label: 'Diamond', color: 'text-cyan-400', bg: 'bg-cyan-400/20', border: 'border-cyan-400/40', icon: Gem }
-  if (level >= 7) return { key: 'gold', label: 'Gold', color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/20', border: 'border-[#F0B90B]/40', icon: Crown }
+  if (level >= 7) return { key: 'gold', label: 'Gold', color: 'text-[#8247E5]', bg: 'bg-[#8247E5]/20', border: 'border-[#8247E5]/40', icon: Crown }
   if (level >= 4) return { key: 'silver', label: 'Silver', color: 'text-gray-300', bg: 'bg-gray-400/20', border: 'border-gray-400/40', icon: Shield }
   return { key: 'bronze', label: 'Bronze', color: 'text-amber-600', bg: 'bg-amber-700/20', border: 'border-amber-700/40', icon: Award }
 }
@@ -202,13 +202,13 @@ function AchievementCard({
       onClick={onClick}
       className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 ${
         isUnlocked
-          ? 'glass-card border-[#F0B90B]/30 hover:border-[#F0B90B]/50 glow-bnb'
+          ? 'glass-card border-[#8247E5]/30 hover:border-[#8247E5]/50 glow-poly'
           : 'glass-card opacity-60 grayscale-[30%] hover:grayscale-0 hover:opacity-80'
       }`}
     >
       {/* Golden glow overlay for unlocked */}
       {isUnlocked && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#F0B90B]/5 via-transparent to-[#F0B90B]/5 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#8247E5]/5 via-transparent to-[#8247E5]/5 pointer-events-none" />
       )}
 
       {/* Lock overlay for locked */}
@@ -224,9 +224,9 @@ function AchievementCard({
         {/* Icon + Tier */}
         <div className="flex items-start justify-between">
           <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${
-            isUnlocked ? 'bg-[#F0B90B]/15 border border-[#F0B90B]/20' : 'bg-white/5 border border-white/10'
+            isUnlocked ? 'bg-[#8247E5]/15 border border-[#8247E5]/20' : 'bg-white/5 border border-white/10'
           }`}>
-            <AchievementIcon name={achievement.icon} className={`h-5 w-5 ${isUnlocked ? 'text-[#F0B90B]' : 'text-gray-500'}`} />
+            <AchievementIcon name={achievement.icon} className={`h-5 w-5 ${isUnlocked ? 'text-[#8247E5]' : 'text-gray-500'}`} />
           </div>
           <TierBadge tier={achievement.tier} />
         </div>
@@ -245,7 +245,7 @@ function AchievementCard({
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-gray-500">Progress</span>
-            <span className={isUnlocked ? 'text-[#F0B90B] font-medium' : 'text-gray-500'}>
+            <span className={isUnlocked ? 'text-[#8247E5] font-medium' : 'text-gray-500'}>
               {achievement.progress}%
             </span>
           </div>
@@ -257,8 +257,8 @@ function AchievementCard({
               className="h-full rounded-full"
               style={{
                 background: isUnlocked
-                  ? 'linear-gradient(90deg, #C99A00, #F0B90B, #F8D12F)'
-                  : 'linear-gradient(90deg, rgba(240,185,11,0.3), rgba(240,185,11,0.5))',
+                  ? 'linear-gradient(90deg, #6B33D4, #8247E5, #9B6DFF)'
+                  : 'linear-gradient(90deg, rgba(130,71,229,0.3), rgba(130,71,229,0.5))',
               }}
             />
           </div>
@@ -267,8 +267,8 @@ function AchievementCard({
         {/* XP Reward & Claim Button */}
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-[#F0B90B]" />
-            <span className="text-xs font-semibold text-[#F0B90B]">
+            <Sparkles className="h-3.5 w-3.5 text-[#8247E5]" />
+            <span className="text-xs font-semibold text-[#8247E5]">
               +{achievement.xpReward} XP
             </span>
           </div>
@@ -286,7 +286,7 @@ function AchievementCard({
                 onClaim()
               }}
               disabled={isClaiming}
-              className="btn-bnb h-7 px-3 rounded-lg text-xs gap-1 font-semibold"
+              className="btn-poly h-7 px-3 rounded-lg text-xs gap-1 font-semibold"
             >
               {isClaiming ? (
                 <motion.div
@@ -336,7 +336,7 @@ function AchievementDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-strong border-[#F0B90B]/20 max-w-md">
+      <DialogContent className="glass-strong border-[#8247E5]/20 max-w-md">
         <DialogHeader>
           <DialogTitle className="sr-only">{name}</DialogTitle>
           <DialogDescription className="sr-only">{desc}</DialogDescription>
@@ -351,11 +351,11 @@ function AchievementDetailModal({
               transition={{ type: 'spring', stiffness: 200, damping: 15 }}
               className={`relative h-20 w-20 rounded-2xl flex items-center justify-center ${
                 isUnlocked
-                  ? 'bg-[#F0B90B]/15 border-2 border-[#F0B90B]/30 glow-bnb'
+                  ? 'bg-[#8247E5]/15 border-2 border-[#8247E5]/30 glow-poly'
                   : 'bg-white/5 border border-white/10'
               }`}
             >
-              <AchievementIcon name={achievement.icon} className={`h-9 w-9 ${isUnlocked ? 'text-[#F0B90B]' : 'text-gray-500'}`} />
+              <AchievementIcon name={achievement.icon} className={`h-9 w-9 ${isUnlocked ? 'text-[#8247E5]' : 'text-gray-500'}`} />
               {isUnlocked && (
                 <motion.div
                   initial={{ scale: 0 }}
@@ -379,7 +379,7 @@ function AchievementDetailModal({
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-400">Progress</span>
-              <span className="text-[#F0B90B] font-bold">{achievement.progress}%</span>
+              <span className="text-[#8247E5] font-bold">{achievement.progress}%</span>
             </div>
 
             <div className="h-3 w-full rounded-full bg-white/5 overflow-hidden">
@@ -390,8 +390,8 @@ function AchievementDetailModal({
                 className="h-full rounded-full"
                 style={{
                   background: isUnlocked
-                    ? 'linear-gradient(90deg, #C99A00, #F0B90B, #F8D12F)'
-                    : 'linear-gradient(90deg, rgba(240,185,11,0.3), rgba(240,185,11,0.5))',
+                    ? 'linear-gradient(90deg, #6B33D4, #8247E5, #9B6DFF)'
+                    : 'linear-gradient(90deg, rgba(130,71,229,0.3), rgba(130,71,229,0.5))',
                 }}
               />
             </div>
@@ -407,10 +407,10 @@ function AchievementDetailModal({
             <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Rewards</h4>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#F0B90B]" />
+                <Sparkles className="h-4 w-4 text-[#8247E5]" />
                 <span className="text-sm text-white">Experience Points</span>
               </div>
-              <span className="text-sm font-bold text-[#F0B90B]">+{achievement.xpReward} XP</span>
+              <span className="text-sm font-bold text-[#8247E5]">+{achievement.xpReward} XP</span>
             </div>
             {achievement.reward && achievement.reward.type && (
               <div className="flex items-center justify-between">
@@ -438,7 +438,7 @@ function AchievementDetailModal({
             <Button
               onClick={onClaim}
               disabled={isClaiming}
-              className="btn-bnb w-full h-12 rounded-xl text-sm gap-2 font-semibold"
+              className="btn-poly w-full h-12 rounded-xl text-sm gap-2 font-semibold"
             >
               {isClaiming ? (
                 <motion.div
@@ -552,9 +552,9 @@ export function AchievementsPage() {
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               className="relative inline-block mb-8"
             >
-              <div className="absolute inset-0 rounded-3xl bg-[#F0B90B]/10 blur-3xl scale-150" />
-              <div className="relative p-6 rounded-3xl glass-card glow-bnb-strong">
-                <Trophy className="h-14 w-14 text-[#F0B90B]" strokeWidth={1.5} />
+              <div className="absolute inset-0 rounded-3xl bg-[#8247E5]/10 blur-3xl scale-150" />
+              <div className="relative p-6 rounded-3xl glass-card glow-poly-strong">
+                <Trophy className="h-14 w-14 text-[#8247E5]" strokeWidth={1.5} />
               </div>
             </motion.div>
 
@@ -572,7 +572,7 @@ export function AchievementsPage() {
               transition={{ delay: 0.3 }}
               className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed"
             >
-              {t('achievements_connect_desc') !== 'achievements_connect_desc' ? t('achievements_connect_desc') : 'Connect your wallet to start earning achievements, track your XP, and claim rewards as you stake and grow your network on BNB Smart Chain.'}
+              {t('achievements_connect_desc') !== 'achievements_connect_desc' ? t('achievements_connect_desc') : 'Connect your wallet to start earning achievements, track your XP, and claim rewards as you stake and grow your network on Polygon.'}
             </motion.p>
 
             <motion.div
@@ -587,7 +587,7 @@ export function AchievementsPage() {
                 { icon: Gift, text: 'Claim Rewards' },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
-                  <item.icon className="h-4 w-4 text-[#F0B90B]" />
+                  <item.icon className="h-4 w-4 text-[#8247E5]" />
                   {item.text}
                 </div>
               ))}
@@ -619,7 +619,7 @@ export function AchievementsPage() {
 
       {/* Level & XP Header */}
       <motion.div variants={fadeUpVariants}>
-        <Card className="glass-card glow-bnb overflow-hidden">
+        <Card className="glass-card glow-poly overflow-hidden">
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row items-center gap-6">
               {/* Level Badge */}
@@ -632,13 +632,13 @@ export function AchievementsPage() {
                 {/* Golden ring */}
                 <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-full flex items-center justify-center relative">
                   {/* Outer glow ring */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#F0B90B]/30 via-[#F8D12F]/10 to-[#C99A00]/20 animate-pulse-glow" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#8247E5]/30 via-[#9B6DFF]/10 to-[#6B33D4]/20 animate-pulse-glow" />
                   {/* Border ring */}
-                  <div className="absolute inset-[3px] rounded-full border-2 border-[#F0B90B]/40" />
+                  <div className="absolute inset-[3px] rounded-full border-2 border-[#8247E5]/40" />
                   {/* Inner background */}
-                  <div className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-gradient-to-br from-[#0a0a0f] to-[#1a1a2e] flex flex-col items-center justify-center border-2 border-[#F0B90B]/50">
-                    <span className="text-2xl sm:text-3xl font-extrabold text-gradient-bnb">Level</span>
-                    <span className="text-3xl sm:text-4xl font-black text-[#F0B90B]">{level}</span>
+                  <div className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-gradient-to-br from-[#0a0a0f] to-[#1a1a2e] flex flex-col items-center justify-center border-2 border-[#8247E5]/50">
+                    <span className="text-2xl sm:text-3xl font-extrabold text-gradient-poly">Level</span>
+                    <span className="text-3xl sm:text-4xl font-black text-[#8247E5]">{level}</span>
                   </div>
                 </div>
               </motion.div>
@@ -656,7 +656,7 @@ export function AchievementsPage() {
                 {/* XP Text */}
                 <div>
                   <p className="text-sm text-gray-400 mb-2">
-                    XP: <span className="text-[#F0B90B] font-semibold">{xp}</span> / <span className="text-white font-medium">{xpForNextLevel}</span> to Level {level + 1}
+                    XP: <span className="text-[#8247E5] font-semibold">{xp}</span> / <span className="text-white font-medium">{xpForNextLevel}</span> to Level {level + 1}
                   </p>
 
                   {/* XP Progress Bar */}
@@ -667,7 +667,7 @@ export function AchievementsPage() {
                       transition={{ duration: 1.5, ease: 'easeOut', delay: 0.3 }}
                       className="h-full rounded-full relative overflow-hidden"
                       style={{
-                        background: 'linear-gradient(90deg, #C99A00, #F0B90B, #F8D12F)',
+                        background: 'linear-gradient(90deg, #6B33D4, #8247E5, #9B6DFF)',
                       }}
                     >
                       {/* Shimmer effect */}
@@ -679,11 +679,11 @@ export function AchievementsPage() {
                 {/* Quick Stats */}
                 <div className="flex items-center gap-4 text-xs">
                   <div className="flex items-center gap-1.5">
-                    <Trophy className="h-3.5 w-3.5 text-[#F0B90B]" />
+                    <Trophy className="h-3.5 w-3.5 text-[#8247E5]" />
                     <span className="text-gray-400">{unlockedCount}/{totalCount} Unlocked</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-[#F0B90B]" />
+                    <Sparkles className="h-3.5 w-3.5 text-[#8247E5]" />
                     <span className="text-gray-400">{xp} Total XP</span>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -704,15 +704,15 @@ export function AchievementsPage() {
             icon: Trophy,
             label: t('achievements_total') !== 'achievements_total' ? t('achievements_total') : 'Total Achievements',
             value: `${unlockedCount}/${totalCount}`,
-            color: 'text-[#F0B90B]',
-            bg: 'bg-[#F0B90B]/10',
+            color: 'text-[#8247E5]',
+            bg: 'bg-[#8247E5]/10',
           },
           {
             icon: Sparkles,
             label: t('achievements_xp_earned') !== 'achievements_xp_earned' ? t('achievements_xp_earned') : 'Total XP Earned',
             value: totalXpEarned.toString(),
-            color: 'text-[#F0B90B]',
-            bg: 'bg-[#F0B90B]/10',
+            color: 'text-[#8247E5]',
+            bg: 'bg-[#8247E5]/10',
           },
           {
             icon: CheckCircle2,
@@ -732,7 +732,7 @@ export function AchievementsPage() {
           },
         ].map((stat, i) => (
           <motion.div key={stat.label} variants={itemVariants}>
-            <Card className="glass-card hover:border-[#F0B90B]/30 transition-all duration-300">
+            <Card className="glass-card hover:border-[#8247E5]/30 transition-all duration-300">
               <CardContent className="p-4 flex items-center gap-3">
                 <div className={`h-10 w-10 rounded-xl ${stat.bg} flex items-center justify-center shrink-0`}>
                   <stat.icon className={`h-5 w-5 ${stat.color}`} />
@@ -760,7 +760,7 @@ export function AchievementsPage() {
       ) : achievements.length === 0 ? (
         <Card className="glass-card">
           <CardContent className="p-8 text-center">
-            <Trophy className="h-10 w-10 text-[#F0B90B] mx-auto mb-3" />
+            <Trophy className="h-10 w-10 text-[#8247E5] mx-auto mb-3" />
             <p className="text-gray-400">{t('achievements_empty') !== 'achievements_empty' ? t('achievements_empty') : 'No achievements available yet.'}</p>
           </CardContent>
         </Card>

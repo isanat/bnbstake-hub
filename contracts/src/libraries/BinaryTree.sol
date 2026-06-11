@@ -242,7 +242,7 @@ library BinaryTree {
      *      - With EIP-2929 cold/warm storage, the first access is ~2100 gas,
      *        subsequent accesses are ~100 gas.
      *      - A tree depth of 30 would cost roughly 30 * 5000 = 150k gas —
-     *        acceptable for BSC but deep trees should be monitored.
+     *        acceptable for Polygon but deep trees should be monitored.
      *
      *      Note: The loop is bounded by the tree depth. In a well-managed
      *      MLM binary tree, depth rarely exceeds 50. However, there is no

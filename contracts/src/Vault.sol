@@ -7,7 +7,7 @@ import "./AccessControl.sol";
 
 /**
  * @title Vault
- * @notice Secure treasury for the StakeBNB system. Holds all deposited USDT.
+ * @notice Secure treasury for the PolyStake system. Holds all deposited USDT.
  * @dev Only authorized operators (StakingPool, Distributors) can withdraw funds.
  *      Admin can emergency withdraw (with timelock).
  *      Implements reentrancy guard for all state-changing functions.
@@ -25,7 +25,7 @@ contract Vault is IVault, AccessControl {
     //                        State Variables
     // ============================================================
 
-    /// @notice The USDT (BEP-20) token contract — immutable for security
+    /// @notice The USDT (ERC-20) token contract — immutable for security
     IERC20Extended public immutable usdt;
 
     /// @notice Tracks total deposits per token (for accounting)
@@ -33,7 +33,7 @@ contract Vault is IVault, AccessControl {
 
     /// @notice Tracks allocated (reserved but not yet withdrawn) amounts per token
     /// @dev Reserved for future use: pre-allocation to prevent operator race conditions.
-    ///      Currently not enforced in withdraw() — relies on sequential tx execution on BSC.
+    ///      Currently not enforced in withdraw() — relies on sequential tx execution on Polygon.
     mapping(address => uint256) public allocatedFunds;
 
     /// @dev Reentrancy guard status
@@ -58,7 +58,7 @@ contract Vault is IVault, AccessControl {
 
     /**
      * @notice Initializes the Vault with the USDT token address.
-     * @param _usdt The address of the USDT (BEP-20) token contract.
+     * @param _usdt The address of the USDT (ERC-20) token contract.
      */
     constructor(address _usdt) {
         require(_usdt != address(0), "Vault: zero address");

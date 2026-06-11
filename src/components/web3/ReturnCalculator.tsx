@@ -39,7 +39,7 @@ const DURATION_OPTIONS = [
 
 const SCENARIOS = [
   { key: 'conservative', label: 'Conservative', multiplier: 0.5, color: '#06b6d4', icon: Shield, desc: '50% of APY' },
-  { key: 'moderate', label: 'Moderate', multiplier: 1.0, color: '#F0B90B', icon: TrendingUp, desc: '100% of APY' },
+  { key: 'moderate', label: 'Moderate', multiplier: 1.0, color: '#8247E5', icon: TrendingUp, desc: '100% of APY' },
   { key: 'optimistic', label: 'Optimistic', multiplier: 1.2, color: '#10b981', icon: Rocket, desc: '120% of APY' },
 ]
 
@@ -79,12 +79,12 @@ function useAnimatedNumber(target: number, _duration: number = 800) {
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="glass-strong rounded-xl px-4 py-3 shadow-2xl glow-bnb">
+    <div className="glass-strong rounded-xl px-4 py-3 shadow-2xl glow-poly">
       <p className="text-xs text-gray-400 mb-1">{label}</p>
       {payload.map((entry, i) => {
         const scenario = SCENARIOS.find(s => s.key === entry.dataKey)
         return (
-          <p key={i} className="text-sm font-bold" style={{ color: scenario?.color || '#F0B90B' }}>
+          <p key={i} className="text-sm font-bold" style={{ color: scenario?.color || '#8247E5' }}>
             ${entry.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </p>
         )
@@ -102,9 +102,9 @@ function AnimatedStatItem({ label, value, icon, isPercentage }: {
 }) {
   const animatedVal = useAnimatedNumber(value, 600)
   return (
-    <div className="text-center p-3 rounded-xl glass border border-[#F0B90B]/8">
+    <div className="text-center p-3 rounded-xl glass border border-[#8247E5]/8">
       <span className="text-sm">{icon}</span>
-      <p className="text-lg sm:text-xl font-bold text-[#F8D12F] mt-1">
+      <p className="text-lg sm:text-xl font-bold text-[#8247E5] mt-1">
         {isPercentage
           ? `${animatedVal.toFixed(1)}%`
           : `$${animatedVal.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
@@ -271,16 +271,16 @@ export function ReturnCalculator() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
-      <Card className="glass-card glow-bnb overflow-hidden transition-all duration-300">
+      <Card className="glass-card glow-poly overflow-hidden transition-all duration-300">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl text-white flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-[#F0B90B]/10">
-                <Calculator className="h-5 w-5 text-[#F0B90B]" />
+              <div className="p-1.5 rounded-lg bg-[#8247E5]/10">
+                <Calculator className="h-5 w-5 text-[#8247E5]" />
               </div>
               {t('calculator_title')}
             </CardTitle>
-            <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/20 hover:bg-[#F0B90B]/20 text-xs">
+            <Badge className="bg-[#8247E5]/10 text-[#8247E5] border-[#8247E5]/20 hover:bg-[#8247E5]/20 text-xs">
               <Sparkles className="h-3 w-3 mr-1" />
               {t('interactive')}
             </Badge>
@@ -292,14 +292,14 @@ export function ReturnCalculator() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-300 flex items-center gap-1.5">
-                <DollarSign className="h-4 w-4 text-[#F0B90B]" />
+                <DollarSign className="h-4 w-4 text-[#8247E5]" />
                 {t('investment_amount')}
               </label>
               <motion.span
                 key={investmentAmount}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-lg font-bold text-gradient-bnb"
+                className="text-lg font-bold text-gradient-poly"
               >
                 ${investmentAmount.toLocaleString()}
               </motion.span>
@@ -312,11 +312,11 @@ export function ReturnCalculator() {
                 max={200000}
                 step={100}
                 onValueChange={handleSliderChange}
-                className="w-full [&_[data-slot=slider-track]]:bg-[#F0B90B]/10 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-gradient-to-r [&_[data-slot=slider-range]]:from-[#C99A00] [&_[data-slot=slider-range]]:via-[#F0B90B] [&_[data-slot=slider-range]]:to-[#F8D12F] [&_[data-slot=slider-thumb]]:h-5 [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:border-[#F0B90B] [&_[data-slot=slider-thumb]]:bg-[#0a0a0f] [&_[data-slot=slider-thumb]]:shadow-[0_0_10px_rgba(240,185,11,0.3)]"
+                className="w-full [&_[data-slot=slider-track]]:bg-[#8247E5]/10 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-gradient-to-r [&_[data-slot=slider-range]]:from-[#6D3BC4] [&_[data-slot=slider-range]]:via-[#8247E5] [&_[data-slot=slider-range]]:to-[#A78BFA] [&_[data-slot=slider-thumb]]:h-5 [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:border-[#8247E5] [&_[data-slot=slider-thumb]]:bg-[#0a0a0f] [&_[data-slot=slider-thumb]]:shadow-[0_0_10px_rgba(130,71,229,0.3)]"
               />
               <div className="flex justify-between mt-2 text-xs text-gray-600">
                 {sliderMarks.map(mark => (
-                  <span key={mark} className="cursor-pointer hover:text-[#F0B90B] transition-colors"
+                  <span key={mark} className="cursor-pointer hover:text-[#8247E5] transition-colors"
                     onClick={() => setInvestmentAmount(mark)}
                   >
                     {formatCurrency(mark)}
@@ -331,19 +331,19 @@ export function ReturnCalculator() {
             {/* Plan Selector */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300 flex items-center gap-1.5">
-                <Zap className="h-4 w-4 text-[#F0B90B]" />
+                <Zap className="h-4 w-4 text-[#8247E5]" />
                 {t('staking_title')}
               </label>
               <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
-                <SelectTrigger className="w-full bg-[#0a0a0f]/60 border-[#F0B90B]/15 text-white focus:ring-[#F0B90B]/30 focus:border-[#F0B90B]/30 rounded-xl h-11">
+                <SelectTrigger className="w-full bg-[#0a0a0f]/60 border-[#8247E5]/15 text-white focus:ring-[#8247E5]/30 focus:border-[#8247E5]/30 rounded-xl h-11">
                   <SelectValue placeholder="Choose a plan" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f1a] border-[#F0B90B]/15">
+                <SelectContent className="bg-[#0f0f1a] border-[#8247E5]/15">
                   {plans.map((plan: { id: string; name: string; apy: number; durationDays: number }) => (
-                    <SelectItem key={plan.id} value={plan.id} className="text-white focus:bg-[#F0B90B]/10 focus:text-[#F8D12F]">
+                    <SelectItem key={plan.id} value={plan.id} className="text-white focus:bg-[#8247E5]/10 focus:text-[#A78BFA]">
                       <div className="flex items-center gap-2">
                         <span>{plan.name}</span>
-                        <span className="text-[#F0B90B] text-xs font-bold">{(plan.apy / 365).toFixed(2)}%/dia</span>
+                        <span className="text-[#8247E5] text-xs font-bold">{(plan.apy / 365).toFixed(2)}%/dia</span>
                         <span className="text-gray-600 text-xs">({plan.apy}% APY)</span>
                       </div>
                     </SelectItem>
@@ -355,7 +355,7 @@ export function ReturnCalculator() {
             {/* Duration Selector */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300 flex items-center gap-1.5">
-                <Clock className="h-4 w-4 text-[#F0B90B]" />
+                <Clock className="h-4 w-4 text-[#8247E5]" />
                 {t('duration')}
               </label>
               <div className="flex gap-2">
@@ -366,7 +366,7 @@ export function ReturnCalculator() {
                     className={`
                       flex-1 h-11 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300
                       ${selectedDuration === opt.value
-                        ? 'bg-[#F0B90B]/15 text-[#F0B90B] border border-[#F0B90B]/30 shadow-[0_0_12px_rgba(240,185,11,0.15)]'
+                        ? 'bg-[#8247E5]/15 text-[#8247E5] border border-[#8247E5]/30 shadow-[0_0_12px_rgba(130,71,229,0.15)]'
                         : 'bg-[#0a0a0f]/40 text-gray-500 border border-white/5 hover:text-gray-300 hover:border-white/10'
                       }
                     `}
@@ -405,7 +405,7 @@ export function ReturnCalculator() {
           {/* Projected Growth Chart */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-[#F0B90B]" />
+              <TrendingUp className="h-4 w-4 text-[#8247E5]" />
               <span className="text-sm font-medium text-gray-300">{t('projected_growth')}</span>
               <div className="flex items-center gap-3 ml-auto">
                 {SCENARIOS.map(s => (
@@ -416,7 +416,7 @@ export function ReturnCalculator() {
                 ))}
               </div>
             </div>
-            <div className="h-52 sm:h-64 rounded-xl bg-[#0a0a0f]/40 border border-[#F0B90B]/5 p-2">
+            <div className="h-52 sm:h-64 rounded-xl bg-[#0a0a0f]/40 border border-[#8247E5]/5 p-2">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
@@ -425,18 +425,18 @@ export function ReturnCalculator() {
                       <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="calcGradModerate" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#F0B90B" stopOpacity={0.3} />
-                      <stop offset="50%" stopColor="#F0B90B" stopOpacity={0.1} />
-                      <stop offset="100%" stopColor="#F0B90B" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#8247E5" stopOpacity={0.3} />
+                      <stop offset="50%" stopColor="#8247E5" stopOpacity={0.1} />
+                      <stop offset="100%" stopColor="#8247E5" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="calcGradOptimistic" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
                       <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="calcStrokeModerate" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#C99A00" />
-                      <stop offset="50%" stopColor="#F0B90B" />
-                      <stop offset="100%" stopColor="#F8D12F" />
+                      <stop offset="0%" stopColor="#6D3BC4" />
+                      <stop offset="50%" stopColor="#8247E5" />
+                      <stop offset="100%" stopColor="#A78BFA" />
                     </linearGradient>
                     <filter id="calcGlow">
                       <feGaussianBlur stdDeviation="2" result="coloredBlur" />
@@ -448,19 +448,19 @@ export function ReturnCalculator() {
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="rgba(240, 185, 11, 0.04)"
+                    stroke="rgba(130, 71, 229, 0.04)"
                     vertical={false}
                   />
                   <XAxis
                     dataKey="day"
-                    stroke="rgba(240, 185, 11, 0.25)"
+                    stroke="rgba(130, 71, 229, 0.25)"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
                     dy={8}
                   />
                   <YAxis
-                    stroke="rgba(240, 185, 11, 0.25)"
+                    stroke="rgba(130, 71, 229, 0.25)"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
@@ -487,7 +487,7 @@ export function ReturnCalculator() {
                     dot={false}
                     activeDot={{
                       r: 6,
-                      fill: '#F0B90B',
+                      fill: '#8247E5',
                       stroke: '#0a0a0f',
                       strokeWidth: 3,
                     }}
@@ -507,8 +507,8 @@ export function ReturnCalculator() {
           </div>
 
           {/* Disclaimer */}
-          <div className="flex items-start gap-2 p-3 rounded-xl bg-[#F0B90B]/5 border border-[#F0B90B]/10">
-            <Info className="h-4 w-4 text-[#F0B90B] shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 p-3 rounded-xl bg-[#8247E5]/5 border border-[#8247E5]/10">
+            <Info className="h-4 w-4 text-[#8247E5] shrink-0 mt-0.5" />
             <p className="text-xs text-gray-500 leading-relaxed">
               {t('calculator_disclaimer')}
             </p>
@@ -518,7 +518,7 @@ export function ReturnCalculator() {
           <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
             <Button
               onClick={() => setPage('staking')}
-              className="btn-bnb w-full h-13 sm:h-14 rounded-2xl text-base gap-2 font-bold"
+              className="btn-poly w-full h-13 sm:h-14 rounded-2xl text-base gap-2 font-bold"
             >
               <Rocket className="h-5 w-5" />
               {t('cta_button')}

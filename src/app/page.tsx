@@ -10,7 +10,6 @@ import { NetworkPage } from '@/components/web3/NetworkPage'
 import { CommissionsPage } from '@/components/web3/CommissionsPage'
 import { AchievementsPage } from '@/components/web3/AchievementsPage'
 import { AdminPage } from '@/components/web3/AdminPage'
-import { ReturnCalculator } from '@/components/web3/ReturnCalculator'
 import { Leaderboard } from '@/components/web3/Leaderboard'
 import { LiveFeed } from '@/components/web3/LiveFeed'
 import { LiveToast } from '@/components/web3/LiveToast'
@@ -72,24 +71,24 @@ function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass-strong">
         <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#F0B90B] to-[#C99A00] flex items-center justify-center shadow-lg shadow-[#F0B90B]/20">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#8247E5] to-[#6B33D4] flex items-center justify-center shadow-lg shadow-[#8247E5]/20">
               <Zap className="h-5 w-5 text-[#0a0a0f]" />
             </div>
-            <span className="font-bold text-xl text-gradient-bnb">StakeBNB</span>
+            <span className="font-bold text-xl text-gradient-poly">PolyStake</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_features')}</a>
-            <a href="#how-it-works" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_how')}</a>
-            <a href="#stats" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_stats')}</a>
-            <a href="#security" className="text-sm text-gray-400 hover:text-[#F0B90B] transition-colors">{t('landing_nav_security')}</a>
+            <a href="#features" className="text-sm text-gray-400 hover:text-[#8247E5] transition-colors">{t('landing_nav_features')}</a>
+            <a href="#how-it-works" className="text-sm text-gray-400 hover:text-[#8247E5] transition-colors">{t('landing_nav_how')}</a>
+            <a href="#stats" className="text-sm text-gray-400 hover:text-[#8247E5] transition-colors">{t('landing_nav_stats')}</a>
+            <a href="#security" className="text-sm text-gray-400 hover:text-[#8247E5] transition-colors">{t('landing_nav_security')}</a>
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden md:block">
               <LiveFeed variant="ticker" />
             </div>
             <LanguageSwitcher />
-            <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs hidden sm:flex">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#F0B90B] animate-pulse" />
+            <Badge variant="outline" className="border-[#8247E5]/30 text-[#8247E5] gap-1.5 text-xs hidden sm:flex">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#8247E5] animate-pulse" />
               {t('bnb_chain')}
             </Badge>
             <WalletConnect />
@@ -106,10 +105,10 @@ function LandingPage() {
         {/* Animated grid background */}
         <div className="absolute inset-0 grid-pattern opacity-50" />
         {/* Floating particles */}
-        <div className="absolute top-1/4 left-1/4 h-2 w-2 rounded-full bg-[#F0B90B]/30 animate-particle" />
-        <div className="absolute top-1/3 right-1/3 h-1.5 w-1.5 rounded-full bg-[#F0B90B]/20 animate-particle" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-1/4 left-1/3 h-1 w-1 rounded-full bg-[#F0B90B]/25 animate-particle" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/2 right-1/4 h-2.5 w-2.5 rounded-full bg-[#F0B90B]/15 animate-particle" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute top-1/4 left-1/4 h-2 w-2 rounded-full bg-[#8247E5]/30 animate-particle" />
+        <div className="absolute top-1/3 right-1/3 h-1.5 w-1.5 rounded-full bg-[#8247E5]/20 animate-particle" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/4 left-1/3 h-1 w-1 rounded-full bg-[#8247E5]/25 animate-particle" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 right-1/4 h-2.5 w-2.5 rounded-full bg-[#8247E5]/15 animate-particle" style={{ animationDelay: '0.5s' }} />
 
         <div className="relative max-w-7xl mx-auto text-center">
           {/* Badge */}
@@ -119,9 +118,9 @@ function LandingPage() {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8"
           >
-            <div className="h-2 w-2 rounded-full bg-[#F0B90B] animate-pulse" />
-            <span className="text-xs font-medium text-[#F0B90B]">{t('live_on_bnb')}</span>
-            <ChevronDown className="h-3 w-3 text-[#F0B90B] rotate-180" />
+            <div className="h-2 w-2 rounded-full bg-[#8247E5] animate-pulse" />
+            <span className="text-xs font-medium text-[#8247E5]">{t('live_on_bnb')}</span>
+            <ChevronDown className="h-3 w-3 text-[#8247E5] rotate-180" />
           </motion.div>
 
           {/* Main Heading */}
@@ -133,7 +132,7 @@ function LandingPage() {
           >
             <span className="text-white">{t('hero_title_1')}</span>
             <br />
-            <span className="text-gradient-bnb glow-bnb-text">{t('hero_title_2')}</span>
+            <span className="text-gradient-poly glow-poly-text">{t('hero_title_2')}</span>
             <br />
             <span className="text-white">{t('hero_title_3')}</span>
           </motion.h1>
@@ -158,7 +157,7 @@ function LandingPage() {
             {isConnected ? (
               <Button
                 onClick={() => setPage('dashboard')}
-                className="btn-bnb h-14 px-8 rounded-2xl text-base gap-2"
+                className="btn-poly h-14 px-8 rounded-2xl text-base gap-2"
               >
                 <Rocket className="h-5 w-5" />
                 {t('go_to_dashboard')}
@@ -168,7 +167,7 @@ function LandingPage() {
               <>
                 <Button
                   onClick={() => setPage('dashboard')}
-                  className="btn-bnb h-14 px-8 rounded-2xl text-base gap-2"
+                  className="btn-poly h-14 px-8 rounded-2xl text-base gap-2"
                 >
                   <Zap className="h-5 w-5" />
                   {t('hero_cta')}
@@ -176,7 +175,7 @@ function LandingPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-14 px-8 rounded-2xl text-base border-[#F0B90B]/20 text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/30 gap-2"
+                  className="h-14 px-8 rounded-2xl text-base border-[#8247E5]/20 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/30 gap-2"
                 >
                   <Globe className="h-5 w-5" />
                   {t('view_bscscan')}
@@ -205,7 +204,7 @@ function LandingPage() {
                 transition={{ delay: 1 + i * 0.1 }}
                 className="glass-card rounded-2xl p-4 text-center"
               >
-                <stat.icon className="h-5 w-5 text-[#F0B90B] mx-auto mb-2" />
+                <stat.icon className="h-5 w-5 text-[#8247E5] mx-auto mb-2" />
                 <p className="text-xl sm:text-2xl font-bold text-white">{stat.value}</p>
                 <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
               </motion.div>
@@ -224,7 +223,7 @@ function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
+            <Badge variant="outline" className="border-[#8247E5]/30 text-[#8247E5] gap-1.5 text-xs mb-4">
               <Star className="h-3 w-3" />
               {t('features_title').split(' ')[0].toUpperCase()}
             </Badge>
@@ -242,7 +241,7 @@ function LandingPage() {
                 icon: TrendingUp,
                 title: t('feature_staking_title'),
                 desc: t('feature_staking_desc'),
-                color: '#F0B90B'
+                color: '#8247E5'
               },
               {
                 icon: Users,
@@ -272,7 +271,7 @@ function LandingPage() {
                 icon: Globe,
                 title: t('feature_community_title'),
                 desc: t('feature_community_desc'),
-                color: '#F0B90B'
+                color: '#8247E5'
               },
             ].map((feature, i) => (
               <motion.div
@@ -288,7 +287,7 @@ function LandingPage() {
                 >
                   <feature.icon className="h-6 w-6" style={{ color: feature.color }} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#F0B90B] transition-colors">
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#8247E5] transition-colors">
                   {feature.title}
                 </h3>
                 <p className="text-sm text-gray-400 leading-relaxed">{feature.desc}</p>
@@ -299,7 +298,7 @@ function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 sm:py-28 px-4 relative section-transition bnb-gradient-bg">
+      <section id="how-it-works" className="py-20 sm:py-28 px-4 relative section-transition poly-gradient-bg">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -308,7 +307,7 @@ function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
+            <Badge variant="outline" className="border-[#8247E5]/30 text-[#8247E5] gap-1.5 text-xs mb-4">
               <Rocket className="h-3 w-3" />
               {t('how_title').split(' ')[0].toUpperCase()}
             </Badge>
@@ -350,10 +349,10 @@ function LandingPage() {
                 className="relative text-center"
               >
                 <div className="relative inline-flex mb-6">
-                  <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-[#F0B90B]/20 to-[#F0B90B]/5 border border-[#F0B90B]/20 flex items-center justify-center animate-pulse-glow">
-                    <item.icon className="h-8 w-8 text-[#F0B90B]" />
+                  <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-[#8247E5]/20 to-[#8247E5]/5 border border-[#8247E5]/20 flex items-center justify-center animate-pulse-glow">
+                    <item.icon className="h-8 w-8 text-[#8247E5]" />
                   </div>
-                  <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-[#F0B90B] text-[#0a0a0f] text-xs font-bold flex items-center justify-center">
+                  <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-[#8247E5] text-[#0a0a0f] text-xs font-bold flex items-center justify-center">
                     {item.step}
                   </div>
                 </div>
@@ -361,37 +360,12 @@ function LandingPage() {
                 <p className="text-sm text-gray-400 leading-relaxed max-w-xs mx-auto">{item.desc}</p>
                 {i < 2 && (
                   <div className="hidden md:block absolute top-10 -right-4 w-8">
-                    <ArrowRight className="h-5 w-5 text-[#F0B90B]/30" />
+                    <ArrowRight className="h-5 w-5 text-[#8247E5]/30" />
                   </div>
                 )}
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Return Calculator Section */}
-      <section className="py-20 sm:py-28 px-4 relative section-transition">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
-              <TrendingUp className="h-3 w-3" />
-              {t('calculator_title')}
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              {t('your_potential')}
-            </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">
-              {t('calculator_description')}
-            </p>
-          </motion.div>
-          <ReturnCalculator />
         </div>
       </section>
 
@@ -403,7 +377,7 @@ function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="glass-card rounded-3xl p-8 sm:p-12 glow-bnb"
+            className="glass-card rounded-3xl p-8 sm:p-12 glow-poly"
           >
             <div className="text-center mb-10">
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
@@ -426,7 +400,7 @@ function LandingPage() {
                   transition={{ delay: i * 0.1 }}
                   className="text-center"
                 >
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient-bnb mb-1">
+                  <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient-poly mb-1">
                     {stat.value}
                   </p>
                   <p className="text-xs sm:text-sm text-gray-400 mb-1">{stat.label}</p>
@@ -439,7 +413,7 @@ function LandingPage() {
       </section>
 
       {/* Leaderboard Section */}
-      <section className="py-20 sm:py-28 px-4 relative section-transition bnb-gradient-bg">
+      <section className="py-20 sm:py-28 px-4 relative section-transition poly-gradient-bg">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -448,7 +422,7 @@ function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <Badge variant="outline" className="border-[#F0B90B]/30 text-[#F0B90B] gap-1.5 text-xs mb-4">
+            <Badge variant="outline" className="border-[#8247E5]/30 text-[#8247E5] gap-1.5 text-xs mb-4">
               <Award className="h-3 w-3" />
               {t('leaderboard_title')}
             </Badge>
@@ -540,7 +514,7 @@ function LandingPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
                 onClick={() => setPage('dashboard')}
-                className="btn-bnb h-14 px-10 rounded-2xl text-base gap-2"
+                className="btn-poly h-14 px-10 rounded-2xl text-base gap-2"
               >
                 <Zap className="h-5 w-5" />
                 {t('cta_button')}
@@ -555,10 +529,10 @@ function LandingPage() {
       <footer className="border-t border-white/5 py-8 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-[#F0B90B] to-[#C99A00] flex items-center justify-center">
+            <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-[#8247E5] to-[#6B33D4] flex items-center justify-center">
               <Zap className="h-3 w-3 text-[#0a0a0f]" />
             </div>
-            <span className="text-sm text-gray-500">StakeBNB &copy; 2024</span>
+            <span className="text-sm text-gray-500">PolyStake &copy; 2024</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-gray-600">
             <span>{t('bnb_chain')}</span>
@@ -594,11 +568,11 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               }}
               className={`w-full justify-start gap-3 rounded-xl h-11 transition-all ${
                 isActive
-                  ? 'bg-[#F0B90B]/10 text-[#F0B90B] hover:bg-[#F0B90B]/15 hover:text-[#F0B90B]'
+                  ? 'bg-[#8247E5]/10 text-[#8247E5] hover:bg-[#8247E5]/15 hover:text-[#8247E5]'
                   : 'text-gray-400 hover:bg-white/5 hover:text-gray-300'
               }`}
             >
-              <item.icon className={`h-5 w-5 ${isActive ? 'text-[#F0B90B]' : ''}`} />
+              <item.icon className={`h-5 w-5 ${isActive ? 'text-[#8247E5]' : ''}`} />
               <span className="font-medium">{t(item.labelKey)}</span>
             </Button>
           )
@@ -613,7 +587,7 @@ function MobileBottomNav() {
   const { t } = useTranslation()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong pb-safe border-t border-[#F0B90B]/10">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong pb-safe border-t border-[#8247E5]/10">
       <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
         {mobileNavItemConfigs
           .filter(item => !item.adminOnly || isAdmin)
@@ -625,8 +599,8 @@ function MobileBottomNav() {
                 onClick={() => setPage(item.page)}
                 className="flex flex-col items-center gap-1 px-3 py-1.5 transition-colors"
               >
-                <item.icon className={`h-5 w-5 ${isActive ? 'text-[#F0B90B]' : 'text-gray-500'}`} />
-                <span className={`text-[10px] font-medium ${isActive ? 'text-[#F0B90B]' : 'text-gray-500'}`}>
+                <item.icon className={`h-5 w-5 ${isActive ? 'text-[#8247E5]' : 'text-gray-500'}`} />
+                <span className={`text-[10px] font-medium ${isActive ? 'text-[#8247E5]' : 'text-gray-500'}`}>
                   {t(item.labelKey)}
                 </span>
               </button>
@@ -669,7 +643,7 @@ function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-[#F0B90B]/8 glass-strong">
+      <header className="sticky top-0 z-50 border-b border-[#8247E5]/8 glass-strong">
         <div className="flex items-center justify-between h-14 px-4 sm:px-6">
           <div className="flex items-center gap-3">
             {/* Mobile menu button */}
@@ -679,14 +653,14 @@ function AppLayout() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="bg-[#0a0a0f] border-[#F0B90B]/10 p-0 w-64">
+              <SheetContent side="left" className="bg-[#0a0a0f] border-[#8247E5]/10 p-0 w-64">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col h-full">
-                  <div className="flex items-center gap-2 px-6 h-14 border-b border-[#F0B90B]/10">
-                    <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#F0B90B] to-[#C99A00] flex items-center justify-center">
+                  <div className="flex items-center gap-2 px-6 h-14 border-b border-[#8247E5]/10">
+                    <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#8247E5] to-[#6B33D4] flex items-center justify-center">
                       <Zap className="h-4 w-4 text-[#0a0a0f]" />
                     </div>
-                    <span className="font-bold text-lg text-gradient-bnb">StakeBNB</span>
+                    <span className="font-bold text-lg text-gradient-poly">PolyStake</span>
                   </div>
                   <div className="flex-1 py-4">
                     <SidebarNav onNavigate={() => setSidebarOpen(false)} />
@@ -696,17 +670,17 @@ function AppLayout() {
             </Sheet>
 
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#F0B90B] to-[#C99A00] flex items-center justify-center">
+              <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#8247E5] to-[#6B33D4] flex items-center justify-center">
                 <Zap className="h-4 w-4 text-[#0a0a0f]" />
               </div>
-              <span className="font-bold text-lg text-gradient-bnb hidden sm:inline">StakeBNB</span>
+              <span className="font-bold text-lg text-gradient-poly hidden sm:inline">PolyStake</span>
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
-            <Badge variant="outline" className="border-[#F0B90B]/20 text-[#F0B90B] gap-1.5 text-xs hidden sm:flex">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#F0B90B] animate-pulse" />
+            <Badge variant="outline" className="border-[#8247E5]/20 text-[#8247E5] gap-1.5 text-xs hidden sm:flex">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#8247E5] animate-pulse" />
               {t('bnb_chain')}
             </Badge>
             <WalletConnect />
@@ -716,11 +690,11 @@ function AppLayout() {
 
       <div className="flex-1 flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-64 border-r border-[#F0B90B]/8 bg-[#0a0a0f]/50 shrink-0">
+        <aside className="hidden lg:flex flex-col w-64 border-r border-[#8247E5]/8 bg-[#0a0a0f]/50 shrink-0">
           <div className="flex-1 py-4">
             <SidebarNav />
           </div>
-          <div className="p-4 border-t border-[#F0B90B]/8 space-y-4">
+          <div className="p-4 border-t border-[#8247E5]/8 space-y-4">
             <LiveFeed variant="feed" />
             <div className="p-3 rounded-xl glass-card space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -742,12 +716,12 @@ function AppLayout() {
       </div>
 
       {/* Desktop Footer */}
-      <footer className="hidden lg:block border-t border-[#F0B90B]/8 bg-[#0a0a0f] mt-auto">
+      <footer className="hidden lg:block border-t border-[#8247E5]/8 bg-[#0a0a0f] mt-auto">
         <div className="px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between text-xs text-gray-600">
             <div className="flex items-center gap-2">
-              <Zap className="h-3 w-3 text-[#F0B90B]" />
-              <span>StakeBNB &copy; 2024</span>
+              <Zap className="h-3 w-3 text-[#8247E5]" />
+              <span>PolyStake &copy; 2024</span>
             </div>
             <div className="flex items-center gap-4">
               <span>{t('bnb_chain')}</span>

@@ -7,7 +7,7 @@ import "./libraries/BinaryTree.sol";
 
 /**
  * @title MLMNetwork
- * @notice Binary tree MLM network management contract for the StakeBNB system.
+ * @notice Binary tree MLM network management contract for the PolyStake system.
  * @dev Manages user registration with auto-placement (BFS), referral code generation,
  *      direct referral tracking, and binary volume propagation. Inherits AccessControl
  *      for operator-gated volume updates.
