@@ -215,7 +215,7 @@ export function WalletConnect() {
           <div className="flex items-center justify-center gap-2 pt-2">
             <Badge variant="outline" className="border-[#8247E5]/20 text-[#8247E5]/70 gap-1">
               <div className="h-1.5 w-1.5 rounded-full bg-[#8247E5]" />
-              {t('bnb_chain')}
+              {t('network_name')}
             </Badge>
           </div>
         </div>

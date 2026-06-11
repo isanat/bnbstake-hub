@@ -9,9 +9,9 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30 * 1000,
+            staleTime: 15 * 1000, // 15 seconds — short enough to pick up admin changes
             retry: 1,
-            refetchOnWindowFocus: false,
+            refetchOnWindowFocus: true, // Refetch when user returns to the tab — picks up admin changes
           },
         },
       })

@@ -32,7 +32,7 @@ import { toast } from 'sonner'
 import {
   Shield, Plus, Edit, Trash2, Users, Settings, BarChart3,
   Search, Save, AlertTriangle, Coins, TrendingUp, Lock, Loader2,
-  Award, Globe, Bell, Trophy, Sparkles, MessageSquare
+  Award, Globe, Bell, Trophy, Sparkles, MessageSquare, Eye
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -187,6 +187,14 @@ export function AdminPage() {
     isActive: true,
   })
 
+  // Display overrides local state
+  const [displayOverrides, setDisplayOverrides] = useState({
+    display_tvl: '',
+    display_stakers: '',
+    display_rewards: '',
+    display_network: '',
+  })
+
   // Binary config local state
   const [binaryConfigLocal, setBinaryConfigLocal] = useState({
     percentage: 10,
@@ -292,12 +300,25 @@ export function AdminPage() {
     enabled: isAdmin,
   })
 
+  // Fetch system config (display overrides)
+  const { data: systemConfigData, isLoading: systemConfigLoading } = useQuery<{
+    configs: Array<{ id: string; key: string; value: string; description: string }>
+  }>({
+    queryKey: ['admin-system-config', currentWallet],
+    queryFn: () => fetch(`/api/admin/system-config?wallet=${currentWallet}`).then(r => {
+      if (!r.ok) throw new Error('Failed to fetch system config')
+      return r.json()
+    }),
+    enabled: !!currentWallet && isAdmin,
+  })
+
   // Initialize local mlm config from fetched data
   const unilevelConfig = mlmConfigData?.unilevel || []
   const binaryConfig = mlmConfigData?.binary
 
   // Sync local state when data arrives
   const [mlmSynced, setMlmSynced] = useState(false)
+  const [displaySynced, setDisplaySynced] = useState(false)
   if (mlmConfigData && !mlmSynced) {
     setMlmSynced(true)
     if (mlmConfigData.binary) {
@@ -315,6 +336,62 @@ export function AdminPage() {
         percentage: u.percentage,
         isActive: u.isActive,
       })))
+    }
+  }
+
+  // Sync display overrides when system config data arrives
+  if (systemConfigData?.configs && !displaySynced) {
+    setDisplaySynced(true)
+    const overrides: Record<string, string> = {}
+    for (const cfg of systemConfigData.configs) {
+      if (cfg.key.startsWith('display_')) {
+        overrides[cfg.key] = cfg.value
+      }
+    }
+    if (Object.keys(overrides).length > 0) {
+      setDisplayOverrides(prev => ({
+        ...prev,
+        display_tvl: overrides.display_tvl ?? prev.display_tvl,
+        display_stakers: overrides.display_stakers ?? prev.display_stakers,
+        display_rewards: overrides.display_rewards ?? prev.display_rewards,
+        display_network: overrides.display_network ?? prev.display_network,
+      }))
+    }
+  }
+
+  // Save display override mutation
+  const saveDisplayOverrideMutation = useMutation({
+    mutationFn: (data: { key: string; value: string }) =>
+      fetch(`/api/admin/system-config?wallet=${currentWallet}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, description: `Display override for ${data.key}` }),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to save display override')
+        return r.json()
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-system-config', currentWallet] })
+      // CRITICAL: Invalidate platform-stats so landing page & dashboard get updated values
+      queryClient.invalidateQueries({ queryKey: ['platform-stats'] })
+      toast.success('Display settings updated!')
+    },
+    onError: (err: Error) => {
+      toast.error(err.message)
+    },
+  })
+
+  const handleSaveAllDisplayOverrides = () => {
+    const entries = [
+      { key: 'display_tvl', value: displayOverrides.display_tvl },
+      { key: 'display_stakers', value: displayOverrides.display_stakers },
+      { key: 'display_rewards', value: displayOverrides.display_rewards },
+      { key: 'display_network', value: displayOverrides.display_network },
+    ]
+    for (const entry of entries) {
+      if (entry.value.trim()) {
+        saveDisplayOverrideMutation.mutate({ key: entry.key, value: entry.value.trim() })
+      }
     }
   }
 
@@ -338,6 +415,7 @@ export function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ['staking'] })
       queryClient.invalidateQueries({ queryKey: ['plans'] })
       queryClient.invalidateQueries({ queryKey: ['platform-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['user'] })
       toast.success(editPlan ? 'Plan updated successfully!' : 'Plan created successfully!')
       setPlanDialogOpen(false)
       setEditPlan(null)
@@ -592,6 +670,10 @@ export function AdminPage() {
           <TabsTrigger value="notifications" className="data-[state=active]:bg-[#8247E5] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
             <Bell className="h-4 w-4 mr-1" />
             {t('admin_notifications_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="display" className="data-[state=active]:bg-[#8247E5] data-[state=active]:text-[#0a0a0f] data-[state=active]:font-bold text-xs sm:text-sm text-gray-400">
+            <Eye className="h-4 w-4 mr-1" />
+            Display
           </TabsTrigger>
         </TabsList>
 
@@ -1357,9 +1439,96 @@ export function AdminPage() {
             </DialogContent>
           </Dialog>
         </TabsContent>
-      </Tabs>
 
-      {/* Plan Dialog */}
+        {/* Display Settings Tab */}
+        <TabsContent value="display">
+          <Card className="glass-card backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="text-lg text-white">Display Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {systemConfigLoading ? (
+                <LoadingSkeleton variant="detail" />
+              ) : (
+                <>
+                  <div className="p-4 rounded-xl bg-[#8247E5]/5 border border-[#8247E5]/20">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-[#8247E5] mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-sm text-[#8247E5] font-medium">Display Overrides</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Set custom display values for the landing page and dashboard stats. Leave a field empty to use the real data from the database. These values override the actual numbers shown to users.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-gray-300">Total Value Locked (TVL)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Use real data"
+                        value={displayOverrides.display_tvl}
+                        onChange={(e) => setDisplayOverrides({ ...displayOverrides, display_tvl: e.target.value })}
+                        className="bg-gray-800/60 border-[#8247E5]/20 text-white focus:ring-[#8247E5]/50 focus:border-[#8247E5]/50"
+                      />
+                      <p className="text-xs text-gray-500">Override the TVL shown on landing page &amp; stats</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300">Total Stakers</Label>
+                      <Input
+                        type="number"
+                        placeholder="Use real data"
+                        value={displayOverrides.display_stakers}
+                        onChange={(e) => setDisplayOverrides({ ...displayOverrides, display_stakers: e.target.value })}
+                        className="bg-gray-800/60 border-[#8247E5]/20 text-white focus:ring-[#8247E5]/50 focus:border-[#8247E5]/50"
+                      />
+                      <p className="text-xs text-gray-500">Override the staker count shown on landing page &amp; stats</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300">Total Rewards Distributed</Label>
+                      <Input
+                        type="number"
+                        placeholder="Use real data"
+                        value={displayOverrides.display_rewards}
+                        onChange={(e) => setDisplayOverrides({ ...displayOverrides, display_rewards: e.target.value })}
+                        className="bg-gray-800/60 border-[#8247E5]/20 text-white focus:ring-[#8247E5]/50 focus:border-[#8247E5]/50"
+                      />
+                      <p className="text-xs text-gray-500">Override the rewards amount shown on landing page &amp; stats</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300">Network Size</Label>
+                      <Input
+                        type="number"
+                        placeholder="Use real data"
+                        value={displayOverrides.display_network}
+                        onChange={(e) => setDisplayOverrides({ ...displayOverrides, display_network: e.target.value })}
+                        className="bg-gray-800/60 border-[#8247E5]/20 text-white focus:ring-[#8247E5]/50 focus:border-[#8247E5]/50"
+                      />
+                      <p className="text-xs text-gray-500">Override the network size shown on landing page &amp; stats</p>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleSaveAllDisplayOverrides}
+                    disabled={saveDisplayOverrideMutation.isPending}
+                    className="btn-poly rounded-xl gap-2"
+                  >
+                    {saveDisplayOverrideMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    Save Display Settings
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+      </Tabs>
       <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
         <DialogContent className="glass-strong border-[#8247E5]/15 text-white sm:max-w-md backdrop-blur-xl">
           <DialogHeader>

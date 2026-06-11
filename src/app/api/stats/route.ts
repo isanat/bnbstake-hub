@@ -188,12 +188,18 @@ export async function GET(request: NextRequest) {
       []
     );
 
+    // Resolve display overrides — if admin has set an override, use it for the top-level value
+    const displayTVL = configMap["display_tvl"] ? Number(configMap["display_tvl"]) : null;
+    const displayStakers = configMap["display_stakers"] ? Number(configMap["display_stakers"]) : null;
+    const displayRewards = configMap["display_rewards"] ? Number(configMap["display_rewards"]) : null;
+    const displayNetwork = configMap["display_network"] ? Number(configMap["display_network"]) : null;
+
     return NextResponse.json({
-      // Core stats
-      totalTVL: totalStaked,
-      totalStakers: activeUsersResult,
-      totalRewardsDistributed: totalEarned + totalCommissions,
-      totalNetworkSize: totalUsersResult,
+      // Core stats — use display overrides when set by admin, otherwise use real data
+      totalTVL: displayTVL ?? totalStaked,
+      totalStakers: displayStakers ?? activeUsersResult,
+      totalRewardsDistributed: displayRewards ?? (totalEarned + totalCommissions),
+      totalNetworkSize: displayNetwork ?? totalUsersResult,
       averageAPY: Math.round(averageAPY * 10) / 10,
       estimatedDailyRewards: Math.round(estimatedDailyRewards * 100) / 100,
       activeStakedAmount,
@@ -211,12 +217,12 @@ export async function GET(request: NextRequest) {
       // Active plans for landing page display
       plans: activePlans,
 
-      // Override values from SystemConfig (admin can configure display values)
+      // Raw (non-overridden) values so clients can tell if overrides are active
       displayOverrides: {
-        totalTVL: configMap["display_tvl"] || null,
-        totalStakers: configMap["display_stakers"] || null,
-        totalRewardsDistributed: configMap["display_rewards"] || null,
-        totalNetworkSize: configMap["display_network"] || null,
+        totalTVL: configMap["display_tvl"] ?? null,
+        totalStakers: configMap["display_stakers"] ?? null,
+        totalRewardsDistributed: configMap["display_rewards"] ?? null,
+        totalNetworkSize: configMap["display_network"] ?? null,
       },
     });
   } catch (error) {

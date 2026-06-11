@@ -11,7 +11,7 @@ export const defaultTranslations: Record<string, string> = {
   connect_wallet: 'Connect Wallet',
   disconnect: 'Disconnect',
   connected: 'Connected',
-  bnb_chain: 'Polygon',
+  network_name: 'Polygon',
   usdt: 'USDT',
   loading: 'Loading...',
   save: 'Save',
@@ -81,7 +81,7 @@ export const defaultTranslations: Record<string, string> = {
   hero_subtitle: 'The premier Polygon staking platform with Unilevel & Binary MLM rewards. Up to 25% APY with instant commission payouts.',
   hero_cta: 'Start Staking',
   hero_cta_secondary: 'Learn More',
-  live_on_bnb: 'Live on Polygon',
+  live_on_network: 'Live on Polygon',
   features_title: 'Why Choose PolyStake?',
   features_subtitle: 'Innovative staking with multi-level rewards',
   feature_staking_title: 'High-Yield Staking',
@@ -150,7 +150,7 @@ export const defaultTranslations: Record<string, string> = {
   stake_usdt: 'Stake USDT',
   claim_rewards: 'Claim Rewards',
   view_stakes: 'View Stakes',
-  view_bscscan: 'View on Polygonscan',
+  view_explorer: 'View on Polygonscan',
   recent_activity: 'Recent Activity',
   no_activity: 'No recent activity',
   start_staking: 'Start Staking',
@@ -161,7 +161,7 @@ export const defaultTranslations: Record<string, string> = {
   non_custodial: 'Non-Custodial',
   up_to_apy: 'Up to 25% APY',
   up_to_daily: 'Up to 0.07%/day',
-  bnb_chain_label: 'Polygon',
+  network_label: 'Polygon',
 
   // ========================
   // STAKING (25 keys)

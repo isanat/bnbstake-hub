@@ -62,7 +62,7 @@ function LandingPage() {
   const { data: stats } = useQuery({
     queryKey: ['platform-stats'],
     queryFn: () => fetch('/api/stats').then(r => r.json()),
-    staleTime: 60000, // Cache for 1 minute
+    staleTime: 15 * 1000, // Cache for 15 seconds — matches global QueryClient default
   })
 
   return (
@@ -89,7 +89,7 @@ function LandingPage() {
             <LanguageSwitcher />
             <Badge variant="outline" className="border-[#8247E5]/30 text-[#8247E5] gap-1.5 text-xs hidden sm:flex">
               <div className="h-1.5 w-1.5 rounded-full bg-[#8247E5] animate-pulse" />
-              {t('bnb_chain')}
+              {t('network_name')}
             </Badge>
             <WalletConnect />
           </div>
@@ -119,7 +119,7 @@ function LandingPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8"
           >
             <div className="h-2 w-2 rounded-full bg-[#8247E5] animate-pulse" />
-            <span className="text-xs font-medium text-[#8247E5]">{t('live_on_bnb')}</span>
+            <span className="text-xs font-medium text-[#8247E5]">{t('live_on_network')}</span>
             <ChevronDown className="h-3 w-3 text-[#8247E5] rotate-180" />
           </motion.div>
 
@@ -178,7 +178,7 @@ function LandingPage() {
                   className="h-14 px-8 rounded-2xl text-base border-[#8247E5]/20 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/30 gap-2"
                 >
                   <Globe className="h-5 w-5" />
-                  {t('view_bscscan')}
+                  {t('view_explorer')}
                 </Button>
               </>
             )}
@@ -535,7 +535,7 @@ function LandingPage() {
             <span className="text-sm text-gray-500">PolyStake &copy; 2024</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-gray-600">
-            <span>{t('bnb_chain')}</span>
+            <span>{t('network_name')}</span>
             <span className="flex items-center gap-1">
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               {t('network_active')}
@@ -681,7 +681,7 @@ function AppLayout() {
             <LanguageSwitcher />
             <Badge variant="outline" className="border-[#8247E5]/20 text-[#8247E5] gap-1.5 text-xs hidden sm:flex">
               <div className="h-1.5 w-1.5 rounded-full bg-[#8247E5] animate-pulse" />
-              {t('bnb_chain')}
+              {t('network_name')}
             </Badge>
             <WalletConnect />
           </div>
@@ -699,9 +699,9 @@ function AppLayout() {
             <div className="p-3 rounded-xl glass-card space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <ExternalLink className="h-4 w-4" />
-                <span>{t('bnb_chain')}</span>
+                <span>{t('network_name')}</span>
               </div>
-              <p className="text-xs text-gray-600">{t('bnb_chain')}</p>
+              <p className="text-xs text-gray-600">{t('network_name')}</p>
               <p className="text-xs text-emerald-500 flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />{t('network_active')}</p>
             </div>
           </div>
@@ -724,7 +724,7 @@ function AppLayout() {
               <span>PolyStake &copy; 2024</span>
             </div>
             <div className="flex items-center gap-4">
-              <span>{t('bnb_chain')}</span>
+              <span>{t('network_name')}</span>
               <span className="flex items-center gap-1">
                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 {t('network_active')}

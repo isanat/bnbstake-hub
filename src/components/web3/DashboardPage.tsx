@@ -156,7 +156,7 @@ export function DashboardPage() {
     enabled: !!currentWallet,
   })
 
-  // Not connected — beautiful empty state
+  // Not connected — engaging empty state
   if (!isConnected) {
     return (
       <div className="min-h-[70vh] flex flex-col">
@@ -168,14 +168,15 @@ export function DashboardPage() {
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-center max-w-md mx-auto px-4"
           >
+            {/* Animated wallet icon */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               className="relative inline-block mb-8"
             >
               <div className="absolute inset-0 rounded-3xl bg-[#8247E5]/10 blur-3xl scale-150" />
-              <div className="relative p-6 rounded-3xl glass-card glow-poly-strong">
-                <Wallet className="h-14 w-14 text-[#8247E5]" strokeWidth={1.5} />
+              <div className="relative p-6 sm:p-8 rounded-3xl glass-card glow-poly-strong">
+                <Wallet className="h-14 w-14 sm:h-16 sm:w-16 text-[#8247E5]" strokeWidth={1.5} />
               </div>
             </motion.div>
 
@@ -196,23 +197,24 @@ export function DashboardPage() {
               {t('connect_wallet_desc')}
             </motion.p>
 
+            {/* Feature badges */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-3 justify-center"
             >
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
-                <Shield className="h-4 w-4 text-[#8247E5]" />
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-card text-xs text-gray-400 min-h-[44px]">
+                <Shield className="h-4 w-4 text-[#8247E5] shrink-0" />
                 {t('non_custodial')}
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
-                <Flame className="h-4 w-4 text-[#8247E5]" />
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-card text-xs text-gray-400 min-h-[44px]">
+                <Flame className="h-4 w-4 text-[#8247E5] shrink-0" />
                 {t('up_to_daily')}
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs text-gray-400">
-                <Hexagon className="h-4 w-4 text-[#8247E5]" />
-                {t('bnb_chain_label')}
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-card text-xs text-gray-400 min-h-[44px]">
+                <Hexagon className="h-4 w-4 text-[#8247E5] shrink-0" />
+                {t('network_label')}
               </div>
             </motion.div>
           </motion.div>
@@ -266,10 +268,12 @@ export function DashboardPage() {
 
   const dailyEarnings = activeStakes.reduce((sum, s) => sum + (Number(s.amount) * Number(s.plan.apy) / 100 / 365), 0)
   const totalStaked = stakingSummary?.totalStaked ?? user?.totalStaked ?? 0
+  const pendingRewards = stakingSummary?.totalPendingRewards ?? 0
+  const totalEarned = user?.totalEarned ?? 0
 
   return (
     <motion.div
-      className="space-y-4 sm:space-y-6"
+      className="space-y-4 sm:space-y-5"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -283,16 +287,15 @@ export function DashboardPage() {
             <div className="flex gap-2">
               <Button
                 onClick={() => setPage('staking')}
-                className="btn-poly gap-1.5 rounded-xl h-9 px-4 text-sm"
+                className="btn-poly gap-1.5 rounded-xl h-10 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm min-w-[44px]"
               >
                 <Zap className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('deposit')}</span>
-                <span className="sm:hidden">{t('deposit')}</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setPage('commissions')}
-                className="border-[#8247E5]/30 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/50 gap-1.5 rounded-xl h-9 px-4 text-sm transition-all"
+                className="border-[#8247E5]/30 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/50 gap-1.5 rounded-xl h-10 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm transition-all min-w-[44px]"
               >
                 <Gift className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('claim_rewards')}</span>
@@ -300,7 +303,7 @@ export function DashboardPage() {
               <Button
                 variant="ghost"
                 onClick={() => setPage('network')}
-                className="text-gray-400 hover:text-[#8247E5] hover:bg-[#8247E5]/10 gap-1.5 rounded-xl h-9 px-3 text-sm transition-all hidden sm:flex"
+                className="text-gray-400 hover:text-[#8247E5] hover:bg-[#8247E5]/10 gap-1.5 rounded-xl h-10 sm:h-9 px-3 text-xs sm:text-sm transition-all hidden sm:flex"
               >
                 <Network className="h-4 w-4" />
                 <span>{t('nav_network')}</span>
@@ -310,154 +313,142 @@ export function DashboardPage() {
         />
       </motion.div>
 
-      {/* Main Stats - Top Row - Most Important */}
+      {/* Hero Stats — Total Staked & Daily Rate (visually prominent) */}
       {isLoading ? (
-        <LoadingSkeleton variant="cards" count={6} />
+        <LoadingSkeleton variant="cards" count={4} />
       ) : (
-        <motion.div
-          variants={containerVariants}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
-        >
-          <motion.div variants={itemVariants}>
-            <StatsCard
-              icon={Wallet}
-              label={t('total_staked')}
-              value={`$${totalStaked.toLocaleString()}`}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
+        <>
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-2 gap-3 sm:gap-4"
+          >
+            {/* Total Staked — Hero Card */}
+            <motion.div variants={itemVariants}>
+              <Card className="relative overflow-hidden glass-card border-[#8247E5]/20 hover:border-[#8247E5]/40 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#8247E5]/8 via-transparent to-transparent pointer-events-none" />
+                <CardContent className="relative p-4 sm:p-5">
+                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-[#8247E5]/15">
+                      <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-[#8247E5]" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider">{t('total_staked')}</span>
+                  </div>
+                  <p className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-[#8247E5] to-[#9B6DFF] bg-clip-text text-transparent">
+                    ${totalStaked.toLocaleString()}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Daily Rate — Hero Card */}
+            <motion.div variants={itemVariants}>
+              <Card className="relative overflow-hidden glass-card border-[#8247E5]/20 hover:border-[#8247E5]/40 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-bl from-[#8247E5]/8 via-transparent to-transparent pointer-events-none" />
+                <CardContent className="relative p-4 sm:p-5">
+                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-[#8247E5]/15">
+                      <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-[#8247E5]" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider">{t('daily_rate')}</span>
+                  </div>
+                  <p className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-[#8247E5] to-[#9B6DFF] bg-clip-text text-transparent">
+                    {dailyRate.toFixed(2)}%
+                  </p>
+                  {dailyEarnings > 0 && (
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
+                      ~${dailyEarnings.toFixed(2)}/day
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
           </motion.div>
-          <motion.div variants={itemVariants}>
-            <StatsCard
-              icon={TrendingUp}
-              label={t('daily_rate')}
-              value={`${dailyRate.toFixed(2)}%`}
-              trend={dailyEarnings > 0 ? { value: 0, positive: true } : undefined}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
+
+          {/* Secondary Stats Row — Pending Rewards & Total Earned */}
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-2 gap-3 sm:gap-4"
+          >
+            <motion.div variants={itemVariants}>
+              <StatsCard
+                icon={Clock}
+                label={t('pending_rewards')}
+                value={`$${pendingRewards.toFixed(2)}`}
+                className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+                iconClassName="bg-[#8247E5]/10"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <StatsCard
+                icon={TrendingUp}
+                label={t('total_earned')}
+                value={`$${totalEarned.toLocaleString()}`}
+                className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
+                iconClassName="bg-[#8247E5]/10"
+              />
+            </motion.div>
           </motion.div>
-          <motion.div variants={itemVariants}>
-            <StatsCard
-              icon={Clock}
-              label={t('pending_rewards')}
-              value={`$${(stakingSummary?.totalPendingRewards ?? 0).toFixed(2)}`}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
+
+          {/* Compact Tertiary Stats — inline strip */}
+          <motion.div variants={fadeUpVariants}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+              <div className="flex items-center gap-2.5 p-3 sm:p-3.5 rounded-xl glass-card">
+                <div className="p-1.5 rounded-lg bg-[#8247E5]/10 shrink-0">
+                  <Coins className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#8247E5]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">{t('active_stakes')}</p>
+                  <p className="text-sm sm:text-base font-semibold text-white">{stakingSummary?.activeStakesCount ?? 0}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 p-3 sm:p-3.5 rounded-xl glass-card">
+                <div className="p-1.5 rounded-lg bg-[#8247E5]/10 shrink-0">
+                  <Gift className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#8247E5]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">{t('commission_balance')}</p>
+                  <p className="text-sm sm:text-base font-semibold text-white">${(commissionSummary?.pending?.amount ?? 0).toLocaleString()}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 p-3 sm:p-3.5 rounded-xl glass-card">
+                <div className="p-1.5 rounded-lg bg-[#8247E5]/10 shrink-0">
+                  <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#8247E5]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">{t('network_size')}</p>
+                  <p className="text-sm sm:text-base font-semibold text-white">{userStats?.networkSize ?? 0}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 p-3 sm:p-3.5 rounded-xl glass-card">
+                <div className="p-1.5 rounded-lg bg-[#8247E5]/10 shrink-0">
+                  <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#8247E5]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">{t('direct_referrals')}</p>
+                  <p className="text-sm sm:text-base font-semibold text-white">{userStats?.directReferrals ?? 0}</p>
+                </div>
+              </div>
+            </div>
           </motion.div>
-          <motion.div variants={itemVariants}>
-            <StatsCard
-              icon={TrendingUp}
-              label={t('total_earned')}
-              value={`$${(user?.totalEarned ?? 0).toLocaleString()}`}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
-          </motion.div>
-        </motion.div>
+        </>
       )}
 
-      {/* Secondary Stats + Quick Actions Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
-        {/* Secondary Stats */}
-        <motion.div variants={fadeUpVariants} className="lg:col-span-2">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatsCard
-              icon={Coins}
-              label={t('active_stakes')}
-              value={`${stakingSummary?.activeStakesCount ?? 0}`}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
-            <StatsCard
-              icon={Gift}
-              label={t('commission_balance')}
-              value={`$${(commissionSummary?.pending?.amount ?? 0).toLocaleString()}`}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
-            <StatsCard
-              icon={Users}
-              label={t('network_size')}
-              value={`${userStats?.networkSize ?? 0}`}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
-            <StatsCard
-              icon={Layers}
-              label={t('direct_referrals')}
-              value={`${userStats?.directReferrals ?? 0}`}
-              className="glass-card hover:border-[#8247E5]/30 transition-all duration-300"
-              iconClassName="bg-[#8247E5]/10"
-            />
-          </div>
-        </motion.div>
-
-        {/* Quick Actions Card */}
-        <motion.div variants={fadeUpVariants}>
-          <Card className="glass-card h-full transition-all duration-300">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm sm:text-base text-white flex items-center gap-2">
-                <Zap className="h-4 w-4 text-[#8247E5]" />
-                {t('quick_actions')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  onClick={() => setPage('staking')}
-                  className="btn-poly w-full justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm"
-                >
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                  {t('stake_usdt')}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setPage('commissions')}
-                  className="w-full border-[#8247E5]/30 text-[#8247E5] hover:bg-[#8247E5]/10 hover:border-[#8247E5]/50 justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm transition-all"
-                >
-                  <Gift className="h-3.5 w-3.5" />
-                  {t('claim_all_rewards')}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setPage('network')}
-                  className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:text-white justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm transition-all"
-                >
-                  <Users className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">{t('nav_network')}</span>
-                  <span className="sm:hidden">{t('nav_network')}</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-gray-400 hover:bg-white/5 hover:text-white justify-center gap-1.5 rounded-xl h-10 text-xs sm:text-sm transition-all"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  {t('view_bscscan')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      {/* Rewards Chart */}
+      {/* Rewards Chart — compact */}
       <motion.div variants={fadeUpVariants}>
-        <Card className="glass-card glow-poly overflow-hidden transition-all duration-300">
-          <CardHeader className="pb-2">
+        <Card className="glass-card overflow-hidden transition-all duration-300">
+          <CardHeader className="pb-1 sm:pb-2 px-4 sm:px-6 pt-4 sm:pt-5">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base sm:text-lg text-white flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-[#8247E5]" />
+              <CardTitle className="text-sm sm:text-base text-white flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-[#8247E5]" />
                 {t('rewards_overview')}
               </CardTitle>
-              <Badge className="bg-[#8247E5]/10 text-[#8247E5] border-[#8247E5]/20 hover:bg-[#8247E5]/20 text-xs">
+              <Badge className="bg-[#8247E5]/10 text-[#8247E5] border-[#8247E5]/20 hover:bg-[#8247E5]/20 text-[10px] sm:text-xs">
                 Live
               </Badge>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="h-48 sm:h-64 lg:h-72">
+          <CardContent className="px-4 sm:px-6 pb-4 sm:pb-5">
+            <div className="h-36 sm:h-48 lg:h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
@@ -527,13 +518,13 @@ export function DashboardPage() {
         {/* Recent Activity */}
         <motion.div variants={fadeUpVariants}>
           <Card className="glass-card transition-all duration-300 h-full">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base sm:text-lg text-white flex items-center gap-2">
-                <Clock className="h-5 w-5 text-[#8247E5]" />
+            <CardHeader className="pb-2 px-4 sm:px-6 pt-4 sm:pt-5">
+              <CardTitle className="text-sm sm:text-base text-white flex items-center gap-2">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-[#8247E5]" />
                 {t('recent_activity')}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-5">
               {commissionLoading ? (
                 <LoadingSkeleton variant="table" count={3} />
               ) : recentTransactions.length === 0 ? (
@@ -544,7 +535,7 @@ export function DashboardPage() {
                   action={
                     <Button
                       onClick={() => setPage('staking')}
-                      className="btn-poly gap-2 rounded-xl text-sm"
+                      className="btn-poly gap-2 rounded-xl text-sm min-h-[44px]"
                     >
                       <ArrowUpRight className="h-4 w-4" />
                       {t('start_staking')}
@@ -552,7 +543,7 @@ export function DashboardPage() {
                   }
                 />
               ) : (
-                <div className="space-y-2 max-h-80 overflow-y-auto custom-scrollbar">
+                <div className="space-y-1.5 sm:space-y-2 max-h-72 sm:max-h-80 overflow-y-auto custom-scrollbar">
                   {recentTransactions.map((tx, index) => (
                     <motion.div
                       key={tx.id}
@@ -563,14 +554,14 @@ export function DashboardPage() {
                         delay: index * 0.05,
                         ease: [0.25, 0.46, 0.45, 0.94],
                       }}
-                      className="flex items-center justify-between p-3 rounded-xl glass-card border-l-2 border-l-[#8247E5]/60 hover:border-l-[#8247E5] transition-all duration-200 group"
+                      className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl glass-card border-l-2 border-l-[#8247E5]/60 hover:border-l-[#8247E5] transition-all duration-200 group min-h-[44px] sm:min-h-0"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="p-2 rounded-lg shrink-0 bg-[#8247E5]/10 group-hover:bg-[#8247E5]/20 transition-colors">
+                      <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                        <div className="p-1.5 sm:p-2 rounded-lg shrink-0 bg-[#8247E5]/10 group-hover:bg-[#8247E5]/20 transition-colors">
                           {tx.commissionType === 'binary' ? (
-                            <Gift className="h-3.5 w-3.5 text-[#8247E5]" />
+                            <Gift className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#8247E5]" />
                           ) : (
-                            <TrendingUp className="h-3.5 w-3.5 text-[#8247E5]" />
+                            <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#8247E5]" />
                           )}
                         </div>
                         <div className="min-w-0">
@@ -584,7 +575,7 @@ export function DashboardPage() {
                         </p>
                         <Badge
                           variant="outline"
-                          className={`text-[10px] px-1.5 py-0 ${
+                          className={`text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 ${
                             tx.status === 'completed'
                               ? 'border-[#8247E5]/30 text-[#8247E5]'
                               : 'border-amber-500/30 text-amber-400'
