@@ -37,12 +37,12 @@ library RewardMath {
      *      This is a simple linear division — we divide BPS by 365 days.
      *      The result is in BPS so it can be reused in other calculations.
      *
-     *      Example: APY 32000 BPS (320%) → daily rate = 32000 / 365 ≈ 87 BPS (0.87%/day)
+     *      Example: APY 2500 BPS (25%) → daily rate = 2500 / 365 ≈ 6 BPS (0.06%/day)
      *
      *      Note: Integer division truncates (rounds down). This is acceptable
      *      for reward calculations as it slightly favors the protocol over users.
      *
-     * @param apyBps APY in basis points (e.g., 32000 = 320%).
+     * @param apyBps APY in basis points (e.g., 2500 = 25%).
      * @return dailyRateBps Daily rate in basis points.
      */
     function apyToDailyRate(
@@ -64,7 +64,7 @@ library RewardMath {
      *      max out at ~1e27 for 1 billion supply).
      *
      * @param amount  The staked amount (in token smallest units).
-     * @param apyBps  APY in basis points (e.g., 32000 = 320%).
+     * @param apyBps  APY in basis points (e.g., 2500 = 25%).
      * @return rewardPerSecond The reward earned per second (in token smallest units).
      */
     function rewardPerSecond(
@@ -199,8 +199,8 @@ library RewardMath {
      *      (because you earn the full APY in less than a year).
      *      If durationSeconds > SECONDS_PER_YEAR, effective APY < nominal APY.
      *
-     *      Example: 320% APY over 180 days (15,552,000 seconds):
-     *        effectiveAPY = 32000 * 31536000 / 15552000 ≈ 64899 BPS (≈649%)
+     *      Example: 25% APY over 180 days (15,552,000 seconds):
+     *        effectiveAPY = 2500 * 31536000 / 15552000 ≈ 5069 BPS (≈50.7%)
      *
      *      Note: For durations less than 1 year, the effective APY
      *      exceeds the nominal APY — this is correct by design as it

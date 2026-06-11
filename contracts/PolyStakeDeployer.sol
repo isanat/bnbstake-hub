@@ -97,32 +97,41 @@ contract PolyStakeDeployer {
     /// @notice Default minimum stake amount: 100 USDT (18 decimals).
     uint256 private constant MIN_STAKE = 100 * 10 ** 18;
 
-    /// @notice Plan 1 APY: 120% = 12000 basis points.
-    uint256 private constant PLAN1_APY_BPS = 12000;
+    /// @notice Plan 1 APY: 12% = 1200 basis points.
+    uint256 private constant PLAN1_APY_BPS = 1200;
 
-    /// @notice Plan 2 APY: 220% = 22000 basis points.
-    uint256 private constant PLAN2_APY_BPS = 22000;
+    /// @notice Plan 2 APY: 18% = 1800 basis points.
+    uint256 private constant PLAN2_APY_BPS = 1800;
 
-    /// @notice Plan 3 APY: 320% = 32000 basis points.
-    uint256 private constant PLAN3_APY_BPS = 32000;
+    /// @notice Plan 3 APY: 25% = 2500 basis points.
+    uint256 private constant PLAN3_APY_BPS = 2500;
 
-    /// @notice Plan 1 duration: 180 days.
-    uint256 private constant PLAN1_DURATION = 180 days;
+    /// @notice Plan 1 duration: 30 days.
+    uint256 private constant PLAN1_DURATION = 30 days;
 
-    /// @notice Plan 2 duration: 365 days.
-    uint256 private constant PLAN2_DURATION = 365 days;
+    /// @notice Plan 2 duration: 90 days.
+    uint256 private constant PLAN2_DURATION = 90 days;
 
-    /// @notice Plan 3 duration: 365 days.
-    uint256 private constant PLAN3_DURATION = 365 days;
+    /// @notice Plan 3 duration: 180 days.
+    uint256 private constant PLAN3_DURATION = 180 days;
 
-    /// @notice Plan 1 early withdrawal penalty: 10% = 1000 bps.
-    uint256 private constant PLAN1_PENALTY_BPS = 1000;
+    /// @notice Plan 1 early withdrawal penalty: 5% = 500 bps.
+    uint256 private constant PLAN1_PENALTY_BPS = 500;
 
-    /// @notice Plan 2 early withdrawal penalty: 15% = 1500 bps.
-    uint256 private constant PLAN2_PENALTY_BPS = 1500;
+    /// @notice Plan 2 early withdrawal penalty: 10% = 1000 bps.
+    uint256 private constant PLAN2_PENALTY_BPS = 1000;
 
-    /// @notice Plan 3 early withdrawal penalty: 20% = 2000 bps.
-    uint256 private constant PLAN3_PENALTY_BPS = 2000;
+    /// @notice Plan 3 early withdrawal penalty: 15% = 1500 bps.
+    uint256 private constant PLAN3_PENALTY_BPS = 1500;
+
+    /// @notice Plan 1 maximum stake: 10,000 USDT.
+    uint256 private constant PLAN1_MAX = 10000 * 10 ** 18;
+
+    /// @notice Plan 2 maximum stake: 50,000 USDT.
+    uint256 private constant PLAN2_MAX = 50000 * 10 ** 18;
+
+    /// @notice Plan 3 maximum stake: 200,000 USDT.
+    uint256 private constant PLAN3_MAX = 200000 * 10 ** 18;
 
     // ============================================================
     //                          Events
@@ -384,41 +393,41 @@ contract PolyStakeDeployer {
 
     /**
      * @dev Adds three default staking plans:
-     *      Plan 0: 120% APY, 180-day lock, 10% early withdrawal penalty
-     *      Plan 1: 220% APY, 365-day lock, 15% early withdrawal penalty
-     *      Plan 2: 320% APY, 365-day lock, 20% early withdrawal penalty
+     *      Plan 0 (Flex Staking): 12% APY, 30-day lock, 5% early withdrawal penalty, $100-$10,000
+     *      Plan 1 (Pro Staking): 18% APY, 90-day lock, 10% early withdrawal penalty, $1,000-$50,000
+     *      Plan 2 (Elite Staking): 25% APY, 180-day lock, 15% early withdrawal penalty, $5,000-$200,000
      *
-     *      All plans have a minimum stake of 100 USDT and no maximum.
+     *      All plans have a minimum stake of 100 USDT.
      *
      *      Note: APY values on RewardDistributor are timelocked and must be
      *      set separately. See _scheduleAPYChanges.
      */
     function _addDefaultPlans(StakingPool stakingPool) internal {
-        // Plan 0: 120% APY, 180 days, 10% penalty
+        // Plan 0 (Flex Staking): 12% APY, 30 days, 5% penalty, $100-$10,000
         stakingPool.addPlan(
-            PLAN1_DURATION,       // duration: 180 days
-            PLAN1_APY_BPS,        // apyBps: 12000 (120%)
+            PLAN1_DURATION,       // duration: 30 days
+            PLAN1_APY_BPS,        // apyBps: 1200 (12%)
             MIN_STAKE,            // minStake: 100 USDT
-            0,                    // maxStake: no limit
-            PLAN1_PENALTY_BPS     // penaltyBps: 1000 (10%)
+            PLAN1_MAX,            // maxStake: 10,000 USDT
+            PLAN1_PENALTY_BPS     // penaltyBps: 500 (5%)
         );
 
-        // Plan 1: 220% APY, 365 days, 15% penalty
+        // Plan 1 (Pro Staking): 18% APY, 90 days, 10% penalty, $1,000-$50,000
         stakingPool.addPlan(
-            PLAN2_DURATION,       // duration: 365 days
-            PLAN2_APY_BPS,        // apyBps: 22000 (220%)
+            PLAN2_DURATION,       // duration: 90 days
+            PLAN2_APY_BPS,        // apyBps: 1800 (18%)
             MIN_STAKE,            // minStake: 100 USDT
-            0,                    // maxStake: no limit
-            PLAN2_PENALTY_BPS     // penaltyBps: 1500 (15%)
+            PLAN2_MAX,            // maxStake: 50,000 USDT
+            PLAN2_PENALTY_BPS     // penaltyBps: 1000 (10%)
         );
 
-        // Plan 2: 320% APY, 365 days, 20% penalty
+        // Plan 2 (Elite Staking): 25% APY, 180 days, 15% penalty, $5,000-$200,000
         stakingPool.addPlan(
-            PLAN3_DURATION,       // duration: 365 days
-            PLAN3_APY_BPS,        // apyBps: 32000 (320%)
+            PLAN3_DURATION,       // duration: 180 days
+            PLAN3_APY_BPS,        // apyBps: 2500 (25%)
             MIN_STAKE,            // minStake: 100 USDT
-            0,                    // maxStake: no limit
-            PLAN3_PENALTY_BPS     // penaltyBps: 2000 (20%)
+            PLAN3_MAX,            // maxStake: 200,000 USDT
+            PLAN3_PENALTY_BPS     // penaltyBps: 1500 (15%)
         );
     }
 
@@ -429,9 +438,9 @@ contract PolyStakeDeployer {
      *      must execute them after the timelock expires.
      *
      *      POST-DEPLOYMENT: After 2 days, the multisig calls:
-     *      - rewardDistributor.setAPY(0, 12000)
-     *      - rewardDistributor.setAPY(1, 22000)
-     *      - rewardDistributor.setAPY(2, 32000)
+     *      - rewardDistributor.setAPY(0, 1200)
+     *      - rewardDistributor.setAPY(1, 1800)
+     *      - rewardDistributor.setAPY(2, 2500)
      */
     function _scheduleAPYChanges(RewardDistributor rewardDistributor) internal {
         rewardDistributor.scheduleSetAPY(0, PLAN1_APY_BPS);
